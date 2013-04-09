@@ -7,8 +7,9 @@
 # Change the value of ENCUT of INCAR, nKP of KPOINTS and generalized length of POSCAR to @R@ before executing the create batch files.
 
 if [[ $1 == "entest" || $1 == "kptest" ]]; then
-    mkdir $1
+    mkdir $1 2> /dev/null
     cd $1
+#   ls $1 || mkdir $1 && cd $1
     for ((n=$2; n<=$3; n=n+$4))
     do
         for i in $n $n-1
@@ -22,20 +23,28 @@ if [[ $1 == "entest" || $1 == "kptest" ]]; then
             cp ../../qsub.parallel .
             if [ $1 == "entest" ]; then
                 sed -i s/@R@/$n/g INCAR
-    	        sed -i s/@R@/$5/g KPOINTS
+                sed -i s/@R@/$5/g KPOINTS
             else
                 sed -i s/@R@/$n/g KPOINTS
                 sed -i s/@R@/$5/g INCAR
             fi
-            sed -i s/@R@/$6/g POSCAR
-            PWD=$(pwd)
+            if [ $i == $n ]; then
+                sed -i s/@R@/$6/g POSCAR
+            else
+                lc=$(echo $6+0.1 | bc)
+                sed -i s/@R@/$lc/g POSCAR
+            fi
+            qname=${PWD//\//_}                  # edit the name of the command
+            qname=${qname##*utl0268_}
+            sed -i s/@N@/$qname/g qsub.parallel
             sed -i s%@R@%$PWD%g qsub.parallel
             cd ..
         done
     done
 elif [ $1 == "lctest" ]; then
-    mkdir lctest
-    cd lctest
+    mkdir $1 2> /dev/null
+    cd $1
+#   ls $1 || mkdir $1 && cd $1
     List=""
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")
     do i=$(echo "scale=2;$n/1" | bc)			# change decimal format from 5.1 to 5.10
@@ -51,9 +60,11 @@ elif [ $1 == "lctest" ]; then
         cp ../../KPOINTS .
         cp ../../qsub.parallel .
         sed -i s/@R@/$n/g POSCAR
-	sed -i s/@R@/$5/g INCAR
-	sed -i s/@R@/$6/g KPOINTS
-        PWD=$(pwd)
+        sed -i s/@R@/$5/g INCAR
+        sed -i s/@R@/$6/g KPOINTS
+        qname=${PWD//\//_}                  # edit the name of the command
+        qname=${qname##*utl0268_}
+        sed -i s/@N@/$qname/g qsub.parallel
         sed -i s%@R@%$PWD%g qsub.parallel
         cd ..
     done

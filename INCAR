@@ -1,7 +1,7 @@
 SYSTEM = Si bulk
-NWRITE = 4 
-ENCUT  =  @R@ eV,
-NBANDS = 20
+NWRITE = 2 
+ENCUT  =  @R@ eV
+NBANDS = 25
 PREC = HIGH 
 ISPIN = 1 
 ISTART = 0 
