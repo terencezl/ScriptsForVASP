@@ -1,0 +1,12 @@
+#PBS -l walltime=10:00:00
+#PBS -l nodes=8:ppn=8:pvfs
+#PBS -N cdte_tvac_test	
+#PBS -S /bin/ksh
+#PBS -j oe
+
+cd @R@
+time mpiexec -verbose /nfs/02/utl0268/library/vasp.4.6_opt_mpi
+
+
+
+
