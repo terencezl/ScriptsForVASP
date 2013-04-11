@@ -18,7 +18,7 @@ if [[ $1 == "entest" || $1 == "kptest" ]]; then
     else
         echo -e nKP from $2 to $3 step $4\\nENCUT = $5 >> $fname
     fi
-    echo -e "LC1 = $6, LC2 = $lc (directories with \"-1\")\\n" >> $fname
+    echo -e "LC1 = $6, LC2 = $lc (directories with \"-1\")" >> $fname
     for ((n=$2; n<=$3; n=n+$4))                                             # create each subfolder
     do
         for i in $n $n-1                                                    # subfolders for two LCs
@@ -56,7 +56,7 @@ elif [ $1 == "lctest" ]; then
     fname=$1"_output.txt"
     echo -e $1\\n > $fname                                                  # start to write some head info of each trial run
     echo LC from $2 to $3 step $4 >> $fname
-    echo -e ENCUT = $5\\nnKP = $6\\n >> $fname
+    echo -e ENCUT = $5\\nnKP = $6 >> $fname
     List=""                                                                 # clear the initial variable
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
     do i=$(echo "scale=2;$n/1" | bc)                                        # change decimal format from 5.1 to 5.10

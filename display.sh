@@ -11,7 +11,7 @@ if [[ $1 == "entest" ||  $1 == "kptest" ]]; then
     fname=$1"_output.txt"
     cd $1                                                           # get into the test dir
     if [ $1 == "entest" ]; then echo "ENCUT(meV)   E_LC1   E_LC2   DE=E_LC2-E_LC1   dDE" >> $fname
-    else echo "nKP   E_LC1   E_LC2   DE=E_LC2-E_LC1   dDE" >> $fname
+    else echo -e "\\nnKP   E_LC1   E_LC2   DE=E_LC2-E_LC1   dDE" >> $fname
     fi
     for ((n=$2; n<=$3; n=n+$4))                                     # display each subfolder's OUTCAR
     do
@@ -25,12 +25,12 @@ if [[ $1 == "entest" ||  $1 == "kptest" ]]; then
         echo "$n   $E_LC1   $E_LC2   $DE   $dDE" >> $fname          # output into a file
         DE_pre=$DE                                                  # set DE for this cycle as DE_pre for the next cycle to get the next dDE
     done
-    echo -e "\\nTime elapsed: \c"                                   # record the maxmum time elapsed
-    cat < $(find $3 -mindepth 1 -name "*$3*") | grep real | cut -c 6- > $fname
+    echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
+    cat < $(find $3 -mindepth 1 -name "*$3*") | grep real | cut -c 6- >> $fname
 elif [ $1 == "lctest" ]; then
     fname="lctest_output.txt"
     cd lctest                                                       # get into the test dir
-    echo "LC(Ams)   E" >> $fname
+    echo -e "\\nLC(Ams)   E" >> $fname
     List=""                                                         # clear the initial variable
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")           # generate subfolders specified by float numbers
     do
@@ -39,8 +39,9 @@ elif [ $1 == "lctest" ]; then
     done
     for n in $List
     do echo "$n   $(grep sigma $n/OUTCAR | tail -1 | cut -c 68-)" >> $fname; done   # output into a file
-    echo -e "\\nTime elapsed: \c"                                   # record the maxmum time elapsed
-    cat < $(find $3 -mindepth 1 -name "*$3*") | grep real | cut -c 6- > $fname
+    echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
+    i=$(echo "scale=2;$n/1" | bc)                                   # change the float format to match
+    cat < $(find $i -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
 else
     echo "Specify what you are going to test! entest/kptest/lctest"
 fi
