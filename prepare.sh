@@ -3,7 +3,8 @@
 # In the top working directory:
 # ./prepare.sh entest min max step nKP LC1
 # ./prepare.sh kptest min max step ENCUT LC1
-# ./prepare.sh lctest min max step ENCUT nKP
+# ./prepare.sh lctest min max step
+# ./prepare.sh rttest min max step
 # Change the value of ENCUT of INCAR, nKP of KPOINTS and generalized length of POSCAR to @R@ before executing the create batch files.
 
 if [[ $1 == "entest" || $1 == "kptest" ]]; then
@@ -50,13 +51,12 @@ if [[ $1 == "entest" || $1 == "kptest" ]]; then
         done
     done
 elif [ $1 == "lctest" ]; then
-#   ls $1 || mkdir $1 && cd $1
     mkdir $1 2> /dev/null
     cd $1                                                                   # get into the test dir
     fname=$1"_output.txt"
     echo -e $1\\n > $fname                                                  # start to write some head info of each trial run
     echo LC from $2 to $3 step $4 >> $fname
-    echo -e ENCUT = $5\\nnKP = $6 >> $fname
+#    echo -e ENCUT = $5\\nnKP = $6 >> $fname
     List=""                                                                 # clear the initial variable
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
     do i=$(echo "scale=2;$n/1" | bc)                                        # change decimal format from 5.1 to 5.10
@@ -72,8 +72,38 @@ elif [ $1 == "lctest" ]; then
         cp ../../KPOINTS .
         cp ../../qsub.parallel .
         sed -i s/@R@/$n/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
-        sed -i s/@R@/$5/g INCAR
-        sed -i s/@R@/$6/g KPOINTS
+ #       sed -i s/@R@/$5/g INCAR
+ #       sed -i s/@R@/$6/g KPOINTS
+        qname=${PWD//\//_}                                                  # edit the name of the command so that it looks like terencelz_GaN_MN_lctest_140
+        qname=${qname##*utl0268_}
+        sed -i s/@N@/$qname/g qsub.parallel                                 # replace the name in the command file. Arg reserved
+        sed -i s%@R@%$PWD%g qsub.parallel                                   # replace the trial subfolder in the command file. Arg reserved
+        cd ..
+    done
+elif [ $1 == "rttest"]; then
+    mkdir $1 2> /dev/null
+    cd $1                                                                   # get into the test dir
+    fname=$1"_output.txt"
+    echo -e $1\\n > $fname                                                  # start to write some head info of each trial run
+    echo "Ratio c/a from $2 to $3 step $4" >> $fname
+#    echo -e ENCUT = $5\\nnKP = $6 >> $fname
+    for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
+    do
+        i=$(echo "scale=2;$n/1" | bc)                                       # change decimal format from 5.1 to 5.10
+        List=$List" "$i                                                     # add List of float numbers up
+    done
+    for n in $List
+    do
+        mkdir $n
+        cd $n
+        cp ../../INCAR .
+        cp ../../POSCAR .
+        cp ../../POTCAR .
+        cp ../../KPOINTS .
+        cp ../../qsub.parallel .
+        sed -i s/@RT@/$n/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
+#        sed -i s/@R@/$5/g INCAR
+#        sed -i s/@R@/$6/g KPOINTS
         qname=${PWD//\//_}                                                  # edit the name of the command so that it looks like terencelz_GaN_MN_lctest_140
         qname=${qname##*utl0268_}
         sed -i s/@N@/$qname/g qsub.parallel                                 # replace the name in the command file. Arg reserved
