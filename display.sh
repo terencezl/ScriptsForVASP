@@ -1,7 +1,7 @@
 #!/bin/bash
 # Use: In the top working directory
 # (the one that generates subfolders like entest),
-# ./display.sh TEST_TYPE min max step
+# ./Display.sh TEST_TYPE min max step
 # ./xxtest/xxtest_output is the output file in the form of
 # ENCUT  E_LC1   E_LC2   DE=E_LC2-E_LC1   dDE, for entest
 # nKP  E_LC1   E_LC2   DE=E_LC2-E_LC1   dDE, for kptest

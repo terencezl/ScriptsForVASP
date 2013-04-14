@@ -1,6 +1,6 @@
 #!/bin/bash
 # Use: In the top working directory,
-# ./fire.sh TEST_TYPE min max step
+# ./Fire.sh TEST_TYPE min max step
 
 if [[ $1 == "entest" || $1 == "kptest" ]]; then
     cd $1                                                    # get into the test dir

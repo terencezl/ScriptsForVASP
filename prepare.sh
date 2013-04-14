@@ -1,10 +1,10 @@
 #!/bin/bash
 # All batch files and the four input files should be prepared in the top working directory.
 # In the top working directory:
-# ./prepare.sh entest min max step nKP LC1
-# ./prepare.sh kptest min max step ENCUT LC1
-# ./prepare.sh lctest min max step
-# ./prepare.sh rttest min max step
+# ./Prepare.sh entest min max step nKP LC1
+# ./Prepare.sh kptest min max step ENCUT LC1
+# ./Prepare.sh lctest min max step
+# ./Prepare.sh rttest min max step
 # Change the value of ENCUT of INCAR, nKP of KPOINTS and generalized length of POSCAR to @R@ before executing the create batch files.
 
 if [[ $1 == "entest" || $1 == "kptest" ]]; then
@@ -13,9 +13,9 @@ if [[ $1 == "entest" || $1 == "kptest" ]]; then
     cd $1                                                                   # get into the test dir
     fname=$1"_output.txt"
     lc=$(echo $6+0.1 | bc)                                                  # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
-    echo -e $1\\n > $fname                                                  # start to write some head info of each trial run
+    echo -e $1\\n >> $fname                                                  # start to write some head info of each trial run
     if [ $1 == "entest" ]; then
-        echo -e ENCUT from $2 to $3 step $4\\nnKP = $5 > $fname
+        echo -e ENCUT from $2 to $3 step $4\\nnKP = $5 >> $fname
     else
         echo -e nKP from $2 to $3 step $4\\nENCUT = $5 >> $fname
     fi
@@ -26,11 +26,11 @@ if [[ $1 == "entest" || $1 == "kptest" ]]; then
         do
             mkdir $i
             cd $i
-            cp ../../INCAR .
-            cp ../../POSCAR .
-            cp ../../POTCAR .
-            cp ../../KPOINTS .
-            cp ../../qsub.parallel .
+            cp ../../INPUT/INCAR .
+            cp ../../INPUT/POSCAR .
+            cp ../../INPUT/POTCAR .
+            cp ../../INPUT/KPOINTS .
+            cp ../../INPUT/qsub.parallel .
             if [ $1 == "entest" ]; then
                 sed -i s/@R@/$n/g INCAR                                     # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS are reserved
                 sed -i s/@R@/$5/g KPOINTS
@@ -54,7 +54,7 @@ elif [ $1 == "lctest" ]; then
     mkdir $1 2> /dev/null
     cd $1                                                                   # get into the test dir
     fname=$1"_output.txt"
-    echo -e $1\\n > $fname                                                  # start to write some head info of each trial run
+    echo -e $1\\n >> $fname                                                  # start to write some head info of each trial run
     echo LC from $2 to $3 step $4 >> $fname
 #    echo -e ENCUT = $5\\nnKP = $6 >> $fname
     List=""                                                                 # clear the initial variable
@@ -66,11 +66,11 @@ elif [ $1 == "lctest" ]; then
     do
         mkdir $n
         cd $n
-        cp ../../INCAR .
-        cp ../../POSCAR .
-        cp ../../POTCAR .
-        cp ../../KPOINTS .
-        cp ../../qsub.parallel .
+        cp ../../INPUT/INCAR .
+        cp ../../INPUT/POSCAR .
+        cp ../../INPUT/POTCAR .
+        cp ../../INPUT/KPOINTS .
+        cp ../../INPUT/qsub.parallel .
         sed -i s/@R@/$n/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
  #       sed -i s/@R@/$5/g INCAR
  #       sed -i s/@R@/$6/g KPOINTS
@@ -80,11 +80,11 @@ elif [ $1 == "lctest" ]; then
         sed -i s%@R@%$PWD%g qsub.parallel                                   # replace the trial subfolder in the command file. Arg reserved
         cd ..
     done
-elif [ $1 == "rttest"]; then
+elif [ $1 == "rttest" ]; then
     mkdir $1 2> /dev/null
     cd $1                                                                   # get into the test dir
     fname=$1"_output.txt"
-    echo -e $1\\n > $fname                                                  # start to write some head info of each trial run
+    echo -e $1\\n >> $fname                                                  # start to write some head info of each trial run
     echo "Ratio c/a from $2 to $3 step $4" >> $fname
 #    echo -e ENCUT = $5\\nnKP = $6 >> $fname
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
@@ -96,11 +96,11 @@ elif [ $1 == "rttest"]; then
     do
         mkdir $n
         cd $n
-        cp ../../INCAR .
-        cp ../../POSCAR .
-        cp ../../POTCAR .
-        cp ../../KPOINTS .
-        cp ../../qsub.parallel .
+        cp ../../INPUT/INCAR .
+        cp ../../INPUT/POSCAR .
+        cp ../../INPUT/POTCAR .
+        cp ../../INPUT/KPOINTS .
+        cp ../../INPUT/qsub.parallel .
         sed -i s/@RT@/$n/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
 #        sed -i s/@R@/$5/g INCAR
 #        sed -i s/@R@/$6/g KPOINTS
