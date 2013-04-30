@@ -41,11 +41,11 @@ elif [ $1 == "lctest" ]; then
     do echo "$n   $(grep sigma $n/OUTCAR | tail -1 | cut -c 68-)" >> $fname; done   # output into a file
     echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
     i=$(echo "scale=2;$3/1" | bc)                                   # change the float format to match
+    cat < $(find $i -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
 elif [ $1 == "rttest" ]; then
     fname=$1"_output.txt"
     cd $1                                                           # get into the test dir
     echo -e "\\nRatio c/a   E" >> $fname
-#    List=""                                                         # clear the initial variable
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")           # generate subfolders specified by float numbers
     do
         i=$(echo "scale=2;$n/1" | bc)                               # change decimal format from 5.1 to 5.10
@@ -55,7 +55,7 @@ elif [ $1 == "rttest" ]; then
     do echo "$n   $(grep sigma $n/OUTCAR | tail -1 | cut -c 68-)" >> $fname; done   # output into a file
     echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
     i=$(echo "scale=2;$3/1" | bc)                                   # change the float format to match
-    cat < $(find $i -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname   cat < $(find $i -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
+    cat < $(find $i -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
 else
     echo "Specify what you are going to test! entest/kptest/lctest"
 fi
