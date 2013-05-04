@@ -31,7 +31,6 @@ elif [ $1 == "lctest" ]; then
     fname=$1"_output.txt"
     cd $1                                                           # get into the test dir
     echo -e "\\nLC(Ams)   E" >> $fname
-#    List=""                                                         # clear the initial variable
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")           # generate subfolders specified by float numbers
     do
         i=$(echo "scale=2;$n/1" | bc)                               # change decimal format from 5.1 to 5.10
@@ -45,7 +44,7 @@ elif [ $1 == "lctest" ]; then
 elif [ $1 == "rttest" ]; then
     fname=$1"_output.txt"
     cd $1                                                           # get into the test dir
-    echo -e "\\nRatio c/a   E" >> $fname
+    echo -e "\\nRatio   E" >> $fname
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")           # generate subfolders specified by float numbers
     do
         i=$(echo "scale=2;$n/1" | bc)                               # change decimal format from 5.1 to 5.10
@@ -56,6 +55,30 @@ elif [ $1 == "rttest" ]; then
     echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
     i=$(echo "scale=2;$3/1" | bc)                                   # change the float format to match
     cat < $(find $i -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
+elif [ $1 == "mesh2d" ]; then
+    fname=$1"_output.txt"
+    cd $1                                                                   # get into the test dir
+    echo -e "\\nScaling_const   Ratio   E" >> $fname
+    for x in $(awk "BEGIN{for(i=$2;i<=$3;i+=$6)print i}")                   # generate subfolders specified by float numbers
+    do i=$(echo "scale=2;$x/1" | bc)                                        # change decimal format from 5.1 to 5.10
+        Listx=$Listx" "$i                                                         # add List of float numbers up
+    done
+    for y in $(awk "BEGIN{for(i=$4;i<=$5;i+=$6)print i}")                   # generate subfolders specified by float numbers
+    do i=$(echo "scale=2;$y/1" | bc)                                        # change decimal format from 5.1 to 5.10
+        Listy=$Listy" "$i                                                         # add List of float numbers up
+    done
+    for x in $Listx
+    do
+        for y in $Listy
+        do
+            echo "$x            $y   $(grep sigma x$x-y$y/OUTCAR | tail -1 | cut -c 68-)" >> $fname   # output into a file
+#            echo "{$x,$y,$(grep sigma x$x-y$y/OUTCAR | tail -1 | cut -c 68-)}," >> $fname   # output into a file
+        done
+    done
+    echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
+    x=$(echo "scale=2;$3/1" | bc)                                   # change the float format to match
+    y=$(echo "scale=2;$5/1" | bc)                                   # change the float format to match
+    cat < $(find x$x-y$y -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
 else
     echo "Specify what you are going to test! entest/kptest/lctest"
 fi

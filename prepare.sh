@@ -110,6 +110,43 @@ elif [ $1 == "rttest" ]; then
         sed -i s%@R@%$PWD%g qsub.parallel                                   # replace the trial subfolder in the command file. Arg reserved
         cd ..
     done
+elif [ $1 == "mesh2d" ]; then
+    mkdir $1 2> /dev/null
+    cd $1                                                                   # get into the test dir
+    fname=$1"_output.txt"
+    echo -e $1\\n >> $fname                                                  # start to write some head info of each trial run
+    echo Scaling factor from $2 to $3, ratio from $4 to $5 step $6 >> $fname
+#    echo -e ENCUT = $5\\nnKP = $6 >> $fname
+    for x in $(awk "BEGIN{for(i=$2;i<=$3;i+=$6)print i}")                   # generate subfolders specified by float numbers
+    do i=$(echo "scale=2;$x/1" | bc)                                        # change decimal format from 5.1 to 5.10
+    Listx=$Listx" "$i                                                         # add List of float numbers up
+    done
+    for y in $(awk "BEGIN{for(i=$4;i<=$5;i+=$6)print i}")                   # generate subfolders specified by float numbers
+    do i=$(echo "scale=2;$y/1" | bc)                                        # change decimal format from 5.1 to 5.10
+    Listy=$Listy" "$i                                                         # add List of float numbers up
+    done
+    for x in $Listx
+    do
+        for y in $Listy
+        do
+            mkdir x$x-y$y
+            cd x$x-y$y
+            cp ../../INPUT/INCAR .
+            cp ../../INPUT/POSCAR .
+            cp ../../INPUT/POTCAR .
+            cp ../../INPUT/KPOINTS .
+            cp ../../INPUT/qsub.parallel .
+            sed -i s/@Rx@/$x/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
+            sed -i s/@Ry@/$y/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
+    #       sed -i s/@R@/$5/g INCAR
+    #       sed -i s/@R@/$6/g KPOINTS
+            qname=${PWD//\//_}                                                  # edit the name of the command so that it looks like terencelz_GaN_MN_lctest_140
+            qname=${qname##*utl0268_}
+            sed -i s/@N@/$qname/g qsub.parallel                                 # replace the name in the command file. Arg reserved
+            sed -i s%@R@%$PWD%g qsub.parallel                                   # replace the trial subfolder in the command file. Arg reserved
+            cd ..
+        done
+    done
 else
     echo "Specify what you are going to test! entest/kptest/lctest"
 fi
