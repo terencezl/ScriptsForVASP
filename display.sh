@@ -15,8 +15,8 @@ if [[ $1 == "entest" ||  $1 == "kptest" ]]; then
     fi
     for ((n=$2; n<=$3; n=n+$4))                                     # display each subfolder's OUTCAR
     do
-        E_LC1=$(grep sigma $n/OUTCAR | tail -1 | cut -c 68-)        # get the total energy when LC1
-        E_LC2=$(grep sigma $n-1/OUTCAR | tail -1 | cut -c 68-)      # get the total energy when LC2, characterized by patterns like 160-1
+        E_LC1=$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')        # get the total energy when LC1
+        E_LC2=$(grep sigma $n-1/OUTCAR | tail -1 | awk '{print $7;}')      # get the total energy when LC2, characterized by patterns like 160-1
         DE=$(echo "($E_LC2)-($E_LC1)" | bc)                         # echo the expr into bc (calculator) to get DE. bash doesn't support floats
         if [ $n == $2 ]; then DE_pre=$DE; fi                        # in the first cycle let dDE = 0
         dDE=$(echo "($DE)-($DE_pre)" | bc)                          # get dDE (the diff of energy difference between two adjacent rows)
@@ -26,7 +26,7 @@ if [[ $1 == "entest" ||  $1 == "kptest" ]]; then
         DE_pre=$DE                                                  # set DE for this cycle as DE_pre for the next cycle to get the next dDE
     done
     echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
-    cat < $(find $3 -mindepth 1 -name "*$3*") | grep real | cut -c 6- >> $fname
+    cat < $(find $3 -mindepth 1 -name "*$3*") | grep real | awk '{print $2;}' >> $fname
 elif [ $1 == "lctest" ]; then
     fname=$1"_output.txt"
     cd $1                                                           # get into the test dir
@@ -37,10 +37,10 @@ elif [ $1 == "lctest" ]; then
         List=$List" "$i                                             # add List of float numbers up
     done
     for n in $List
-    do echo "$n   $(grep sigma $n/OUTCAR | tail -1 | cut -c 68-)" >> $fname; done   # output into a file
+    do echo "$n   $(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname; done   # output into a file
     echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
     i=$(echo "scale=2;$3/1" | bc)                                   # change the float format to match
-    cat < $(find $i -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
+    cat < $(find $i -mindepth 1 -name "*$i*") | grep real | awk '{print $2;}' >> $fname
 elif [ $1 == "rttest" ]; then
     fname=$1"_output.txt"
     cd $1                                                           # get into the test dir
@@ -51,10 +51,10 @@ elif [ $1 == "rttest" ]; then
         List=$List" "$i                                             # add List of float numbers up
     done
     for n in $List
-    do echo "$n   $(grep sigma $n/OUTCAR | tail -1 | cut -c 68-)" >> $fname; done   # output into a file
+    do echo "$n   $(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname; done   # output into a file
     echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
     i=$(echo "scale=2;$3/1" | bc)                                   # change the float format to match
-    cat < $(find $i -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
+    cat < $(find $i -mindepth 1 -name "*$i*") | grep real | awk '{print $2;}' >> $fname
 elif [ $1 == "mesh2d" ]; then
     fname=$1"_output.txt"
     cd $1                                                                   # get into the test dir
@@ -71,14 +71,14 @@ elif [ $1 == "mesh2d" ]; then
     do
         for y in $Listy
         do
-            echo "$x            $y   $(grep sigma x$x-y$y/OUTCAR | tail -1 | cut -c 68-)" >> $fname   # output into a file
-#            echo "{$x,$y,$(grep sigma x$x-y$y/OUTCAR | tail -1 | cut -c 68-)}," >> $fname   # output into a file
+            echo "$x            $y   $(grep sigma x$x-y$y/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname   # output into a file
+#            echo "{$x,$y,$(grep sigma x$x-y$y/OUTCAR | tail -1 | awk '{print $7;}')}," >> $fname   # output into a file
         done
     done
     echo -e "\\nMaximal time per run: \c" >> $fname                 # record the maximal time elapsed
     x=$(echo "scale=2;$3/1" | bc)                                   # change the float format to match
     y=$(echo "scale=2;$5/1" | bc)                                   # change the float format to match
-    cat < $(find x$x-y$y -mindepth 1 -name "*$i*") | grep real | cut -c 6- >> $fname
+    cat < $(find x$x-y$y -mindepth 1 -name "*$i*") | grep real | awk '{print $2;}' >> $fname
 else
     echo "Specify what you are going to test! entest/kptest/lctest"
 fi
