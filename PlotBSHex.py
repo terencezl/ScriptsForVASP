@@ -44,8 +44,8 @@ for i in range(0, N_bands):
 # Set the axis range
 xlim0 = 0
 xlim1 = k_end_K_G
-ylim0 = -8
-ylim1 = 3
+ylim0 = 0
+ylim1 = 5
 plt.axis([0, xlim1, ylim0, ylim1])
 
 plt.plot([k_end_G_M, k_end_G_M], [ylim0, ylim1], 'k--')
@@ -63,5 +63,5 @@ frame1 = plt.gca()
 frame1.axes.get_xaxis().set_ticks([])
 plt.title("Band Structure")
 plt.ylabel('Energy (eV)')
-plt.savefig('bandstructure.png')
+#plt.savefig('bandstructure.png')
 plt.show()
