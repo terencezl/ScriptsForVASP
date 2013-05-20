@@ -22,16 +22,16 @@ Fermi_E1 = float(list1[5][3])
 for i in range( 6, 6 + N_steps ):
     E1.append(float(list1[i][0]) - Fermi_E1)
     dos1_tot.append(float(list1[i][1]))
-plt.plot(E1, dos1_tot, label="1")
+#plt.plot(E1, dos1_tot, label="Terence")
 
 Fermi_E2 = float(list2[5][3])
 for i in range( 6, 6 + N_steps ):
     E2.append(float(list2[i][0]) - Fermi_E2)
     dos2_tot.append(float(list2[i][1]))
-plt.plot(E2, dos2_tot, label="2")
+#plt.plot(E2, dos2_tot, label="Jason")
 
-#D_dos = np.array(dos1_tot) - np.array(dos2_tot)
-#plt.plot (E1, D_dos, label='diff')
+D_dos = np.array(dos1_tot) - np.array(dos2_tot)
+plt.plot (E1, D_dos, label='diff')
  
 plt.legend()
 #plt.xlim([-15,30])
