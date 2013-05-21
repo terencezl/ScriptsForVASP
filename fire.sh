@@ -1,6 +1,6 @@
 #!/bin/bash
 # Use: In the top working directory,
-# ./Fire.sh TEST_TYPE
+# Fire.sh TEST_TYPE
 
 cd $1 || exit 1
 dir_list=$(ls -F)

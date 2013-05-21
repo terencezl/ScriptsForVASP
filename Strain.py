@@ -2,11 +2,8 @@
 import sys
 import numpy as np
 #import matplotlib.pyplot as plt
-import pdb
+
 f = open('POSCAR','r')
-#file = []
-#for line in f:
-#    file.append(line.split())
 file = f.readlines()
 f.close()
 
@@ -15,7 +12,7 @@ for n in [2,3,4]:
     vectors_raw.append(file[n].split())
 
 vectors = np.array(vectors_raw, dtype=np.float)
-#pdb.set_trace()
+
 delta = 0.01
 delta = float(sys.argv[2])
 

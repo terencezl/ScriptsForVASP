@@ -1,21 +1,20 @@
 #!/bin/bash
-# Use it under the successfully relaxed folder.
-# Onlly support 2 elements. Specify the number of atoms as
-# Cellinfo.sh N1 N2
+# Use it under a folder that has an OUTCAR
+# Cellinfo.sh
+# Cellinfo.sh rwigs [N1,N2] (Specify the number of atoms)
+# Cellinfo.sh cubic [a_c11+2c12,a_c11-c12,a_c44]
 
-cat POTCAR |grep US |grep -v TITEL |head -1
-cat POTCAR |grep ENMAX |head -1
-cat POTCAR |grep RWIGS |head -1
-cat POTCAR |grep US |grep -v TITEL |tail -1
-cat POTCAR |grep ENMAX |tail -1
-cat POTCAR |grep RWIGS |tail -1
-cat OUTCAR |grep 'volume of cell' -A 7 |tail -8
+Vpcell=$(cat OUTCAR |grep 'volume of cell' |tail -1| awk '{print $5;}')
 
-if [ $1 ] && [ $2 ]; then
-    Vpcell=$(cat OUTCAR |grep 'volume of cell' |tail -1| awk '{print $5;}')
-    r1=$(cat POTCAR |grep RWIGS |head -1 |awk '{print $6;}')
-    r2=$(cat POTCAR |grep RWIGS |tail -1 |awk '{print $6;}')
-    R1=$(echo "scale=4; e(l($Vpcell*3/4/3.14159/($1+$2*($r2/$r1)^3))/3)" | bc -l)
-    R2=$(echo "scale=4; $r2/$r1*$R1" | bc -l)
-    echo "You should use $R1 $R2 as your RWIGS in INCAR to get 100% filling."
+if [ -z $1 ]; then
+    grep -A 8 TITEL OUTCAR | grep -E 'TITEL | RWIGS | ENMAX'
+    cat OUTCAR |grep 'volume of cell' -A 7 |tail -8
+
+elif [ $1 == rwigs ]; then
+    r_input=$(cat OUTCAR |grep RWIGS |grep wigner |awk '{print $6;}')
+    r_input=[$(echo $r_input | sed 's/ /,/')]
+    ElasticCoeff.py $1 "$2" $Vpcell "$r_input"
+
+elif [[ $1 == cubic || $1 == tetragonal || $1 == orthorhombic || $1 == hexagonal || $1 == trigonal || $1 == monoclinic || $1 == triclinic ]]; then
+    ElasticCoeff.py $1 "$2" $Vpcell
 fi
