@@ -6,7 +6,7 @@
 # Prepare.sh lctest min max step
 # Prepare.sh rttest min max step
 # Prepare.sh mesh2d LC_min LC_max RT_min RT_max step
-# Prepare.sh c11-c12
+# Prepare.sh c11-c12 cubic
 
 # Change the value of ENCUT of INCAR, nKP of KPOINTS and generalized length of POSCAR to @R@ before executing the create batch files.
 
@@ -116,8 +116,8 @@ elif [ "$1" == "mesh2d" ]; then
         done
     done
     
-elif [[ $1 == "c11-c12" || $1 == "c11+2c12" || $1 == "c44" ]]; then
-    echo -e "Crystallographical System: $2\n" >> $fname
+elif [[ $1 == *c[1-9][1-9]* ]]; then
+    echo -e "Crystallographic System: $2\n" >> $fname
     echo "Delta from -0.04 to 0.04 with step 0.01" >> $fname
     dir_list="0.04n 0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03 0.04"
     for n in $dir_list
@@ -134,7 +134,7 @@ elif [[ $1 == "c11-c12" || $1 == "c11+2c12" || $1 == "c44" ]]; then
         sed -i s/@N@/$qname/g qsub.parallel
         sed -i s%@R@%$PWD%g qsub.parallel
         if [[ "$n" == *n ]]; then n=-${n%n}; fi
-        Strain.py $1 $n
+        _Prepare_strain.py $1 $2 $n
         cd ..
     done
 

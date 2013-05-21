@@ -1,4 +1,8 @@
 #!/usr/bin/python
+# Used by Cellinfo.sh to solve equations
+# S. K. R. Patil, S. V. Khare, B. R. Tuttle, J. K. Bording, and S. Kodambaka, Mechanical stability of possible structures of PtN investigated using first-principles calculations, PHYSICAL REVIEW B 73, 104118 2006, DOI: 10.1103/PhysRevB.73.104118
+# _Cellinfo_solver.py Task InputData VolumnOfPrimitiveCell
+
 import sys
 import numpy as np
 
@@ -14,7 +18,7 @@ if task =='rwigs':
         V_raw += 4/3. * np.pi * (N[i]*r_raw[i]**3)
     ratio = (Vpcell/V_raw)**(1/3.)
     r = r_raw * ratio
-#    print("You should use {} {} as your RWIGS in INCAR to get 100% filling.".format(r[0], r[1]))    # We are dealing with Python 2.4 here!
+#    print("You should use {} {} as your RWIGS in INCAR to get 100% filling.".format(r[0], r[1]))    # We are dealing with Python 2.7.1 here!
     print("You should use %f %f as your RWIGS in INCAR to get 100%% filling." % (r[0], r[1]))
 
 if task == 'cubic':
