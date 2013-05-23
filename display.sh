@@ -5,10 +5,9 @@
 if [[ "$1" == */ ]]; then test_type=${1%/}; else test_type=$1; fi
 cd $test_type || exit 1
 fname=$test_type"_output.txt"
-ls_list=$(ls -F)
-for n in $ls_list
+for n in $(ls -F)
 do
-    if [[ "$n" == */ ]]; then dir_list="$dir_list ${n%/}"; fi
+    if [[ "$n" == */ ]]; then dir_list=$dir_list" "${n%/}; fi
 done
 
 data_line_count=0
@@ -18,9 +17,9 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     fi
     for n in $dir_list
     do
-        if [[ "$n" != *-1 ]]; then dir_list_enkp="$dir_list_enkp $n"; fi
+        if [[ "$n" != *-1 ]]; then dir_list_enkp=$dir_list_enkp" "$n; fi
     done
-    dir_list=$(_Display_sort_dir.py "$dir_list_enkp")
+    dir_list=$(echo -e ${dir_list_enkp// /\\n} | sort -n)
     smallest=$(echo $dir_list | awk '{print $1}')
     for n in $dir_list
     do
@@ -34,12 +33,11 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
         DE_pre=$DE                                                  # set DE for this cycle as DE_pre for the next cycle to get the next dDE
         data_line_count=$(($data_line_count + 1))
     done
+#    Another routine
 #    x=$(echo $(sed -n 8,$((7 + $data_line_count))p $fname |awk '{print $1}'))
 #    x=[$(echo ${x// /,})]
-#    y=$(echo $(sed -n 8,$((7 + $data_line_count))p $fname |awk '{print $4}'))
-#    y=[$(echo ${y// /,})]
 #    Fit.py $x $y | tee -a $fname
-    _Display_fit.py $test_type 7 $((7+data_line_count)) | tee -a $fname
+    _Display_fit.py $test_type 7 $((7+data_line_count)) >> $fname
 
 elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2d" ]]; then
     if [ $test_type == "lctest" ]; then echo -e "\nScaling Constant (Ams)\tE" >> $fname
@@ -52,10 +50,11 @@ elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2
         data_line_count=$(($data_line_count + 1))
     done
     echo '' >> $fname
-    _Display_fit.py $test_type 5 $((5+data_line_count)) | tee -a $fname
+    _Display_fit.py $test_type 5 $((5+data_line_count)) >> $fname
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # meaning elastic const.
     echo -e "\nDelta (ratio)\tE" >> $fname
+    dir_list="0.04n 0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03 0.04"
     for n in $dir_list
     do
         if [[ "$n" == *n ]]; then i=-${n%n}; else i=$n; fi
@@ -63,7 +62,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # mean
         data_line_count=$(($data_line_count + 1))
     done
     echo '' >> $fname
-    _Display_fit.py $test_type 7 $((7+data_line_count)) | tee -a $fname
+    _Display_fit.py $test_type 7 $((7+data_line_count)) >> $fname
     
 fi
 
