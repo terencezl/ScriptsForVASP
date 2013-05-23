@@ -13,7 +13,7 @@ if [ -z $1 ]; then
 elif [ $1 == rwigs ]; then
     N_atoms=$(echo $(sed -n 6p POSCAR))
     N_atoms=[${N_atoms// /,}]
-    r_input=$(echo $(cat OUTCAR |grep RWIGS |grep wigner |awk '{print $6;}'))
+    r_input=$(echo $(cat OUTCAR | grep RWIGS | grep wigner | awk '{print $6;}'))
     r_input=[${r_input// /,}]
     _Cellinfo_solver.py $1 $Vpcell "$N_atoms" "$r_input"
 fi

@@ -3,15 +3,17 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import re
 
-f = open(sys.argv[1]+'_output.txt','rU')
+test_type = sys.argv[1]
+f = open(test_type+'_output.txt','rU')
 file = f.readlines()
 f.close()
 
 line_from = int(sys.argv[2]); line_to = int(sys.argv[3])
 x = []; y = []
 
-if sys.argv[1] == 'entest' or sys.argv[1] == 'kptest':
+if test_type == 'entest' or test_type == 'kptest':
     for i in file[line_from:line_to]:
         x.append(float(i.split()[0]))
         y.append(float(i.split()[3]))
@@ -19,7 +21,7 @@ if sys.argv[1] == 'entest' or sys.argv[1] == 'kptest':
     plt.xlabel('step')
     plt.ylabel('E (eV)')
     
-elif sys.argv[1] == 'lctest' or sys.argv[1].isalpha() == False: # meanings elastic const.
+elif test_type == 'lctest' or re.search('.*c[1-9][1-9].*', test_type): # meanings elastic const.
     for i in file[line_from:line_to]:
         x.append(float(i.split()[0]))
         y.append(float(i.split()[1]))
