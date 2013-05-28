@@ -1,28 +1,27 @@
 #!/bin/bash
 # The four input files and qsub.parallel should be prepared in the top working directory.
 # In the top working directory:
-# Prepare.sh entest min max step nKP LC1
-# Prepare.sh kptest min max step ENCUT LC1
+# Prepare.sh entest min max step LC1
+# Prepare.sh kptest min max step LC1
 # Prepare.sh lctest min max step
 # Prepare.sh rttest min max step
 # Prepare.sh mesh2d LC_min LC_max RT_min RT_max step
 # Prepare.sh c11-c12 cubic
-
-# Change the value of ENCUT of INCAR, nKP of KPOINTS and generalized length of POSCAR to @R@ before executing the create batch files.
+# Note: Change the value of ENCUT of INCAR (when doing entest), nKP of KPOINTS (when kptest) and scaling factor of POSCAR (when both) to @R@ before executing the batch file.
 
 mkdir "$1" 2> /dev/null
 cd "$1"
 fname="$1""_output.txt"
-echo -e "$1\n" >> $fname                                                  # start to write some head info of each trial run
+echo -e "$1" >> $fname                                                  # start to write some head info of each trial run
 
 if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
     lc=$(echo $6+0.1 | bc)                                                  # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
     if [ "$1" == "entest" ]; then
-        echo -e "ENCUT from $2 to $3 step $4\nnKP = $5" >> $fname
+        echo -e "ENCUT from $2 to $3 step $4" >> $fname
     else
-        echo -e "nKP from $2 to $3 step $4\nENCUT = $5" >> $fname
+        echo -e "nKP from $2 to $3 step $4" >> $fname
     fi
-    echo -e "LC1 = $6, LC2 = $lc (directories with \"-1\")" >> $fname
+    echo -e "LC1 = $5, LC2 = $lc (directories with \"-1\")" >> $fname
     for ((n=$2; n<=$3; n=n+$4))                                             # create each subfolder
     do
         for i in $n $n-1                                                    # subfolders for two LCs
@@ -36,13 +35,11 @@ if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
             cp ../../INPUT/qsub.parallel .
             if [ "$1" == "entest" ]; then
                 sed -i s/@R@/$n/g INCAR                                     # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS are reserved
-                sed -i s/@R@/$5/g KPOINTS
             else
                 sed -i s/@R@/$n/g KPOINTS
-                sed -i s/@R@/$5/g INCAR
             fi
             if [ $i == $n ]; then                                           # replace the two LCs in their own POSCAR. Arguments about the generalized length is reserved
-                sed -i s/@R@/$6/g POSCAR
+                sed -i s/@R@/$5/g POSCAR
             else
                 sed -i s/@R@/$lc/g POSCAR
             fi
@@ -60,7 +57,6 @@ elif [[ "$1" == "lctest" || "$1" == "rttest" ]]; then
     else
         echo -e "Ratio from $2 to $3 step $4" >> $fname
     fi
-#    echo -e "ENCUT = $5\nnKP = $6" >> $fname
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
     do
         i=$(echo "scale=2;$n/1" | bc)                                        # change decimal format from 5.1 to 5.10
@@ -117,7 +113,7 @@ elif [ "$1" == "mesh2d" ]; then
     done
     
 elif [[ $1 == *c[1-9][1-9]* ]]; then
-    echo -e "Crystallographic System: $2\n" >> $fname
+    echo -e "Crystallographic system: $2" >> $fname
     echo "Delta from -0.04 to 0.04 with step 0.01" >> $fname
     dir_list="0.04n 0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03 0.04"
     for n in $dir_list

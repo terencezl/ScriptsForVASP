@@ -1,5 +1,6 @@
-#!/usr/bin/python
+#!/usr/local/python/2.7.1/bin/python
 # Used by Cellinfo.sh to solve equations
+# _Cellinfo_solver.py Task VolumnOfPrimitiveCell InputData
 
 import sys
 import numpy as np
@@ -15,5 +16,4 @@ if task =='rwigs':
         V_raw += 4/3. * np.pi * (N_atoms[i]*r_input[i]**3)
     ratio = (Vpcell/V_raw)**(1/3.)
     r = r_input * ratio
-#    print("You should use {} {} as your RWIGS in INCAR to get 100% filling.".format(r[0], r[1]))    # We are dealing with Python 2.7.1 here!
-    print("You should use %f %f as your RWIGS in INCAR to get 100%% filling." % (r[0], r[1]))
+    print "You should use", r, "as your RWIGS in INCAR to get 100% filling."

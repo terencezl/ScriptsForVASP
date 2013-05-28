@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/local/python/2.7.1/bin/python
 # Used by ElasticSolve.sh to solve linear equations to get elastic consts
 # S. K. R. Patil, S. V. Khare, B. R. Tuttle, J. K. Bording, and S. Kodambaka, Mechanical stability of possible structures of PtN investigated using first-principles calculations, PHYSICAL REVIEW B 73, 104118 2006, DOI: 10.1103/PhysRevB.73.104118
-# _Cellinfo_solver.py Task VolumnOfPrimitiveCell InputData
+# _ElasticSolve_solver.py Task VolumnOfPrimitiveCell InputData
 
 import sys
 import numpy as np

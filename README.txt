@@ -12,7 +12,7 @@ Prepare.sh    Fire.sh    Display.sh
 
 Auxiliary Scripts:
 
-Cellinfo.sh
+Cellinfo.sh - Go into the deepest VASP working directory and execute
     |
  _flies.py
 
@@ -20,7 +20,10 @@ Cellinfo.sh
 
 Small Quick Scripts:
 
-Delfiles.sh PrepFast.sh
+PrepFast.sh
+Delfiles.sh - Go into the deepest VASP working directory and execute
+PrepRerun.sh
+PrepElement.sh
 
 ####################################################################################
 
@@ -30,7 +33,7 @@ General Uses:
 2. Go into the directory and create folder INPUT, putting INCAR, KPOINTS, POSCAR, concatenated POTCAR and qsub.parallel into it
 3. Customize the input files to prepare the run, including reserving the strings that need to be replaced as @R@, @N@, etc.
 4. Go back to the top working directory. Use Prepare.sh xxx yyy to perform a set of runs, or PrepFast.sh xxx to simply create a folder xxx with proper substitutions
-5. Use Fire.sh xxx to execute a set of qsub batch commands, or simply go into the folder by PrepFast.sh and qsub qsub.parallel
+5. Use Fire.sh xxx to execute a set of qsub batch commands, or simply go into the folder prepared by PrepFast.sh and qsub qsub.parallel
 6. Using Display.sh xxx to get the (step, energy) pairs written into xxx_output.txt and other instructive information. For lctest and elastic constant runs the fitting results and plot figures are also written
 7. Rename the folder created during the process under the top working directory to whatever looks neat and tidy, i.e. labeling them with numbers
 

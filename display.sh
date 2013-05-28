@@ -36,21 +36,21 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
 #    Another routine
 #    x=$(echo $(sed -n 8,$((7 + $data_line_count))p $fname |awk '{print $1}'))
 #    x=[$(echo ${x// /,})]
-#    Fit.py $x $y | tee -a $fname
-    _Display_fit.py $test_type 7 $((7+data_line_count)) >> $fname
+    _Display_fit.py $test_type 5 $((5+data_line_count)) >> $fname
 
 elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2d" ]]; then
-    if [ $test_type == "lctest" ]; then echo -e "\nScaling Constant (Ams)\tE" >> $fname
+    if [ $test_type == "lctest" ]; then echo -e "\nScalingFactor (Ang)\tVolume (Ang^3)\tE" >> $fname
     elif [ $test_type == "rttest" ]; then echo -e "\nRatio\tE" >> $fname
-    else echo -e "\nScaling Constant (Ams)\tRatio\tE" >> $fname
+    else echo -e "\nScalingFactor (Ang)\tRatio\tE" >> $fname
     fi
     for n in $dir_list
     do
-        echo -e "$n\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
+        Vpcell=$(cat $n/OUTCAR |grep 'volume of cell' |tail -1| awk '{print $5;}')
+        echo -e "$n\t$Vpcell\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
         data_line_count=$(($data_line_count + 1))
     done
     echo '' >> $fname
-    _Display_fit.py $test_type 5 $((5+data_line_count)) >> $fname
+    _Display_fit.py $test_type 4 $((4+data_line_count)) >> $fname
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # meaning elastic const.
     echo -e "\nDelta (ratio)\tE" >> $fname
@@ -62,10 +62,10 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # mean
         data_line_count=$(($data_line_count + 1))
     done
     echo '' >> $fname
-    _Display_fit.py $test_type 7 $((7+data_line_count)) >> $fname
+    _Display_fit.py $test_type 5 $((5+data_line_count)) >> $fname
     
 fi
 
-echo -e "\nMaximal time per run: \c" >> $fname
+echo -e "Maximal time per run: \c" >> $fname
 largest=$(echo $dir_list | awk '{print $NF}')
 cat < $(find $largest -mindepth 1 -name "*$largest*") | grep real | awk '{print $2;}' >> $fname
