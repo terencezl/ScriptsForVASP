@@ -1,9 +1,11 @@
 Main Task Scripts:
 
+             ElementRun.sh
+            /             \
 ElasticPrepFire.sh       ElasticDispSolve.sh
        /      \              /           \
       /        \            /        ElasticSolve.sh
-     /          \          / 
+     /          \          /
 Prepare.sh    Fire.sh    Display.sh
                      |||
                   _files.py
@@ -43,7 +45,7 @@ To perform a complete set of elastic constant runs:
 
 1. Under the top working directory, execute ElasticPrepFire.sh xxx, i.e. cubic
 2. ElasticDispSolve.sh xxx after every batched job is finished
-3. Go check the elastic/output.txt for the results
+3. Go check the elastic/elastic_output.txt for the results
 
 ----------------------------------------------------
 
@@ -53,3 +55,11 @@ To use a slightly different set of elastic constant equations (i.e. changing onl
 2. Perform an additional run (with a specific combination of elastic consts) with Prepare.sh, Fire.sh and Display.sh
 3. Change the dir_list in ElasticSolve.sh and one line of the matrix in _ElasticSolve_solver.py
 4. Re-execute ElasticSolve.sh, the results will show on the screen. Save or redirect it if you wish
+
+----------------------------------------------------
+
+To perform a large scale run through different elements:
+
+1. Create a directory, i.e. TMN
+2. Create a folder INPUT, putting in necessary input files with necessary @R@ and @N@
+2. Go into the directory and execute ElementRun.sh. Do as suggested by the script

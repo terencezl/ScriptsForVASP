@@ -12,7 +12,7 @@
 mkdir "$1" 2> /dev/null
 cd "$1"
 fname="$1""_output.txt"
-echo -e "$1" >> $fname                                                  # start to write some head info of each trial run
+echo -e "$1" > $fname                                                  # start to write some head info of each trial run
 
 if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
     lc=$(echo $6+0.1 | bc)                                                  # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats

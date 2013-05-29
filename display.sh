@@ -12,8 +12,8 @@ done
 
 data_line_count=0
 if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
-    if [ $test_type == "entest" ]; then echo -e "\nENCUT(meV)\tE_LC1\tE_LC2\tDE=E_LC2-E_LC1\tdDE" >> $fname
-    else echo -e "\nnKP\tE_LC1\tE_LC2\tDE=E_LC2-E_LC1\tdDE" >> $fname
+    if [ $test_type == "entest" ]; then echo -e "\nENCUT (eV)\tE_LC1 (eV)\tE_LC2 (eV)\tDE=E_LC2-E_LC1 (eV)\tdDE (eV)" >> $fname
+    else echo -e "\nnKP\tE_LC1 (eV)\tE_LC2 (eV)\tDE=E_LC2-E_LC1 (eV)\tdDE (eV)" >> $fname
     fi
     for n in $dir_list
     do
@@ -39,9 +39,9 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     _Display_fit.py $test_type 5 $((5+data_line_count)) >> $fname
 
 elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2d" ]]; then
-    if [ $test_type == "lctest" ]; then echo -e "\nScalingFactor (Ang)\tVolume (Ang^3)\tE" >> $fname
-    elif [ $test_type == "rttest" ]; then echo -e "\nRatio\tE" >> $fname
-    else echo -e "\nScalingFactor (Ang)\tRatio\tE" >> $fname
+    if [ $test_type == "lctest" ]; then echo -e "\nScalingFactor (Ang)\tVolume (Ang^3)\tE (eV)" >> $fname
+    elif [ $test_type == "rttest" ]; then echo -e "\nRatio\tE (eV)" >> $fname
+    else echo -e "\nScalingFactor (Ang)\tRatio\tE (eV)" >> $fname
     fi
     for n in $dir_list
     do
@@ -53,7 +53,7 @@ elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2
     _Display_fit.py $test_type 4 $((4+data_line_count)) >> $fname
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # meaning elastic const.
-    echo -e "\nDelta (ratio)\tE" >> $fname
+    echo -e "\nDelta (ratio)\tE (eV)" >> $fname
     dir_list="0.04n 0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03 0.04"
     for n in $dir_list
     do
