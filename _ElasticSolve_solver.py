@@ -1,23 +1,26 @@
 #!/usr/local/python/2.7.1/bin/python
 # Used by ElasticSolve.sh to solve linear equations to get elastic consts
 # S. K. R. Patil, S. V. Khare, B. R. Tuttle, J. K. Bording, and S. Kodambaka, Mechanical stability of possible structures of PtN investigated using first-principles calculations, PHYSICAL REVIEW B 73, 104118 2006, DOI: 10.1103/PhysRevB.73.104118
-# _ElasticSolve_solver.py Task VolumnOfPrimitiveCell InputData
+# _ElasticSolve_solver.py cryst_sys volumn_of_primitive_cell input_data
 
 import sys
 import numpy as np
+import os
 
-task = sys.argv[1]
+print(os.getcwd())
+cryst_sys = sys.argv[1]
 Vpcell = float(sys.argv[2])
 econst_input = np.array(eval(sys.argv[3])) * 160.2 / Vpcell
 
-if task == 'cubic':
+if cryst_sys == 'cubic':
     coeff_matrix = np.array([[3/2., 3, 0],
                              [3, -3, 0],
                              [0, 0, 1/2.]])
     result = np.linalg.solve(coeff_matrix, econst_input)
     print("C11 is %f\nC12 is %f\nC44 is %f" % (result[0], result[1], result[2]))
+    print("B is %f" % (result[0]+2*result[1])/3)
 
-if task == 'tetragonal':
+if cryst_sys == 'tetragonal':
     coeff_matrix = np.array([[1/2., 0, 0, 0, 0, 0],
                              [0, 1/2., 0, 0, 0, 0],
                              [0, 0, 2, 0, 0, 0],
@@ -28,7 +31,7 @@ if task == 'tetragonal':
     print("C11 is %f\nC33 is %f\nC44 is %f\nC12 is %f\nC13 is %f\nC66 is %f"
             % (result[0], result[1], result[2], result[3], result[4], result[5]))
 
-if task == 'orthorhombic':
+if cryst_sys == 'orthorhombic':
     coeff_matrix = np.array([[1/2., 0, 0, 0, 0, 0, 0, 0, 0],
                              [0, 1/2., 0, 0, 0, 0, 0, 0, 0],
                              [0, 0, 1/2., 0, 0, 0, 0, 0, 0],

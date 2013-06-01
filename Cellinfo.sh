@@ -2,7 +2,7 @@
 # General view and calculation of cell parameters, including rwigs
 # Use it under a folder that has an OUTCAR and that has the equilibrium state of ions
 # Cellinfo.sh
-# Cellinfo.sh rwigs [N1,N2] (Specify the number of atoms)
+# Cellinfo.sh rwigs
 
 Vpcell=$(cat OUTCAR |grep 'volume of cell' |tail -1| awk '{print $5;}')
 

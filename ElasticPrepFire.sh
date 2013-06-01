@@ -6,6 +6,8 @@
 mkdir elastic 2> /dev/null
 cd elastic
 cp -r ../INPUT .
+scaling_factor=$(grep "The equilibrium scaling factor is" ../lctest/lctest_output.txt | awk '{print $6}')
+sed -i "s/@R@/$scaling_factor/g" INPUT/POSCAR
 
 if [ $1 == cubic ]; then
     dir_list="c11+2c12 c11-c12 c44"
@@ -18,7 +20,7 @@ elif [ $1 == trigonal ]; then echo
 elif [ $1 == monoclinic ]; then echo
 elif [ $1 == triclinic ]; then echo
 fi
-
+    
 for n in $dir_list
 do
     Prepare.sh $n $1

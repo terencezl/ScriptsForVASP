@@ -7,25 +7,32 @@ ElasticPrepFire.sh       ElasticDispSolve.sh
       /        \            /        ElasticSolve.sh
      /          \          /
 Prepare.sh    Fire.sh    Display.sh
-                     |||
-                  _files.py
+
+ElementRun.sh - Interactive
+ElasticPrepFire.sh cryst_sys(cubic/...)
+ElasticDispSolve.sh cryst_sys(cubic/...)
+ElasticSolve.sh cryst_sys(cubic/...)
+    _ElasticSolve_solver.py cryst_sys(cubic/...) volumn_of_primitive_cell input_data(in the form of a python list)
+Prepare.sh test_type(entest/lctest/c11...)
+    _Prepare_strain.py cryst_sys(cubic/...)
+Fire.sh test_type(entest/lctest/c11...) [from to step (lctest only)]
+Display.sh test_type(entest/lctest/c11...)
+    _Display_fit.py test_type(entest/lctest/c11...) line_from(python style) line_to(python style)
 
 ----------------------------------------------------
 
 Auxiliary Scripts:
 
-Cellinfo.sh - Go into the deepest VASP working directory and execute
-    |
- _flies.py
+Cellinfo.sh [rwigs] - Go into the deepest VASP working directory and execute
+    _Cellinfo_solver.py [task(rwigs) volumn_of_primitive_cell input_data(in the form of a python list)]
 
 ----------------------------------------------------
 
 Small Quick Scripts:
 
-PrepFast.sh
+PrepFast.sh test_type(arbituary)
 Delfiles.sh - Go into the deepest VASP working directory and execute
-PrepRerun.sh
-PrepElement.sh
+PrepRerun.sh test_type
 
 ####################################################################################
 

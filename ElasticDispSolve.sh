@@ -22,4 +22,4 @@ do
     Display.sh $n
 done
 
-ElasticSolve.sh $1 > elastic_output.txt
+ElasticSolve.sh $1

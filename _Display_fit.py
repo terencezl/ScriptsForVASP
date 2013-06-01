@@ -1,5 +1,5 @@
 #!/usr/local/python/2.7.1/bin/python
-# _Display_fit.py TestType LineFrom LineTo
+# _Display_fit.py test_type line_from line_to
 
 import sys
 import numpy as np
@@ -64,15 +64,25 @@ elif test_type == 'lctest':
         volume.append(float(i.split()[1]))
         energy.append(float(i.split()[2]))
 
-    (p, r_squared, volume_fit, energy_fit) = polyfit(volume, energy, 2)
+    (p_vol, r_squared, volume_fit, energy_fit) = polyfit(volume, energy, 2)
+    p_sf = np.poly1d(np.polyfit(scaling_factor, energy, 2))
     scaling_factor_fit = np.linspace(scaling_factor[0], scaling_factor[-1], 100)
     plt.plot(volume, energy, '.', volume_fit, energy_fit, '-')
-    result_str = "E = %.3f x^2 + (%.3f) x + (%.3f)\nR-squared is %f" % (p[2], p[1], p[0], r_squared)
-    plt.text(volume_fit[len(volume_fit)/4], energy_fit[len(energy_fit)/8*1], result_str)
+    result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared is %f" % (p_vol[2], p_vol[1], p_vol[0], r_squared)
+    plt.text(volume_fit[len(volume_fit)/4], energy_fit[6], result_str)
     plt.xlabel(r'Volume ($\AA^{3}$)')
     plt.ylabel('E (eV)')
     print "Fitting result of E-V:", result_str
-    print("The scaling factor is %f" % (scaling_factor_fit[energy_fit.argmin()]))
+#    print("The equilibrium volume is %f" % (volume_fit[energy_fit.argmin()]))
+#    print("The equilibrium scaling factor is %f" % (scaling_factor_fit[energy_fit.argmin()]))
+    scaling_factor_equi = -p_sf[1]/2/p_sf[2]
+    print("The equilibrium scaling factor is %f" % scaling_factor_equi)
+    if scaling_factor_equi <= scaling_factor[0] or scaling_factor_equi >= scaling_factor[-1]:
+        print("!The equilibrium point is out of the considered range!")
+    else:
+        volume_equi = -p_vol[1]/2/p_vol[2]
+        print("The equilibrium volume is %f" % volume_equi)
+        print("The bulk modulus calculated from above is %f" % (-p_vol[1] * 160.2))
         
 elif re.search('.*c[1-9][1-9].*', test_type):     # meaning elastic const.
     delta = []; energy = []
@@ -82,8 +92,8 @@ elif re.search('.*c[1-9][1-9].*', test_type):     # meaning elastic const.
         
     (p, r_squared, delta_fit, energy_fit) = polyfit(delta, energy, 2)
     plt.plot(delta, energy, '.', delta_fit, energy_fit, '-')
-    result_str = "E = %.3f x^2 + (%.3f) x + (%.3f)\nR-squared is %f" % (p[2], p[1], p[0], r_squared)
-    plt.text(delta_fit[len(delta_fit)/4], energy_fit[len(energy_fit)/8*1], result_str)
+    result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared is %f" % (p[2], p[1], p[0], r_squared)
+    plt.text(delta_fit[len(delta_fit)/4], energy_fit[6], result_str)
     plt.xlabel('Delta (ratio)')
     plt.ylabel('E (eV)')
     print "Fitting result:", result_str

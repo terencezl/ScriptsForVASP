@@ -12,7 +12,7 @@
 mkdir "$1" 2> /dev/null
 cd "$1"
 fname="$1""_output.txt"
-echo -e "$1" > $fname                                                  # start to write some head info of each trial run
+echo -e $PWD > $fname                                                  # start to write some head info of each run
 
 if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
     lc=$(echo $6+0.1 | bc)                                                  # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
@@ -115,7 +115,7 @@ elif [ "$1" == "mesh2d" ]; then
 elif [[ $1 == *c[1-9][1-9]* ]]; then
     echo -e "Crystallographic system: $2" >> $fname
     echo "Delta from -0.04 to 0.04 with step 0.01" >> $fname
-    dir_list="0.04n 0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03 0.04"
+    dir_list="0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03"
     for n in $dir_list
     do
         mkdir $n

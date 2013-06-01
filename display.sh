@@ -51,10 +51,27 @@ elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2
     done
     echo '' >> $fname
     _Display_fit.py $test_type 4 $((4+data_line_count)) >> $fname
+    echo $PWD
+    grep "The equilibrium scaling factor is" $fname
+    grep "!The equilibrium point is out of the considered range!" $fname
+    grep "The bulk modulus calculated from above is" $fname
+    
+#    smallest=$(echo $dir_list | awk '{print $1}')
+#    largest=$(echo $dir_list | awk '{print $NF}')
+#    scaling_factor_equi=$(grep "The equilibrium scaling factor is" $fname | tail -1 | awk '{print $6}')
+#    if [ $(echo "$scaling_factor_equi == $largest" | bc) == 1 ] || [ $(echo "$scaling_factor_equi == $smallest" | bc) == 1 ]; then
+#        echo $PWD
+#        echo "The equilibrium point is out of the considered range!" | tee -a $fname
+#    else
+#        volume_equi=$(grep "The equilibrium volume is" $fname | head -1 | awk '{print $5}')
+#        bulk_mod=$(echo "$(grep 'Fitting result of' $fname | tail -1 | awk '{print $10}') * (-160.2)" | bc)
+#        echo $PWD
+#        echo "The bulk modulus calculated from above is:" $bulk_mod | tee -a $fname
+#    fi
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # meaning elastic const.
     echo -e "\nDelta (ratio)\tE (eV)" >> $fname
-    dir_list="0.04n 0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03 0.04"
+    dir_list="0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03"
     for n in $dir_list
     do
         if [[ "$n" == *n ]]; then i=-${n%n}; else i=$n; fi

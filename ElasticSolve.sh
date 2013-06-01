@@ -15,11 +15,11 @@ elif [ $1 == monoclinic ]; then echo
 elif [ $1 == triclinic ]; then echo
 fi
 
-Vpcell=$(cat $(cut -d' ' -f1 <<< $dir_list)/0.00/OUTCAR |grep 'volume of cell' |tail -1| awk '{print $5;}')
+Vpcell=$(cat $(cut -d' ' -f1 <<< $dir_list)/0.00/OUTCAR |grep 'volume of cell' | tail -1 | awk '{print $5;}')
 for n in $dir_list
 do
-    econst_raw=$econst_raw" "$(grep "Fitting result" $n/$n"_output.txt" | awk '{print $5}')
+    econst_raw=$econst_raw" "$(grep "Fitting result" $n/$n"_output.txt" | tail -1 | awk '{print $5}')
 done
 econst_raw=${econst_raw/ /}
 econst_raw=[${econst_raw// /,}]
-_ElasticSolve_solver.py $1 $Vpcell $econst_raw
+_ElasticSolve_solver.py $1 $Vpcell $econst_raw | tee -a elastic_output.txt
