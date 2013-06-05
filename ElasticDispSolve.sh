@@ -22,4 +22,7 @@ do
     Display.sh $n
 done
 
-ElasticSolve.sh $1
+echo $PWD | tee elastic_output.txt
+cd ..
+ElasticSolve.sh $1 original
+ElasticModuli.sh $1

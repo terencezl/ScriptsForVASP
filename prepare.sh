@@ -12,16 +12,10 @@
 mkdir "$1" 2> /dev/null
 cd "$1"
 fname="$1""_output.txt"
-echo -e $PWD > $fname                                                  # start to write some head info of each run
 
 if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
-    lc=$(echo $6+0.1 | bc)                                                  # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
-    if [ "$1" == "entest" ]; then
-        echo -e "ENCUT from $2 to $3 step $4" >> $fname
-    else
-        echo -e "nKP from $2 to $3 step $4" >> $fname
-    fi
-    echo -e "LC1 = $5, LC2 = $lc (directories with \"-1\")" >> $fname
+    lc1=$5
+    lc2=$(echo "$lc1+0.1" | bc)                                                  # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
     for ((n=$2; n<=$3; n=n+$4))                                             # create each subfolder
     do
         for i in $n $n-1                                                    # subfolders for two LCs
@@ -39,9 +33,9 @@ if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
                 sed -i s/@R@/$n/g KPOINTS
             fi
             if [ $i == $n ]; then                                           # replace the two LCs in their own POSCAR. Arguments about the generalized length is reserved
-                sed -i s/@R@/$5/g POSCAR
+                sed -i s/@R@/$lc1/g POSCAR
             else
-                sed -i s/@R@/$lc/g POSCAR
+                sed -i s/@R@/$lc2/g POSCAR
             fi
             qname=${PWD//\//_}                                              # edit the name of the command so that it looks like terencelz_GaN_MN_entest_140
             qname=${qname##*utl0268_}
@@ -52,11 +46,6 @@ if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
     done
 
 elif [[ "$1" == "lctest" || "$1" == "rttest" ]]; then
-    if [ "$1" == "lctest" ]; then
-        echo -e "Scaling factor from $2 to $3 step $4" >> $fname
-    else
-        echo -e "Ratio from $2 to $3 step $4" >> $fname
-    fi
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
     do
         i=$(echo "scale=2;$n/1" | bc)                                        # change decimal format from 5.1 to 5.10
@@ -82,7 +71,6 @@ elif [[ "$1" == "lctest" || "$1" == "rttest" ]]; then
     done
 
 elif [ "$1" == "mesh2d" ]; then
-    echo "Scaling factor from $2 to $3 step $6, ratio from $4 to $5 step $6" >> $fname
     for x in $(awk "BEGIN{for(i=$2;i<=$3;i+=$6)print i}")                   # generate subfolders specified by float numbers
     do i=$(echo "scale=2;$x/1" | bc)                                        # change decimal format from 5.1 to 5.10
     dir_listx=$dir_listx" "$i                                                         # add dir_list of float numbers up
@@ -113,9 +101,7 @@ elif [ "$1" == "mesh2d" ]; then
     done
     
 elif [[ $1 == *c[1-9][1-9]* ]]; then
-    echo -e "Crystallographic system: $2" >> $fname
-    echo "Delta from -0.04 to 0.04 with step 0.01" >> $fname
-    dir_list="0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03"
+    dir_list="0.02n 0.01n 0.00 0.01 0.02"
     for n in $dir_list
     do
         mkdir $n

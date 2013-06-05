@@ -6,8 +6,13 @@
 mkdir elastic 2> /dev/null
 cd elastic
 cp -r ../INPUT .
-scaling_factor=$(grep "The equilibrium scaling factor is" ../lctest/lctest_output.txt | awk '{print $6}')
+
+scaling_factor=$(grep "The equilibrium scaling factor is" ../lctest/lctest_output.txt | tail -1 | awk '{print $6}')
 sed -i "s/@R@/$scaling_factor/g" INPUT/POSCAR
+sed -i 's/#NSW /NSW /g' INPUT/INCAR
+sed -i 's/#IBRION /IBRION /g' INPUT/INCAR
+sed -i 's/#EDIFFG /EDIFFG /g' INPUT/INCAR
+sed -i 's/ISMEAR /#ISMEAR /g' INPUT/INCAR
 
 if [ $1 == cubic ]; then
     dir_list="c11+2c12 c11-c12 c44"
@@ -26,5 +31,3 @@ do
     Prepare.sh $n $1
     Fire.sh $n
 done
-
-rm -r INPUT
