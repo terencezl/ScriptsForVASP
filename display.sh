@@ -1,6 +1,6 @@
 #!/bin/bash
 # Use: In the top working directory,
-# Display.sh TEST_TYPE (e.g. entest/c11-c12)
+# Display.sh TEST_TYPE (e.g. entest/c11-c12) P (polynomial fit)/M (Murnaghan fit)
 
 if [[ "$1" == */ ]]; then test_type=${1%/}; else test_type=$1; fi
 cd $test_type || exit 1
@@ -77,22 +77,31 @@ elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2
         Vpcell=$(cat $n/OUTCAR |grep 'volume of cell' | tail -1 | awk '{print $5;}')
         echo -e "$n\t$Vpcell\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
         data_line_count=$(($data_line_count + 1))
+        force_rms=$(grep "FORCES:" $n/OUTCAR | tail -1 | awk '{print $6}')
+        force_rms=${force_rms#-}
+        if [ $(echo "$force_rms > 0.01" | bc) == 1 ]; then force_converge_flag=$n; fi
+        entropy=$(grep "entropy T\*S" $n/OUTCAR | tail -1 | awk '{print $5}')
+        entropy=${entropy#-}
+        if [ $(echo "$entropy > 0.001" | bc) == 1 ]; then entropy_converge_flag=$n; fi
     done
     
     echo '' >> $fname
-    _Display_fit.py $test_type 4 $((4 + data_line_count)) >> $fname
+    _Display_fit.py $test_type 4 $((4 + data_line_count)) $2 >> $fname
     
     echo $PWD
+    if [ $force_converge_flag ]; then echo "!Force doesn't converge during $force_converge_flag run!" | tee -a $fname; fi
+    if [ $entropy_converge_flag ]; then echo "!Entropy doesn't converge during $entropy_converge_flag run!" | tee -a $fname; fi
     grep "R-squared is" $fname
     grep "Equilibrium scaling factor is" $fname
     grep "!Equilibrium point is out of the considered range!" $fname
-    grep "V0 =" $fname
-    grep -e "Total energy is" $fname
+    grep "B0 =" $fname
+    grep "B0' =" $fname
+    grep "Total energy is" $fname
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # meaning elastic const.
-    echo "Delta from -0.02 to 0.02 with step 0.01" >> $fname
+    echo "Delta from -0.03 to 0.03 with step 0.01" >> $fname
     echo -e "\nDelta(ratio)\tE(eV)" >> $fname
-    dir_list="0.02n 0.01n 0.00 0.01 0.02"
+    dir_list="0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03"
     
     for n in $dir_list
     do
@@ -100,13 +109,18 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # mean
         echo -e "$i\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
         data_line_count=$(($data_line_count + 1))
         force_rms=$(grep "FORCES:" $n/OUTCAR | tail -1 | awk '{print $6}')
+        force_rms=${force_rms#-}
         if [ $(echo "$force_rms > 0.01" | bc) == 1 ]; then force_converge_flag=$i; fi
+        entropy=$(grep "entropy T\*S" $n/OUTCAR | tail -1 | awk '{print $5}')
+        entropy=${entropy#-}
+        if [ $(echo "$entropy > 0.001" | bc) == 1 ]; then entropy_converge_flag=$i; fi
     done
     echo '' >> $fname
     _Display_fit.py $test_type 4 $((4 + data_line_count)) >> $fname
     echo $PWD
-    grep "R-squared is" $fname
     if [ $force_converge_flag ]; then echo "!Force doesn't converge during $force_converge_flag run!" | tee -a $fname; fi
+    if [ $entropy_converge_flag ]; then echo "!Entropy doesn't converge during $entropy_converge_flag run!" | tee -a $fname; fi
+    grep "R-squared is" $fname
     
 fi
 

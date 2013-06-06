@@ -23,7 +23,7 @@ if cryst_sys == 'cubic':
         f.close()
     result = np.linalg.solve(coeff_matrix, econst_input)
     print("C11 is %f\nC12 is %f\nC44 is %f" % (result[0], result[1], result[2]))
-    print("B is %f" % ((result[0]+2*result[1])/3.))
+#    print("B is %f" % ((result[0]+2*result[1])/3.))
 
 if cryst_sys == 'tetragonal':
     coeff_matrix = np.array([[1/2., 0, 0, 0, 0, 0],

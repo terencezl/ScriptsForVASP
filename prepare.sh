@@ -101,7 +101,7 @@ elif [ "$1" == "mesh2d" ]; then
     done
     
 elif [[ $1 == *c[1-9][1-9]* ]]; then
-    dir_list="0.02n 0.01n 0.00 0.01 0.02"
+    dir_list="0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03"
     for n in $dir_list
     do
         mkdir $n

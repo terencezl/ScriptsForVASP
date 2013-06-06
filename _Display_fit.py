@@ -1,5 +1,5 @@
 #!/usr/local/python/2.7.1/bin/python
-# _Display_fit.py test_type line_from line_to
+# _Display_fit.py test_type line_from line_to P/M
 
 import sys
 import numpy as np
@@ -37,14 +37,19 @@ def polyfit(x, y, degree):
 def murnaghan_eqn(V, V0, B0, B0_prime, E0):
     return (E0 + B0/B0_prime * V * (1 + (V0/V)**B0_prime/(B0_prime - 1)) - V0 * B0/(B0_prime -1))
     
-def murnaghan_eqn2(V, V0, B0, B0_prime, E0):
-    return (E0 + 9*V0*B0/16. * (((V0/V)**(2/3) - 1)**3 * B0_prime + ((V0/V)**(2/3) - 1)**2 * (6 - 4*(V0/V)**(2/3))))
+#def murnaghan_eqn2(V, V0, B0, B0_prime, E0):
+#    return (E0 + 9*V0*B0/16. * (((V0/V)**(2/3) - 1)**3 * B0_prime + ((V0/V)**(2/3) - 1)**2 * (6 - 4*(V0/V)**(2/3))))
 
 def murnaghan_fit(x, y):
     coeffs, pcov = curve_fit(murnaghan_eqn, x, y, [20, 2.5, 2.5, -20])
     x_fit = np.linspace(sorted(x)[0], sorted(x)[-1], 100)
     y_fit = murnaghan_eqn(x_fit, *coeffs)
-    return (coeffs, x_fit, y_fit)
+    y_fit_eqlen = murnaghan_eqn(x, *coeffs)
+    ss_resid = np.sum((y_fit_eqlen - y)**2)
+    y_avg = np.sum(y)/len(y)
+    ss_total = np.sum((y-y_avg)**2)
+    r_squared = 1 - ss_resid/ss_total
+    return (coeffs, r_squared, x_fit, y_fit)
 
 test_type = sys.argv[1]
 f = open(test_type+'_output.txt','rU')
@@ -56,8 +61,9 @@ if test_type == 'entest':
     ENCUT = []; energy = []
     for i in file[line_from:line_to]:
         ENCUT.append(float(i.split()[0]))
-        energy.append(float(i.split()[3]))
+        energy.append(float(i.split()[4]))
     plt.plot(ENCUT, energy, 'o')
+    plt.plot([ENCUT[0], ENCUT[-1]], [0.001, 0.001], 'k:')
     plt.xlabel('ENCUT (eV)')
     plt.ylabel('E (eV)')
 
@@ -65,8 +71,9 @@ elif test_type == 'kptest':
     nKP = []; energy = []
     for i in file[line_from:line_to]:
         nKP.append(float(i.split()[0]))
-        energy.append(float(i.split()[3]))
+        energy.append(float(i.split()[4]))
     plt.plot(nKP, energy, 'o')
+    plt.plot([nKP[0], nKP[-1]], [0.001, 0.001], 'k:')
     plt.xlabel('nKP')
     plt.ylabel('E (eV)')
 
@@ -79,43 +86,54 @@ elif test_type == 'lctest':
     scaling_factor = np.array(scaling_factor)
     volume = np.array(volume)
     energy = np.array(energy)
-    # fitting the 2nd order polynomial
-    (p_vol, r_squared, volume_fit, energy_fit) = polyfit(volume, energy, 2)
-    p_sf = np.poly1d(np.polyfit(scaling_factor, energy, 2))
-    scaling_factor_eqlbrm = -p_sf[1]/2/p_sf[2]
-    volume_eqlbrm = -p_vol[1]/2/p_vol[2]
-    
-    # fitting the Murnaghan equation of state
-    (coeffs_vol_M, volume_fit_M, energy_fit_M) = murnaghan_fit(volume, energy)
-    
-    # plotting the 2nd order polynomial
     plt.plot(volume, energy, 'o', label="Original data")
-    plt.plot(volume_fit, energy_fit, '-', label="2nd Order polynomial")
-    # plotting the Murnaghan equation of state
-    if coeffs_vol_M[0]: plt.plot(volume_fit_M, energy_fit_M, '-', label="Murnaghan eqn of state")
+    
+    if sys.argv[4] == 'P':
+        # fitting the 2nd order polynomial
+        (p_vol, r_squared, volume_fit, energy_fit) = polyfit(volume, energy, 2)
+        p_sf = np.poly1d(np.polyfit(scaling_factor, energy, 2))
+        scaling_factor_eqlbrm = -p_sf[1]/2/p_sf[2]
+        volume_eqlbrm = -p_vol[1]/2/p_vol[2]
+        
+        # plotting the 2nd order polynomial
+        plt.plot(volume_fit, energy_fit, '-', label="2nd order polynomial")
+        result_str = "E = %f x^2 + (%f) x + (%f)\n  R-squared is %f" % (p_vol[2], p_vol[1], p_vol[0], r_squared)
+        plt.text(volume_fit[len(volume_fit)/4], energy_fit[6], result_str)
+        
+        # standrad output, directed to files by the bash script calling this python script
+        print "2nd order polynomial fitting results (better for a small span of lattice constants):";
+        print "  %s" % result_str
+        print("  Equilibrium scaling factor is %f" % scaling_factor_eqlbrm)
+        if scaling_factor_eqlbrm <= scaling_factor[0] or scaling_factor_eqlbrm >= scaling_factor[-1]:
+            print("  !Equilibrium point is out of the considered range!")
+        else:
+            print("  V0 = %f\n  B0 = %f" % (volume_eqlbrm, -p_vol[1] * 160.2))
+            print("  Total energy is %f" % energy_fit.min())
+            np.savetxt(test_type+'_polyfit_data.dat', np.column_stack((volume_fit, energy_fit)), '%.6f', '\t')
+    
+    elif sys.argv[4] == 'M':
+        # fitting the Murnaghan equation of state
+        (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(volume, energy)
+        scaling_factor_eqlbrm = (coeffs_vol_M[0]*4)**(1/3.)
+        
+        # plotting the Murnaghan equation of state
+        plt.plot(volume_fit_M, energy_fit_M, '-', label="Murnaghan eqn of state")
+        
+        # standrad output, directed to files by the bash script calling this python script
+        print "Murnaghan equation of state fitting results (better for a large span of lattice constants):"
+        print "  R-squared is %f" % r_squared_M
+        print("  Equilibrium scaling factor is %f" % scaling_factor_eqlbrm)
+        if scaling_factor_eqlbrm <= scaling_factor[0] or scaling_factor_eqlbrm >= scaling_factor[-1]:
+            print("  !Equilibrium point is out of the considered range!")
+        else:
+            print("  V0 = %f\n  B0 = %f\n  B0' = %f" % (coeffs_vol_M[0], coeffs_vol_M[1] * 160.2, coeffs_vol_M[2]))
+            print("  Total energy is %f" % energy_fit_M.min())
+            np.savetxt(test_type+'_eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)), '%.6f', '\t')
+    
     plt.xlabel(r'Volume ($\AA^{3}$)')
     plt.ylabel('E (eV)')
     plt.legend()
-    result_str = "E = %f x^2 + (%f) x + (%f)\n  R-squared is %f" % (p_vol[2], p_vol[1], p_vol[0], r_squared)
-    plt.text(volume_fit[len(volume_fit)/4], energy_fit[6], result_str)
-    
-    # standrad output, directed to files by the bash script calling this python script
-    print "2nd order polynomial fitting results (better for a small span of lattice constants):"
-    print "  %s" % result_str
-    print("  Equilibrium scaling factor is %f" % scaling_factor_eqlbrm)
-    if scaling_factor_eqlbrm <= scaling_factor[0] or scaling_factor_eqlbrm >= scaling_factor[-1]:
-        print("  !Equilibrium point is out of the considered range!")
-    else:
-        print("  V0 = %f, B0 = %f" % (volume_eqlbrm, -p_vol[1] * 160.2))
-        if coeffs_vol_M[0]:
-            print("Murnaghan equation of state fitting results (better for a large span of lattice constants):")
-            print("  Equilibrium scaling factor is %f" %  (coeffs_vol_M[0]*4)**(1/3.))
-            print("  V0 = %f, B0 = %f, B0' = %f" % (coeffs_vol_M[0], coeffs_vol_M[1] * 160.2, coeffs_vol_M[2]))
-            print("\nTotal energy is %f" % energy_fit_M.min())
-    
     np.savetxt(test_type+'_orig_data.dat', np.column_stack((volume, energy)), '%.6f', '\t')
-    np.savetxt(test_type+'_polyfit_data.dat', np.column_stack((volume_fit, energy_fit)), '%.6f', '\t')
-    np.savetxt(test_type+'_eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)), '%.6f', '\t')
     
 elif re.search('.*c[1-9][1-9].*', test_type):     # meaning elastic const.
     delta = []; energy = []

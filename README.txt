@@ -11,15 +11,15 @@ Prepare.sh    Fire.sh    Display.sh
 
 ElementRun.sh - Interactive
 ElasticPrepFire.sh cryst_sys(cubic/...)
-ElasticDispSolve.sh cryst_sys(cubic/...)
+ElasticDispSolveMod.sh cryst_sys(cubic/...)
 ElasticModuli.sh cryst_sys(cubic/...)
 ElasticSolve.sh cryst_sys(cubic/...) original/alternative
     _ElasticSolve_solver.py cryst_sys(cubic/...) volumn_of_primitive_cell input_data(in the form of a python list) original/alternative
 Prepare.sh test_type(entest/lctest/c11/...) cryst_sys(cubic/...)
     _Prepare_strain.py test_type(c11/...) cryst_sys(cubic/...) delta
 Fire.sh test_type(entest/lctest/c11...) [from to step (lctest only)]
-Display.sh test_type(entest/lctest/c11...)
-    _Display_fit.py test_type(entest/lctest/c11...) line_from(python style) line_to(python style)
+Display.sh test_type(entest/lctest/c11...) M/P (for lctest)
+    _Display_fit.py test_type(entest/lctest/c11...) line_from(python style) line_to(python style) M/P (for lctest)
 
 ----------------------------------------------------
 
