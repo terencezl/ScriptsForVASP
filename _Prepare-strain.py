@@ -16,7 +16,7 @@ for n in [2,3,4]:
 vectors = np.array(vectors_raw, dtype=np.float)
 delta = float(sys.argv[3])
 
-if sys.argv[2] == 'cubic':
+if sys.argv[2] == 'cubic' or sys.argv[2] == 'cubic_A':
     if sys.argv[1] == "c11+2c12":    # sequence is a little different. Switching 1 and 2
         transformation_matrix = np.array([[1 + delta, 0, 0],
                                           [0, 1 + delta, 0],
@@ -33,6 +33,31 @@ if sys.argv[2] == 'cubic':
         transformation_matrix = np.array([[1 + delta, 0, 0],
                                          [0, 1 + delta, delta/2],
                                          [0, delta/2, 1]])
+    elif sys.argv[1] == "A1":
+        transformation_matrix = np.array([[1 + delta, 0, 0],
+                                          [0, 1, 0],
+                                          [0, 0, 1]])
+    elif sys.argv[1] == "A2":
+        transformation_matrix = np.array([[1 + delta, 0, 0],
+                                          [0, 1 + delta, 0],
+                                          [0, 0, 1]])
+    elif sys.argv[1] == "A3":
+        transformation_matrix = np.array([[1 + delta, 0, 0],
+                                          [0, 1 + delta, 0],
+                                          [0, 0, 1 + delta]])
+    elif sys.argv[1] == "A4":
+        transformation_matrix = np.array([[1 + delta, 0, 0],
+                                          [0, 1, delta],
+                                          [0, delta, 1]])
+    elif sys.argv[1] == "A5":
+        transformation_matrix = np.array([[1 + delta, delta, 0],
+                                          [delta, 1, 0],
+                                          [0, 0, 1]])
+    elif sys.argv[1] == "A6":
+        transformation_matrix = np.array([[1, delta, delta],
+                                          [delta, 1, delta],
+                                          [delta, delta, 1]])
+
 elif sys.argv[2] == 'tetragonal':
     if sys.argv[1] == "c11":
         transformation_matrix = np.array([[1 + delta, 0, 0],

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Use: In the working directory of elastic consts
 # S. K. R. Patil, S. V. Khare, B. R. Tuttle, J. K. Bording, and S. Kodambaka, Mechanical stability of possible structures of PtN investigated using first-principles calculations, PHYSICAL REVIEW B 73, 104118 2006, DOI: 10.1103/PhysRevB.73.104118
-# ElasticSolve.sh cubic/tetragonal/...
+# Elastic-solve.sh cubic/tetragonal/...
 
 cd elastic
 if [ $1 == cubic ]; then
@@ -32,4 +32,4 @@ N_atoms=$(echo $(sed -n 6p $(cut -d' ' -f1 <<< $dir_list)/0.00/POSCAR))
 N_atoms=[${N_atoms// /,}]
 econst=[${econst// /,}]
 echo '' >> elastic_output.txt
-_ElasticModuli_solver.py $1 $Vpcell "$N_atoms" "$econst"  | tee -a elastic_output.txt
+_Elastic-moduli-solver.py $1 $Vpcell "$N_atoms" "$econst"  | tee -a elastic_output.txt

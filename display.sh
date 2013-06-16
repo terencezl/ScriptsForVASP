@@ -51,14 +51,13 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
 #    Another routine
 #    x=$(echo $(sed -n 8,$((7 + $data_line_count))p $fname |awk '{print $1}'))
 #    x=[$(echo ${x// /,})]
-    _Display_fit.py $test_type 5 $((5 + data_line_count)) >> $fname
+    _Display-fit.py $test_type 5 $((5 + data_line_count)) >> $fname
 
 elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2d" ]]; then
     dir_list=$(echo -e ${dir_list// /\\n} | sort -n)
     smallest=$(echo $dir_list | awk '{print $1}')
     largest=$(echo $dir_list | awk '{print $NF}')
-    step=$(echo "$(echo $dir_list | awk '{print $2}') - $smallest" | bc)
-    if [[ $step == .* ]]; then step=0$step; fi
+    step=$(echo "print($(echo $dir_list_i | awk '{print $2}') - ($smallest))" | python)
 
     if [ $test_type == "lctest" ]; then
         echo -e "Scaling factor from $smallest to $largest step $step" >> $fname
@@ -74,7 +73,7 @@ elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2
     
     for n in $dir_list
     do
-        Vpcell=$(cat $n/OUTCAR |grep 'volume of cell' | tail -1 | awk '{print $5;}')
+        Vpcell=$(cat $n/OUTCAR | grep 'volume of cell' | tail -1 | awk '{print $5;}')
         echo -e "$n\t$Vpcell\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
         data_line_count=$(($data_line_count + 1))
         force_rms=$(grep "FORCES:" $n/OUTCAR | tail -1 | awk '{print $6}')
@@ -86,7 +85,7 @@ elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2
     done
     
     echo '' >> $fname
-    _Display_fit.py $test_type 4 $((4 + data_line_count)) $2 >> $fname
+    _Display-fit.py $test_type 4 $((4 + data_line_count)) $2 >> $fname
     
     echo $PWD
     if [ $force_converge_flag ]; then echo "!Force doesn't converge during $force_converge_flag run!" | tee -a $fname; fi
@@ -98,11 +97,26 @@ elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2
     grep "B0' =" $fname
     grep "Total energy is" $fname
 
-elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # meaning elastic const.
-    echo "Delta from -0.03 to 0.03 with step 0.01" >> $fname
+elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                              # meaning elastic const.
+    for n in $dir_list
+    do
+        if [[ "$n" == *n ]]; then i=-${n%n}; else i=$n; fi
+        dir_list_i=$dir_list_i" "$i
+    done
+    dir_list_i=$(echo -e ${dir_list_i// /\\n} | sort -n)
+    smallest=$(echo $dir_list_i | awk '{print $1}')
+    largest=$(echo $dir_list_i | awk '{print $NF}')
+    step=$(echo "print($(echo $dir_list_i | awk '{print $2}') - ($smallest))" | python)
+    echo "Delta from $smallest to $largest with step $step" >> $fname
     echo -e "\nDelta(ratio)\tE(eV)" >> $fname
-    dir_list="0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03"
     
+    # still wanna get the sorted original dir_list to easily go into the folder named 0.01n...
+    unset dir_list
+    for i in $dir_list_i
+    do
+        if [[ "$i" == -* ]]; then n=${i#-}n; else n=$i; fi
+        dir_list=$dir_list" "$n
+    done
     for n in $dir_list
     do
         if [[ "$n" == *n ]]; then i=-${n%n}; else i=$n; fi
@@ -116,7 +130,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then                              # mean
         if [ $(echo "$entropy > 0.001" | bc) == 1 ]; then entropy_converge_flag=$i; fi
     done
     echo '' >> $fname
-    _Display_fit.py $test_type 4 $((4 + data_line_count)) >> $fname
+    _Display-fit.py $test_type 4 $((4 + data_line_count)) >> $fname
     echo $PWD
     if [ $force_converge_flag ]; then echo "!Force doesn't converge during $force_converge_flag run!" | tee -a $fname; fi
     if [ $entropy_converge_flag ]; then echo "!Entropy doesn't converge during $entropy_converge_flag run!" | tee -a $fname; fi

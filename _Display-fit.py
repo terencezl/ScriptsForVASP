@@ -41,7 +41,7 @@ def murnaghan_eqn(V, V0, B0, B0_prime, E0):
 #    return (E0 + 9*V0*B0/16. * (((V0/V)**(2/3) - 1)**3 * B0_prime + ((V0/V)**(2/3) - 1)**2 * (6 - 4*(V0/V)**(2/3))))
 
 def murnaghan_fit(x, y):
-    coeffs, pcov = curve_fit(murnaghan_eqn, x, y, [20, 2.5, 2.5, -20])
+    coeffs, pcov = curve_fit(murnaghan_eqn, x, y, [30, 2.5, 4, -20])
     x_fit = np.linspace(sorted(x)[0], sorted(x)[-1], 100)
     y_fit = murnaghan_eqn(x_fit, *coeffs)
     y_fit_eqlen = murnaghan_eqn(x, *coeffs)
@@ -114,14 +114,16 @@ elif test_type == 'lctest':
     elif sys.argv[4] == 'M':
         # fitting the Murnaghan equation of state
         (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(volume, energy)
-        scaling_factor_eqlbrm = (coeffs_vol_M[0]*4)**(1/3.)
+        scaling_factor_eqlbrm = (coeffs_vol_M[0])**(1/3.)
         
         # plotting the Murnaghan equation of state
         plt.plot(volume_fit_M, energy_fit_M, '-', label="Murnaghan eqn of state")
+        result_str = "R-squared is %f" % r_squared_M
+        plt.text(volume_fit_M[len(volume_fit_M)/4], energy_fit_M[6], result_str)
         
         # standrad output, directed to files by the bash script calling this python script
         print "Murnaghan equation of state fitting results (better for a large span of lattice constants):"
-        print "  R-squared is %f" % r_squared_M
+        print "  %s" % result_str
         print("  Equilibrium scaling factor is %f" % scaling_factor_eqlbrm)
         if scaling_factor_eqlbrm <= scaling_factor[0] or scaling_factor_eqlbrm >= scaling_factor[-1]:
             print("  !Equilibrium point is out of the considered range!")
@@ -135,19 +137,29 @@ elif test_type == 'lctest':
     plt.legend()
     np.savetxt(test_type+'_orig_data.dat', np.column_stack((volume, energy)), '%.6f', '\t')
     
-elif re.search('.*c[1-9][1-9].*', test_type):     # meaning elastic const.
+elif re.search('.*c[1-9][1-9].*', test_type) or re.search('A.*', test_type):     # meaning elastic const.
     delta = []; energy = []
     for i in file[line_from:line_to]:
         delta.append(float(i.split()[0]))
         energy.append(float(i.split()[1]))
         
-    (p, r_squared, delta_fit, energy_fit) = polyfit(delta, energy, 2)
-    plt.plot(delta, energy, 'o', delta_fit, energy_fit, '-')
-    result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared is %f" % (p[2], p[1], p[0], r_squared)
+    if re.search('.*c[1-9][1-9].*', test_type):
+        (p, r_squared, delta_fit, energy_fit) = polyfit(delta, energy, 2)
+        plt.plot(delta, energy, 'o', delta_fit, energy_fit, '-')
+        result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared is %f" % (p[2], p[1], p[0], r_squared)
+    elif re.search('A.*', test_type):
+        (p, r_squared, delta_fit, energy_fit) = polyfit(delta, energy, 3)
+        plt.plot(delta, energy, 'o', delta_fit, energy_fit, '-')
+        result_str = "E = %f x^3 + (%f) x^2 + (%f) x + (%f)\nR-squared is %f" % (p[3], p[2], p[1], p[0], r_squared)
+        
     plt.text(delta_fit[len(delta_fit)/4], energy_fit[6], result_str)
     plt.xlabel('Delta (ratio)')
     plt.ylabel('E (eV)')
     print "Fitting result:", result_str
+    
+    
+    
+    
     
 #    a, c, r_squared, y_fit = centralfit(delta, energy)
 #    plt.plot(delta, y_fit, '-', label='E = a*x^2 + c')

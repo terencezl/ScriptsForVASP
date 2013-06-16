@@ -100,8 +100,11 @@ elif [ "$1" == "mesh2d" ]; then
         done
     done
     
-elif [[ $1 == *c[1-9][1-9]* ]]; then
+elif [[ $1 == *c[1-9][1-9]* || $1 == A* ]]; then
     dir_list="0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03"
+#    dir_list="0.20n 0.10n 0.08n 0.02n 0.01n 0.00 0.01 0.02 0.08 0.10 0.20"
+#    dir_list="0.003n 0.006n 0.009n 0.012n 0.015n 0.018n 0.021n 0.024n 0.027n 0.000 0.003 0.006 0.009 0.012 0.015 0.018 0.021 0.024 0.027"
+#    dir_list="0.003 0.006 0.009 0.003n 0.006n 0.009n"
     for n in $dir_list
     do
         mkdir $n
@@ -116,7 +119,7 @@ elif [[ $1 == *c[1-9][1-9]* ]]; then
         sed -i s/@N@/$qname/g qsub.parallel
         sed -i s%@R@%$PWD%g qsub.parallel
         if [[ "$n" == *n ]]; then n=-${n%n}; fi
-        _Prepare_strain.py $1 $2 $n
+        _Prepare-strain.py $1 $2 $n
         cd ..
     done
 

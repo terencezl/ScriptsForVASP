@@ -16,4 +16,7 @@ if task =='rwigs':
         V_raw += 4/3. * np.pi * (N_atoms[i]*r_input[i]**3)
     ratio = (Vpcell/V_raw)**(1/3.)
     r = r_input * ratio
-    print "You should use", r, "as your RWIGS in INCAR to get 100% filling."
+    print "You should use",
+    for i in range(len(r)):
+        print "%.5f" % r[i],
+    print "as your RWIGS in INCAR to get 100% filling."
