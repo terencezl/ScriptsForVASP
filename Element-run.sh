@@ -115,7 +115,7 @@ elif [ $test_type == solve-again ]; then
 
 # scrun - do the self-consistent run to get the CHGCAR
 # dosrun - do the dos run in the sc-dos-bs folder, putting the last run into a deeper folder called scrun
-elif [ $test_type == scrun ] || [ $test_type == dosrun ] | [ $test_type == plotdos ]; then
+elif [ $test_type == scrun ] || [ $test_type == dosrun ] || [ $test_type == plotdos ]; then
     for n in $element_list
     do
         cd $n/$cryst_struct || exit 1

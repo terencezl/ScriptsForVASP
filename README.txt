@@ -6,7 +6,7 @@ ElementRun.sh - Interactive
 ::::::Elastic set runs::::::
 Elastic-dos.sh cubic/... prerun / scrun / dosrun / plotdos
 Elastic.sh cubic/... prep-fire / disp-solve
-Elastic-solve.sh cubic/... original / alternative
+Elastic-solve.sh cubic/... O / P
 Elastic-moduli.sh cubic/...
     _Elastic-solve_solver.py cubic/... volumn_of_primitive_cell input_data(in the form of a python list) original / alternative
 

@@ -1,11 +1,11 @@
 #!/bin/bash
 # Use: In the working directory of elastic consts
 # S. K. R. Patil, S. V. Khare, B. R. Tuttle, J. K. Bording, and S. Kodambaka, Mechanical stability of possible structures of PtN investigated using first-principles calculations, PHYSICAL REVIEW B 73, 104118 2006, DOI: 10.1103/PhysRevB.73.104118
-# Elastic-solve.sh cubic/tetragonal/... original/alternative
+# Elastic-solve.sh cubic/tetragonal/... O/A
 
 cd elastic
 echo '' >> elastic_output.txt
-if [ $2 == original ]; then
+if [ $2 == O ]; then
     if [ $1 == cubic ]; then
         dir_list="c11+2c12 c11-c12 c44"
     elif [ $1 == cubic_A ]; then
@@ -20,7 +20,7 @@ if [ $2 == original ]; then
     elif [ $1 == triclinic ]; then echo
     fi
     echo "Original strain set: $dir_list" | tee -a elastic_output.txt
-elif [ $2 == alternative ]; then
+elif [ $2 == A ]; then
     if [ $1 == cubic ]; then
         dir_list="c11+2c12 c11-c12 2c11+2c12+c44"
     elif [ $1 == tetragonal ]; then echo

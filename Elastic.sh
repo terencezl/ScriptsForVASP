@@ -44,6 +44,6 @@ elif [ $2 == disp-solve ]; then
 
     echo $PWD | tee elastic_output.txt
     cd ..
-    Elastic-solve.sh $1 original
+    Elastic-solve.sh $1 O
     
 fi
