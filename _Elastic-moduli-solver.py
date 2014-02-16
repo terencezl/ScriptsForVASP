@@ -27,13 +27,13 @@ if cryst_sys == 'cubic':
     k = G/B
     cauchy_pressure = c12 - c44
     H_V = (1 - 2*nu) * E/(6 * (1 + nu))
-    row = (N_atoms[0] * 44.96 + N_atoms[1] * 14.01) * 10**27 / Vpcell / N_A
-    v_l = ((B + 4/3. * G)/row)**0.5
-    v_t = (G/row)**0.5
-    v_m = (1/3. * (2/v_t**3 + 1/v_l**3))**(-1/3.)
+#    row = (N_atoms[0] * 44.96 + N_atoms[1] * 14.01) * 10**27 / Vpcell / N_A
+#    v_l = ((B + 4/3. * G)/row)**0.5
+#    v_t = (G/row)**0.5
+#    v_m = (1/3. * (2/v_t**3 + 1/v_l**3))**(-1/3.)
 #    row = (N_atoms[0] * atomic_mass_M + N_atoms[1] * atomic_mass_N) / Vpcell / N_A
-    theta_D = h/k_B * (3*total_atoms/4/np.pi/Vpcell)**(1/3.) * v_m
-    print("B = %f\nG_V = %f\nG_R = %f\nG = %f\nE = %f\nnu = %f\nk = %f\ncauchy_pressure = %f\nH_V = %f\ntheta_D = %f" % (B, G_V, G_R, G, E, nu, k, cauchy_pressure, H_V, theta_D))
+#    theta_D = h/k_B * (3*total_atoms/4/np.pi/Vpcell)**(1/3.) * v_m
+    print("B = %f\nG_V = %f\nG_R = %f\nG = %f\nE = %f\nnu = %f\nk = %f\ncauchy_pressure = %f\nH_V = %f" % (B, G_V, G_R, G, E, nu, k, cauchy_pressure, H_V))
 
 if cryst_sys == 'tetragonal':
     pass

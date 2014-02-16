@@ -7,7 +7,8 @@ cd elastic
 echo '' >> elastic_output.txt
 if [ $2 == O ]; then
     if [ $1 == cubic ]; then
-        dir_list="c11+2c12 c11-c12 c44"
+#        dir_list="c11+2c12 c11-c12 c44"
+        dir_list="c11-c12 c44"
     elif [ $1 == cubic_A ]; then
         dir_list="A1 A2 A3 A4 A5 A6"
     elif [ $1 == tetragonal ]; then echo
@@ -35,7 +36,8 @@ elif [ $2 == A ]; then
     echo "A slight change of strain set: $dir_list" | tee -a elastic_output.txt
 fi
 
-Vpcell=$(grep 'volume of cell' $(cut -d' ' -f1 <<< $dir_list)/0.00/OUTCAR | tail -1 | awk '{print $5;}')
+Vpcell=$(grep 'volume of cell' $(cut -d' ' -f1 <<< $dir_list)/0.000/OUTCAR | tail -1 | awk '{print $5;}')
+econst_raw=$(echo $(grep 'B0 =' ../lctest/lctest_output.txt | tail -1 | awk '{print $3}')/160.2*$Vpcell)
 for n in $dir_list
 do
     if [ $1 == cubic ]; then

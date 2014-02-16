@@ -14,7 +14,7 @@ Vpcell = float(sys.argv[2])
 econst_input = np.array(eval(sys.argv[3])) * 160.2 / Vpcell
 
 if cryst_sys == 'cubic':
-    coeff_matrix = np.array([[3/2., 3, 0],
+    coeff_matrix = np.array([[1/3., 2/3., 0],
                              [1, -1, 0],
                              [0, 0, 1/2.]])
     if sys.argv[4] == 'alternative':

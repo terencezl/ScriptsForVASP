@@ -1,0 +1,8 @@
+#PBS -l walltime=00:20:00
+#PBS -l nodes=1:ppn=1
+#PBS -N @N@
+#PBS -S /bin/ksh
+#PBS -j oe
+
+cd @R@
+time mpiexec -verbose /nfs/02/utl0268/terencelz/scripts/dev/bader CHGCAR -ref CHGCAR_sum

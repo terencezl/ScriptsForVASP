@@ -9,11 +9,13 @@
 # Prepare.sh c11-c12 cubic
 # Note: Change the value of ENCUT of INCAR (when doing entest), nKP of KPOINTS (when kptest) and scaling factor of POSCAR (when both) to @R@ before executing the batch file.
 
-mkdir "$1" 2> /dev/null
-cd "$1"
-fname="$1""_output.txt"
+test_type=$1
+mkdir "$test_type" 2> /dev/null
+cd "$test_type"
+test_type=${test_type%%_*}
+fname="$test_type""_output.txt"
 
-if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
+if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
     lc1=$5
     lc2=$(echo "$lc1+0.1" | bc)                                                  # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
     for ((n=$2; n<=$3; n=n+$4))                                             # create each subfolder
@@ -27,25 +29,36 @@ if [[ "$1" == "entest" || "$1" == "kptest" ]]; then
             cp ../../INPUT/POTCAR .
             cp ../../INPUT/KPOINTS .
             cp ../../INPUT/qsub.parallel .
-            if [ "$1" == "entest" ]; then
-                sed -i s/@R@/$n/g INCAR                                     # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS are reserved
+            if [ "$test_type" == "entest" ]; then
+                sed -i "s/.*ENCUT.*/ENCUT = $n/g" INCAR
             else
-                sed -i s/@R@/$n/g KPOINTS
+                sed -i "4c $n $n $n" KPOINTS
             fi
             if [ $i == $n ]; then                                           # replace the two LCs in their own POSCAR. Arguments about the generalized length is reserved
-                sed -i s/@R@/$lc1/g POSCAR
+                sed -i "2c $lc1" POSCAR
             else
-                sed -i s/@R@/$lc2/g POSCAR
+                sed -i "2c $lc2" POSCAR
             fi
-            qname=${PWD//\//_}                                              # edit the name of the command so that it looks like terencelz_GaN_MN_entest_140
-            qname=${qname##*utl0268_}
+#            qname=${PWD//\//_}                                              # edit the name of the command so that it looks like terencelz_GaN_MN_entest_140
+#            qname=${qname##*utl0268_}
+            qname_1=${PWD##*/}
+            PWD_2=${PWD%/*}
+            qname_2=${PWD_2##*/}
+            PWD_3=${PWD_2%/*}
+            qname_3=${PWD_3##*/}
+            PWD_4=${PWD_3%/*}
+            qname_4=${PWD_4##*/}
+            qname=T-$qname_4-$qname_3-$qname_2-$qname_1
+            if [[ $(echo $qname | wc -c) > 17 ]]; then
+            	qname=T-$qname_3-$qname_2-$qname_1
+            fi
             sed -i s/@N@/$qname/g qsub.parallel                             # replace the name in the command file. Arg reserved
             sed -i s%@R@%$PWD%g qsub.parallel                               # replace the trial subfolder in the command file. Arg reserved
             cd ..
         done
     done
 
-elif [[ "$1" == "lctest" || "$1" == "rttest" ]]; then
+elif [[ "$test_type" == "lctest" || "$test_type" == "rttest" ]]; then
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
     do
         i=$(echo "scale=2;$n/1" | bc)                                        # change decimal format from 5.1 to 5.10
@@ -60,17 +73,32 @@ elif [[ "$1" == "lctest" || "$1" == "rttest" ]]; then
         cp ../../INPUT/POTCAR .
         cp ../../INPUT/KPOINTS .
         cp ../../INPUT/qsub.parallel .
-        sed -i s/@R@/$n/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
-#        sed -i s/@R@/$5/g INCAR
-#        sed -i s/@R@/$6/g KPOINTS
-        qname=${PWD//\//_}                                                  # edit the name of the command so that it looks like terencelz_GaN_MN_lctest_140
-        qname=${qname##*utl0268_}
+        sed -i "2c $n" POSCAR
+#        qname=${PWD//\//_}                                                  # edit the name of the command so that it looks like terencelz_GaN_MN_lctest_140
+#        qname=${qname##*utl0268_}
+        qname_1=${PWD##*/}
+        PWD_2=${PWD%/*}
+        qname_2=${PWD_2##*/}
+        PWD_3=${PWD_2%/*}
+        qname_3=${PWD_3##*/}
+        PWD_4=${PWD_3%/*}
+        qname_4=${PWD_4##*/}
+        qname=T-$qname_4-$qname_3-$qname_2-$qname_1
+        if [[ $(echo $qname | wc -c) > 17 ]]; then
+            qname=T-$qname_3-$qname_2-$qname_1
+        fi
         sed -i s/@N@/$qname/g qsub.parallel                                 # replace the name in the command file. Arg reserved
         sed -i s%@R@%$PWD%g qsub.parallel                                   # replace the trial subfolder in the command file. Arg reserved
         cd ..
     done
 
-elif [ "$1" == "mesh2d" ]; then
+elif [[ "$test_type" == "equi-relax" ]]; then
+    cd ..
+    scaling_factor=$(grep "Equilibrium scaling factor is" lctest/lctest_output.txt | head -1 | awk '{print $5}')
+    Prep-fast.sh $test_type
+    sed -i "2c $scaling_factor" equi-relax/POSCAR
+
+elif [ "$test_type" == "mesh2d" ]; then
     for x in $(awk "BEGIN{for(i=$2;i<=$3;i+=$6)print i}")                   # generate subfolders specified by float numbers
     do i=$(echo "scale=2;$x/1" | bc)                                        # change decimal format from 5.1 to 5.10
     dir_listx=$dir_listx" "$i                                                         # add dir_list of float numbers up
@@ -92,19 +120,35 @@ elif [ "$1" == "mesh2d" ]; then
             cp ../../INPUT/qsub.parallel .
             sed -i s/@Rx@/$x/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
             sed -i s/@Ry@/$y/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
-            qname=${PWD//\//_}                                                  # edit the name of the command so that it looks like terencelz_GaN_MN_lctest_140
-            qname=${qname##*utl0268_}
+#            qname=${PWD//\//_}                                                  # edit the name of the command so that it looks like terencelz_GaN_MN_lctest_140
+#            qname=${qname##*utl0268_}
+            qname_1=${PWD##*/}
+            PWD_2=${PWD%/*}
+            qname_2=${PWD_2##*/}
+            PWD_3=${PWD_2%/*}
+            qname_3=${PWD_3##*/}
+            PWD_4=${PWD_3%/*}
+            qname_4=${PWD_4##*/}
+            qname=T-$qname_4-$qname_3-$qname_2-$qname_1
+            if [[ $(echo $qname | wc -c) > 17 ]]; then
+                qname=T-$qname_3-$qname_2-$qname_1
+            fi
             sed -i s/@N@/$qname/g qsub.parallel                                 # replace the name in the command file. Arg reserved
             sed -i s%@R@%$PWD%g qsub.parallel                                   # replace the trial subfolder in the command file. Arg reserved
             cd ..
         done
     done
     
-elif [[ $1 == *c[1-9][1-9]* || $1 == A* ]]; then
-    dir_list="0.03n 0.02n 0.01n 0.00 0.01 0.02 0.03"
-#    dir_list="0.20n 0.10n 0.08n 0.02n 0.01n 0.00 0.01 0.02 0.08 0.10 0.20"
-#    dir_list="0.003n 0.006n 0.009n 0.012n 0.015n 0.018n 0.021n 0.024n 0.027n 0.000 0.003 0.006 0.009 0.012 0.015 0.018 0.021 0.024 0.027"
-#    dir_list="0.003 0.006 0.009 0.003n 0.006n 0.009n"
+elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
+#    cp -r ../../equi-relax 0.000
+    if [ $test_type == c44 ]; then
+#        dir_list="0.040n 0.025n 0.025 0.040"
+#        dir_list="0.050n 0.030n 0.030 0.050"
+        dir_list="0.030 0.050"
+    elif [ $test_type == c11-c12 ]; then
+#        dir_list="0.025n 0.015n 0.015 0.025"
+        dir_list="0.050n 0.030n 0.030 0.050"
+    fi
     for n in $dir_list
     do
         mkdir $n
@@ -114,12 +158,23 @@ elif [[ $1 == *c[1-9][1-9]* || $1 == A* ]]; then
         cp ../../INPUT/POTCAR .
         cp ../../INPUT/KPOINTS .
         cp ../../INPUT/qsub.parallel .
-        qname=${PWD//\//_}
-        qname=${qname##*utl0268_}
+#        qname=${PWD//\//_}
+#        qname=${qname##*utl0268_}
+        qname_1=${PWD##*/}
+        PWD_2=${PWD%/*}
+        qname_2=${PWD_2##*/}
+        PWD_3=${PWD_2%/*}
+        qname_3=${PWD_3##*/}
+        PWD_4=${PWD_3%/*}
+        qname_4=${PWD_4##*/}
+        qname=T-$qname_4-$qname_3-$qname_2-$qname_1
+        if [[ $(echo $qname | wc -c) > 17 ]]; then
+            qname=T-$qname_3-$qname_2-$qname_1
+        fi
         sed -i s/@N@/$qname/g qsub.parallel
         sed -i s%@R@%$PWD%g qsub.parallel
         if [[ "$n" == *n ]]; then n=-${n%n}; fi
-        _Prepare-strain.py $1 $2 $n
+        _Prepare-strain.py $test_type $2 $n
         cd ..
     done
 

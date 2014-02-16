@@ -1,0 +1,2 @@
+cd "$1" || exit 1
+qsub qsub.parallel
