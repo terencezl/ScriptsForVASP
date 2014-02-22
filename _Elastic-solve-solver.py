@@ -24,22 +24,22 @@ if cryst_sys == 'cubic':
     result = np.linalg.solve(coeff_matrix, econst_input)
     print("C11 is %f\nC12 is %f\nC44 is %f" % (result[0], result[1], result[2]))
 
-if cryst_sys == 'cubic_A':
-    coeff_matrix = np.array([[1/2., 0, 0, 0, 0, 0, 0, 0, 0],
-                             [1, 1, 0, 0, 0, 0, 0, 0, 0],
-                             [0, 0, 6, 0, 0, 0, 0, 0, 0],
-                             [0, 0, 0, 1/6., 0, 0, 0, 0, 0],
-                             [0, 0, 0, 1/3., 1, 0, 0, 0, 0],
-                             [0, 0, 0, 1/2., 3, 1, 0, 0, 0],
-                             [0, 0, 0, 1/6., 0, 0, 2, 0, 0],
-                             [0, 0, 0, 1/6., 0, 0, 0, 2, 0],
-                             [0, 0, 0, 0, 0, 0, 0, 0, 8]])
-
-    result = np.linalg.solve(coeff_matrix, econst_input)
-    print("C11 is %f\nC12 is %f\nC44 is %f\
-           \nC111 is %f\nC112 is %f\nC123 is %f\nC144 is %f\nC166 is %f\nC456 is %f"
-               % (result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8]))
-    
+#if cryst_sys == 'cubic_A':
+#    coeff_matrix = np.array([[1/2., 0, 0, 0, 0, 0, 0, 0, 0],
+#                             [1, 1, 0, 0, 0, 0, 0, 0, 0],
+#                             [0, 0, 6, 0, 0, 0, 0, 0, 0],
+#                             [0, 0, 0, 1/6., 0, 0, 0, 0, 0],
+#                             [0, 0, 0, 1/3., 1, 0, 0, 0, 0],
+#                             [0, 0, 0, 1/2., 3, 1, 0, 0, 0],
+#                             [0, 0, 0, 1/6., 0, 0, 2, 0, 0],
+#                             [0, 0, 0, 1/6., 0, 0, 0, 2, 0],
+#                             [0, 0, 0, 0, 0, 0, 0, 0, 8]])
+#
+#    result = np.linalg.solve(coeff_matrix, econst_input)
+#    print("C11 is %f\nC12 is %f\nC44 is %f\
+#           \nC111 is %f\nC112 is %f\nC123 is %f\nC144 is %f\nC166 is %f\nC456 is %f"
+#               % (result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8]))
+#    
 if cryst_sys == 'tetragonal':
     coeff_matrix = np.array([[1/2., 0, 0, 0, 0, 0],
                              [0, 1/2., 0, 0, 0, 0],

@@ -2,6 +2,17 @@
 # Use: In the top working directory,
 # Display.sh TEST_TYPE (e.g. entest/c11-c12)
 
+function force_entropy_detector {
+    force_max=$(grep "FORCES:" $1/OUTCAR | tail -1 | awk '{print $5}')
+    force_max=${force_max#-}
+    if [ $(echo "$force_max > 0.01" | bc) == 1 ]; then force_converge_flag="$force_converge_flag\n$1 $force_max"; fi
+    entropy=$(grep "entropy T\*S" $1/OUTCAR | tail -1 | awk '{print $5}')
+    entropy=${entropy#-}
+    atom_sum_expr=$(echo $(sed -n '6p' $1/POSCAR))
+    atom_sum=$((${atom_sum_expr// /+}))
+    if [ $(echo "$entropy > 0.001 * $atom_sum" | bc) == 1 ]; then entropy_converge_flag="$entropy_converge_flag\n$1 $entropy"; fi
+}
+
 if [[ "$1" == */ ]]; then test_type=${1%/}; else test_type=$1; fi
 cd $test_type || exit 1
 test_type=${test_type%%_*}
@@ -59,42 +70,22 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
         data_line_count=$(($data_line_count + 1))
     done
     
-#    Another routine
-#    x=$(echo $(sed -n 8,$((7 + $data_line_count))p $fname |awk '{print $1}'))
-#    x=[$(echo ${x// /,})]
     _Display-fit.py $test_type 5 $((5 + data_line_count)) >> $fname
 
-elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2d" ]]; then
+elif [[ $test_type == "lctest" ]]; then
     dir_list=$(echo -e ${dir_list// /\\n} | sort -n)
     smallest=$(echo $dir_list | awk '{print $1}')
     largest=$(echo $dir_list | awk '{print $NF}')
     step=$(echo "print($(echo $dir_list | awk '{print $2}') - ($smallest))" | python)
-
-    if [ $test_type == "lctest" ]; then
-        echo -e "Scaling factor from $smallest to $largest step $step" >> $fname
-        echo -e "\nScalingFactor(Ang)\tVolume(Ang^3)\tE(eV)" >> $fname
-    elif [ $test_type == "rttest" ]; then
-        echo -e "Ratio from $smallest to $largest step $step" >> $fname
-        echo -e "\nRatio\tE(eV)" >> $fname
-#    needs more work
-#    elif [ $test_type == "mesh2d" ]
-#        echo "Scaling factor from $2 to $3 step $6, ratio from $4 to $5 step $6" >> $fname
-#        echo -e "\nScalingFactor(Ang)\tRatio\tE(eV)" >> $fname
-    fi
+    echo -e "Scaling factor from $smallest to $largest step $step" >> $fname
+    echo -e "\nScalingFactor(Ang)\tVolume(Ang^3)\tE(eV)" >> $fname
     
     for n in $dir_list
     do
         Vpcell=$(cat $n/OUTCAR | grep 'volume of cell' | tail -1 | awk '{print $5;}')
         echo -e "$n\t$Vpcell\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
         data_line_count=$(($data_line_count + 1))
-        force_max=$(grep "FORCES:" $n/OUTCAR | tail -1 | awk '{print $5}')
-        force_max=${force_max#-}
-        if [ $(echo "$force_max > 0.01" | bc) == 1 ]; then force_converge_flag="$force_converge_flag\n$n $force_max"; fi
-        entropy=$(grep "entropy T\*S" $n/OUTCAR | tail -1 | awk '{print $5}')
-        entropy=${entropy#-}
-        atom_sum_expr=$(echo $(sed -n '6p' $n/POSCAR))
-        atom_sum=$((${atom_sum_expr// /+}))
-        if [ $(echo "$entropy > 0.001 * $atom_sum" | bc) == 1 ]; then entropy_converge_flag="$entropy_converge_flag\n$n $entropy"; fi
+        force_entropy_detector $n
     done
     
     echo $PWD
@@ -123,6 +114,59 @@ elif [[ $test_type == "lctest" || $test_type == "rttest" || $test_type == "mesh2
     sed -i "2c $scaling_factor" INPUT/POSCAR
     cd $test_type
 
+elif [[ $test_type == "rttest" ]]; then
+    dir_list=$(echo -e ${dir_list// /\\n} | sort -n)
+    smallest=$(echo $dir_list | awk '{print $1}')
+    largest=$(echo $dir_list | awk '{print $NF}')
+    step=$(echo "print($(echo $dir_list | awk '{print $2}') - ($smallest))" | python)
+
+    echo -e "Ratio from $smallest to $largest step $step" >> $fname
+    echo -e "\nRatio\tVolume\tE(eV)" >> $fname
+
+    for n in $dir_list
+    do
+        Vpcell=$(cat $n/OUTCAR | grep 'volume of cell' | tail -1 | awk '{print $5;}')
+        echo -e "$n\t$Vpcell\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
+        data_line_count=$(($data_line_count + 1))
+        force_entropy_detector $n
+    done
+    
+    echo $PWD
+    echo '' >> $fname
+    if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
+    if [ "$entropy_converge_flag" ]; then echo -e "!Entropy doesn't converge during$entropy_converge_flag" | tee -a $fname; echo '' >> $fname; fi
+    _Display-fit.py $test_type 4 $((4 + data_line_count)) >> $fname
+    grep "!Equilibrium point is out of the considered range!" $fname
+    grep "R-squared is" $fname
+    grep "Equilibrium ratio is" $fname
+    grep "B0 =" $fname
+    grep "B0' =" $fname
+    grep "Total energy is" $fname
+
+elif [[ $test_type == "agltest" ]]; then
+    dir_list=$(echo -e ${dir_list// /\\n} | sort -n)
+    smallest=$(echo $dir_list | awk '{print $1}')
+    largest=$(echo $dir_list | awk '{print $NF}')
+    step=$(echo "print($(echo $dir_list | awk '{print $2}') - ($smallest))" | python)
+
+    echo -e "Angle from $smallest to $largest step $step" >> $fname
+    echo -e "\nAngle\tE(eV)" >> $fname
+
+    for n in $dir_list
+    do
+        echo -e "$n\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
+        data_line_count=$(($data_line_count + 1))
+        force_entropy_detector $n
+    done
+    
+    echo $PWD
+    echo '' >> $fname
+    if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
+    if [ "$entropy_converge_flag" ]; then echo -e "!Entropy doesn't converge during$entropy_converge_flag" | tee -a $fname; echo '' >> $fname; fi
+    _Display-fit.py $test_type 4 $((4 + data_line_count)) >> $fname
+    grep "R-squared is" $fname
+    grep "Minimal total energy is" $fname
+
 elif [[ $test_type == "equi-relax" ]]; then
     cp CONTCAR ../INPUT/POSCAR
     exit 0
@@ -130,13 +174,18 @@ elif [[ $test_type == "equi-relax" ]]; then
 elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                              # meaning elastic const.
     if [[ $test_type == c44 ]]; then
         if [ -d 0.030n ]; then rm -r 0.030n; fi
-        if [ -d 0.050n ]; then rm -r 0.050n; fi
+        if [ -d 0.050 ]; then rm -r 0.050; fi
         cp -r 0.030 0.030n
-        cp -r 0.050 0.050n
+        cp -r 0.050n 0.050
+    elif [[ $test_type == c11-c12 ]]; then
+        if [ -d 0.025n ]; then rm -r 0.025n; fi
+        if [ -d 0.040 ]; then rm -r 0.040; fi
+        cp -r 0.025 0.025n
+#        cp -r 0.015 0.015n
+        cp -r 0.040n 0.040
     fi
     if [ -d 0.000 ]; then rm -r 0.000; fi
     cp -r ../../equi-relax 0.000
-#    [[ "$dir_list" =~ 0.000* ]]||dir_list="0.000 "$dir_list
     unset dir_list
     for n in $(ls -F)
     do
@@ -167,14 +216,7 @@ elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                
         if [[ "$n" == *n ]]; then i=-${n%n}; else i=$n; fi
         echo -e "$i\t$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')" >> $fname
         data_line_count=$(($data_line_count + 1))
-        force_max=$(grep "FORCES:" $n/OUTCAR | tail -1 | awk '{print $5}')
-        force_max=${force_max#-}
-        if [ $(echo "$force_max > 0.01" | bc) == 1 ]; then force_converge_flag="$force_converge_flag\n$i $force_max"; fi
-        entropy=$(grep "entropy T\*S" $n/OUTCAR | tail -1 | awk '{print $5}')
-        entropy=${entropy#-}
-        atom_sum_expr=$(echo $(sed -n '6p' $n/POSCAR))
-        atom_sum=$((${atom_sum_expr// /+}))
-        if [ $(echo "$entropy > 0.001 * $atom_sum" | bc) == 1 ]; then entropy_converge_flag="$entropy_converge_flag\n$i $entropy"; fi
+        force_entropy_detector $n
     done
     
     echo $PWD

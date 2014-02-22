@@ -27,6 +27,7 @@ if cryst_sys == 'cubic':
     k = G/B
     cauchy_pressure = c12 - c44
     H_V = (1 - 2*nu) * E/(6 * (1 + nu))
+    H_V = 0.92 * k**1.137 * G**0.708
 #    row = (N_atoms[0] * 44.96 + N_atoms[1] * 14.01) * 10**27 / Vpcell / N_A
 #    v_l = ((B + 4/3. * G)/row)**0.5
 #    v_t = (G/row)**0.5

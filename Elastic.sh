@@ -22,30 +22,13 @@ if [ $2 == prep-fire ]; then
     mkdir elastic 2> /dev/null
     cd elastic
     cp -r ../INPUT .
-
-#    for n in $(ls -F ../lctest)
-#    do
-#        if [[ "$n" == */ ]]; then lc_scale=$lc_scale" "${n%/}; fi
-#    done
-    scaling_factor=$(grep "Equilibrium scaling factor is" ../lctest/lctest_output.txt | head -1 | awk '{print $5}')
-#    closest_lc=$(echo $lc_scale | awk '{print $1}')
-#    for n in $lc_scale; do
-#        diffn=$(echo "$n - $scaling_factor" | bc)
-#        diffn=${diffn#-}
-#        difflc=$(echo "$closest_lc - $scaling_factor" | bc)
-#        difflc=${difflc#-}
-#        if [[ $diffn < $difflc ]]; then closest_lc=$n; fi
-#    done
-#    cp ../lctest/$closest_lc/CONTCAR INPUT/POSCAR
-#    sed -i '2c @R@' INPUT/POSCAR
-    sed -i "s/@R@/$scaling_factor/g" INPUT/POSCAR
-
-    sed -i 's/#NSW /NSW /g' INPUT/INCAR
-    sed -i 's/#IBRION /IBRION /g' INPUT/INCAR
-    sed -i 's/#ISIF /ISIF /g' INPUT/INCAR
-#    sed -i 's/#EDIFF /EDIFF /g' INPUT/INCAR
-    sed -i 's/#EDIFFG /EDIFFG /g' INPUT/INCAR
-    sed -i 's/#POTIM /POTIM /g' INPUT/INCAR
+#    scaling_factor=$(grep "Equilibrium scaling factor is" ../lctest/lctest_output.txt | head -1 | awk '{print $5}')
+#    sed -i "2c $scaling_factor" INPUT/POSCAR
+    sed -i '/NSW/c NSW = 20' INPUT/INCAR
+    sed -i '/IBRION/c IBRION = 2' INPUT/INCAR
+    sed -i '/ISIF/c ISIF = 2' INPUT/INCAR
+    sed -i '/POTIM/c POTIM = 0.5' INPUT/INCAR
+    sed -i '/EDIFFG/c EDIFFG = -0.01' INPUT/INCAR
 #    sed -i '4c 13 13 13' INPUT/KPOINTS
 
     for n in $dir_list

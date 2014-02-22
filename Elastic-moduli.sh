@@ -5,7 +5,7 @@
 
 cd elastic
 if [ $1 == cubic ]; then
-    dir_list="c11+2c12 c11-c12 c44"
+    dir_list="c11-c12 c44"
     c11=$(grep "C11 is" elastic_output.txt | head -1 | awk '{print $3}')
     c12=$(grep "C12 is" elastic_output.txt | head -1 | awk '{print $3}')
     c44=$(grep "C44 is" elastic_output.txt | head -1 | awk '{print $3}')
@@ -27,8 +27,8 @@ elif [ $1 == monoclinic ]; then echo
 elif [ $1 == triclinic ]; then echo
 fi
 
-Vpcell=$(grep 'volume of cell' $(cut -d' ' -f1 <<< $dir_list)/0.00/OUTCAR | tail -1 | awk '{print $5;}')
-N_atoms=$(echo $(sed -n 6p $(cut -d' ' -f1 <<< $dir_list)/0.00/POSCAR))
+Vpcell=$(grep 'volume of cell' $(cut -d' ' -f1 <<< $dir_list)/0.000/OUTCAR | tail -1 | awk '{print $5;}')
+N_atoms=$(echo $(sed -n 6p $(cut -d' ' -f1 <<< $dir_list)/0.000/POSCAR))
 N_atoms=[${N_atoms// /,}]
 econst=[${econst// /,}]
 echo '' >> elastic_output.txt
