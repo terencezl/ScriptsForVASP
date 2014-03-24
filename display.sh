@@ -14,7 +14,7 @@ function force_entropy_detector {
 }
 
 if [[ "$1" == */ ]]; then test_type=${1%/}; else test_type=$1; fi
-cd $test_type || exit 1
+cd "$test_type" || exit 1
 test_type=${test_type%%_*}
 fname=$test_type"_output.txt"
 echo $PWD > $fname

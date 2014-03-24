@@ -5,4 +5,5 @@
 #PBS -j oe
 
 cd @R@
-time mpiexec -verbose /nfs/02/utl0268/terencelz/scripts/dev/bader CHGCAR -ref CHGCAR_sum
+time mpiexec -verbose /nfs/02/utl0268/terencelz/local/vtstscripts/chgsum.pl AECCAR0 AECCAR2
+time mpiexec -verbose /nfs/02/utl0268/terencelz/local/bader CHGCAR -ref CHGCAR_sum

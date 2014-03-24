@@ -29,7 +29,7 @@ function qsub_replacer {
 
 test_type=$1
 mkdir "$test_type" 2> /dev/null
-cd "$test_type"
+cd "$test_type" || exit 1
 test_type=${test_type%%_*}
 fname="$test_type""_output.txt"
 
@@ -78,7 +78,6 @@ elif [[ "$test_type" == "lctest" ]]; then
         cp ../../INPUT/KPOINTS .
         cp ../../INPUT/WAVECAR .
         cp ../../INPUT/qsub.parallel .
-#        _ions-position-keeper.py $n
         sed -i "2c $n" POSCAR
         qsub_replacer
         cd ..
@@ -108,7 +107,7 @@ elif [[ "$test_type" == "rttest" ]]; then
 elif [[ "$test_type" == "agltest" ]]; then
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")
     do
-        n=$(echo "print('{0:.0f}'.format($n))" | python)
+        n=$(echo "print('{0:f}'.format($n))" | python)
         if [[ "$n" == -* ]]; then n=${n#-}n; fi
         dir_list=$dir_list" "$n
     done
@@ -129,36 +128,36 @@ elif [[ "$test_type" == "agltest" ]]; then
 
 elif [[ "$test_type" == "equi-relax" ]]; then
     cd ..
-    scaling_factor=$(grep "Equilibrium scaling factor is" lctest/lctest_output.txt | head -1 | awk '{print $5}')
+#    scaling_factor=$(grep "Equilibrium scaling factor is" lctest/lctest_output.txt | head -1 | awk '{print $5}')
     Prep-fast.sh $test_type
-    sed -i "2c $scaling_factor" equi-relax/POSCAR
+#    sed -i "2c $scaling_factor" equi-relax/POSCAR
 
-elif [ "$test_type" == "mesh2d" ]; then
-    for x in $(awk "BEGIN{for(i=$2;i<=$3;i+=$6)print i}")                   # generate subfolders specified by float numbers
-    do i=$(echo "scale=2;$x/1" | bc)                                        # change decimal format from 5.1 to 5.10
-    dir_listx=$dir_listx" "$i                                                         # add dir_list of float numbers up
-    done
-    for y in $(awk "BEGIN{for(i=$4;i<=$5;i+=$6)print i}")                   # generate subfolders specified by float numbers
-    do i=$(echo "scale=2;$y/1" | bc)                                        # change decimal format from 5.1 to 5.10
-    dir_listy=$dir_listy" "$i                                                         # add dir_list of float numbers up
-    done
-    for x in $dir_listx
-    do
-        for y in $dir_listy
-        do
-            mkdir x$x-y$y
-            cd x$x-y$y
-            cp ../../INPUT/INCAR .
-            cp ../../INPUT/POSCAR .
-            cp ../../INPUT/POTCAR .
-            cp ../../INPUT/KPOINTS .
-            cp ../../INPUT/qsub.parallel .
-            sed -i s/@Rx@/$x/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
-            sed -i s/@Ry@/$y/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
-            qsub_replacer
-            cd ..
-        done
-    done
+#elif [ "$test_type" == "mesh2d" ]; then
+#    for x in $(awk "BEGIN{for(i=$2;i<=$3;i+=$6)print i}")                   # generate subfolders specified by float numbers
+#    do i=$(echo "scale=2;$x/1" | bc)                                        # change decimal format from 5.1 to 5.10
+#    dir_listx=$dir_listx" "$i                                                         # add dir_list of float numbers up
+#    done
+#    for y in $(awk "BEGIN{for(i=$4;i<=$5;i+=$6)print i}")                   # generate subfolders specified by float numbers
+#    do i=$(echo "scale=2;$y/1" | bc)                                        # change decimal format from 5.1 to 5.10
+#    dir_listy=$dir_listy" "$i                                                         # add dir_list of float numbers up
+#    done
+#    for x in $dir_listx
+#    do
+#        for y in $dir_listy
+#        do
+#            mkdir x$x-y$y
+#            cd x$x-y$y
+#            cp ../../INPUT/INCAR .
+#            cp ../../INPUT/POSCAR .
+#            cp ../../INPUT/POTCAR .
+#            cp ../../INPUT/KPOINTS .
+#            cp ../../INPUT/qsub.parallel .
+#            sed -i s/@Rx@/$x/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
+#            sed -i s/@Ry@/$y/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
+#            qsub_replacer
+#            cd ..
+#        done
+#    done
     
 elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
     if [ $test_type == c44 ]; then

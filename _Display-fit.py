@@ -27,7 +27,7 @@ import re
 def polyfit(x, y, degree):
     popts = np.polyfit(x, y, degree, full=True)
     p = np.poly1d(popts[0])
-    x_fit = np.linspace(sorted(x)[0], sorted(x)[-1], 100)
+    x_fit = np.linspace(sorted(x)[0], sorted(x)[-1], 1000)
     y_fit = p(x_fit)
     y_avg = np.sum(y)/len(y)
     ss_total = np.sum((y-y_avg)**2)
@@ -43,7 +43,7 @@ def murnaghan_eqn(V, V0, B0, B0_prime, E0):
 def murnaghan_fit(x, y):
     coeffs, pcov = curve_fit(murnaghan_eqn, x, y, [np.average(x), 2.5, 4, np.average(y)])
 #    coeffs, pcov = curve_fit(murnaghan_eqn, x, y, [20, 2.5, 4, -20])
-    x_fit = np.linspace(sorted(x)[0], sorted(x)[-1], 100)
+    x_fit = np.linspace(sorted(x)[0], sorted(x)[-1], 1000)
     y_fit = murnaghan_eqn(x_fit, *coeffs)
     y_fit_eqlen = murnaghan_eqn(x, *coeffs)
     ss_resid = np.sum((y_fit_eqlen - y)**2)
@@ -139,16 +139,16 @@ elif test_type == 'rttest':
     volume = np.array(volume)
     energy = np.array(energy)
     plt.plot(ratio, energy, 'o')
-    (p_rt, r_squared, rt_fit, energy_fit) = polyfit(ratio, energy, 4)
-    ratio_eqlbrm = rt_fit[energy_fit.argmin()]
-    plt.plot(rt_fit, energy_fit, '-')
+    (p_ratio, r_squared, ratio_fit, energy_fit) = polyfit(ratio, energy, 4)
+    ratio_eqlbrm = ratio_fit[energy_fit.argmin()]
+    plt.plot(ratio_fit, energy_fit, '-')
 
-    print("R-squared is {0}\nEquilibrium ratio is {1}\nThe polynomial coefficients are {2}".format(r_squared, ratio_eqlbrm, p_rt))
+    print("R-squared is {0}\nEquilibrium ratio is {1}\nThe polynomial is\n{2}".format(r_squared, ratio_eqlbrm, p_ratio))
     print("Minimal total energy is %f" % energy_fit.min())
-    np.savetxt(test_type+'_polyfit_data.dat', np.column_stack((volume_fit, energy_fit)), '%.6f', '\t')
+    np.savetxt(test_type+'_polyfit_data.dat', np.column_stack((ratio_fit, energy_fit)), '%.6f', '\t')
     plt.xlabel('raito')
     plt.ylabel('E (eV)')
-    np.savetxt(test_type+'_orig_data.dat', np.column_stack((volume, energy)), '%.6f', '\t')
+    np.savetxt(test_type+'_orig_data.dat', np.column_stack((ratio, energy)), '%.6f', '\t')
 
 elif test_type == 'agltest':
     angle = []; energy = []
@@ -158,13 +158,13 @@ elif test_type == 'agltest':
     angle = np.array(angle)
     energy = np.array(energy)
     plt.plot(angle, energy, 'o')
-    (p_agl, r_squared, agl_fit, energy_fit) = polyfit(agl, energy, 4)
-    angle_eqlbrm = agl_fit[energy_fit.argmin()]
-    plt.plot(agl_fit, energy_fit, '-')
+#    (p_angle, r_squared, angle_fit, energy_fit) = polyfit(angle, energy, 4)
+#    angle_eqlbrm = angle_fit[energy_fit.argmin()]
+#    plt.plot(angle_fit, energy_fit, '-')
 
-    print("R-squared is {0}\nMinimal angle is {1}\nThe polynomial coefficients are {2}".format(r_squared, angle_eqlbrm, p_agl))
-    print("Minimal total energy is %f" % energy_fit.min())
-    np.savetxt(test_type+'_polyfit_data.dat', np.column_stack((angle_fit, energy_fit)), '%.6f', '\t')
+#    print("R-squared is {0}\nMinimal angle is {1}\nThe polynomial coefficients are {2}".format(r_squared, angle_eqlbrm, p_angle))
+#    print("Minimal total energy is %f" % energy_fit.min())
+#    np.savetxt(test_type+'_polyfit_data.dat', np.column_stack((angle_fit, energy_fit)), '%.6f', '\t')
     plt.xlabel('angle')
     plt.ylabel('E (eV)')
     np.savetxt(test_type+'_orig_data.dat', np.column_stack((angle, energy)), '%.6f', '\t')

@@ -5,16 +5,13 @@ import matplotlib.pyplot as plt
 from matplotlib.mlab import stineman_interp
 #import pdb
 
-N_steps = 1501
-fname = sys.argv[1]
-metal = sys.argv[3]
-cryst_struct = sys.argv[2]
+with open('DOSCAR','r') as f:
+    list = f.readlines()
+for i in range(0, len(list)):
+    list[i] = list[i].split()
 
-f = open(fname,'rU')
-list = [];
-for line in f:
-    list.append(line[0:-1].split())
-f.close()
+N_steps = int(list[5][2])
+Fermi_E = float(list[5][3])
 
 # The total DOS and the integrated DOS
 E = []; dos_tot = []; dos_int = []
@@ -27,16 +24,15 @@ plt.plot(E, dos_tot)
 #plt.plot(E, dos_int, label="Integrated")
 
 table = np.column_stack((E, dos_tot, dos_int))
-np.savetxt('TDOS-'+metal+'N-'+cryst_struct+'.txt', table, '%.6f', '\t')
+np.savetxt('TDOS.txt', table, '%.6f', '\t')
 
 slice = dos_int[np.abs(np.array(E) - 0.2).argmin()] - dos_int[np.abs(np.array(E) + 0.2).argmin()]
 #slice = dos_tot[np.abs(np.array(E)).argmin()]
-np.savetxt('TDOS@Ef-'+metal+'N-'+cryst_struct+'.txt', [slice], '%.6f')
+np.savetxt('TDOS@Ef.txt', [slice], '%.6f')
 
 #plt.legend()
-plt.axis([-20, 5, 0, 20])
-plt.title("Total DOS")
+#plt.axis([-20, 5, 0, 20])
 plt.xlabel('Energy (eV)')
 plt.ylabel('TDOS (States / Unit Cell / eV)')
-plt.savefig('TDOS-'+metal+'N-'+cryst_struct+'.png')
+plt.savefig('TDOS.png')
 #plt.show()

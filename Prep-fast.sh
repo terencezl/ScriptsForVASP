@@ -18,7 +18,7 @@ function qsub_replacer {
     sed -i s%@R@%$PWD%g qsub.parallel
 }
 
-mkdir $1 2> /dev/null
+mkdir -p $1 2> /dev/null
+cp INPUT/* $1/
 cd $1
-cp ../INPUT/* .
 qsub_replacer

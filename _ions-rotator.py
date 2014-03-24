@@ -1,0 +1,72 @@
+#!/usr/local/python/2.7.1/bin/python
+# Usage: rotator.py '[ions line number as a list]' '[rotation center vector in direct coords as a list]' '[axis directional vector in cartesian coords as a list(no need to be normalized)]' angle(counter-clockwise)
+# e.g.: rotator.py '[10, 14, 23, 24, 25, 26,27,28]' '[0,0.5,0.75]' '[np.sqrt(2),0,1]' 60
+
+import numpy as np
+import sys
+np.set_printoptions(suppress=True)
+
+ions_line_number = np.array(eval(sys.argv[1])) - 1 # machine counts from 0
+rotation_center_direct_vector = eval(sys.argv[2])
+
+# define the rotation matrix A. Here we use the active rotation scheme, i.e. rotating the object
+#axis = [u_x, u_y, u_z] = [np.sqrt(2), 0, 1]/np.sqrt(3)
+axis = eval(sys.argv[3])
+[u_x, u_y, u_z] = axis/np.linalg.norm(axis)
+angle = eval(sys.argv[4]) / 180. * np.pi
+A = np.eye(3) * np.cos(angle) + np.array([[0, -u_z, u_y], [u_z, 0, -u_x], [-u_y, u_x, 0]]) * np.sin(angle) + np.array([[u_x**2, u_x*u_y, u_x*u_z], [u_x*u_y, u_y**2, u_y*u_z], [u_x*u_z, u_y*u_z, u_z**2]]) * (1 - np.cos(angle))
+
+# open the file that has ions' position part
+f = open('POSCAR','r')
+file = f.readlines()
+f.close
+
+# achieve the basis vectors from POSCAR
+basis_vectors_raw = []
+for i in range(2,5):
+    basis_vectors_raw.append(file[i].split())
+basis_vectors = np.array(basis_vectors_raw, dtype = np.float)
+
+# convert the raw form of ions' position into a numpy numeral array and subtracting the translational vector
+ions_position_raw = []
+for i in ions_line_number:
+    ions_position_raw.append(file[i].split()[0:3])
+ions_position = np.array(ions_position_raw, dtype = np.float) - rotation_center_direct_vector
+
+# transform the coordinates from direct to cartesian
+#direct_to_cartesian = np.array([[np.sqrt(2)*6.46654966725, 0, 0],
+#                                [0, np.sqrt(2)*6.46654966725, 0],
+#                                [0, 0, 2*6.46654966725]])
+#ions_position = np.dot(ions_position, direct_to_cartesian.transpose())
+ions_position = np.dot(ions_position, basis_vectors)
+
+# the matrix multiplication
+ions_position_new = np.dot(ions_position, A.transpose())
+
+# transform the coordinates from cartesian back to direct
+#cartesian_to_direct = np.array([[1/np.sqrt(2)/6.46654966725, 0, 0],
+#                                [0, 1/np.sqrt(2)/6.46654966725, 0],
+#                                [0, 0, 1/2./6.46654966725]])
+#ions_position_new = np.dot(ions_position_new, cartesian_to_direct.transpose())
+ions_position_new = np.dot(ions_position_new, np.linalg.inv(basis_vectors))
+
+ions_position_new = ions_position_new / np.cos(angle)
+
+# add the translational vector
+ions_position_new = ions_position_new + rotation_center_direct_vector
+
+# display the rotated ion positions
+for i in ions_position_new:
+    print('{0:.8f} {1:.8f} {2:.8f}'.format(i[0], i[1], i[2]))
+
+ions_position_new_raw = np.array(ions_position_new, dtype=np.str).tolist()
+for i in range(len(ions_position_new_raw)):
+    ions_position_new_raw[i] = ' '.join(ions_position_new_raw[i])+' F F F\n'
+
+count = 0
+for i in ions_line_number:
+    file[i] = ions_position_new_raw[count]
+    count += 1
+f = open('POSCAR', 'w')
+f.writelines(file)
+f.close()
