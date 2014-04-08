@@ -3,6 +3,12 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+if len(sys.argv) == 2:
+    [ylim0, ylim1] = eval(sys.argv[1])
+else:
+    ylim0 = -5
+    ylim1 = 5
+
 with open('DOSCAR','r') as f:
     for i in range(0,6):
         a = f.readline()
@@ -31,7 +37,7 @@ k_start_end_tuple_list = []
 for i in range(0, len(k_start_and_end) - 1, 2):
     k_start_end_tuple_list.append((np.array(k_start_and_end[i], dtype=float), np.array(k_start_and_end[i+1], dtype=float)))
 
-point_per_path = float(N_steps) / len(k_start_end_tuple_list)
+point_per_path = int(N_steps) / len(k_start_end_tuple_list)
 
 end_point = 0
 end_point_list = [end_point]
@@ -59,8 +65,6 @@ for i in range(0, N_bands):
     plt.plot(k_list, E[i])
 
 # set the axis properties
-ylim0 = -5
-ylim1 = 5
 plt.axis([end_point_list[0], end_point_list[-1], ylim0, ylim1])
 
 for i in range(len(end_point_list)):

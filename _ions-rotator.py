@@ -1,6 +1,6 @@
 #!/usr/local/python/2.7.1/bin/python
-# Usage: rotator.py '[ions line number as a list]' '[rotation center vector in direct coords as a list]' '[axis directional vector in cartesian coords as a list(no need to be normalized)]' angle(counter-clockwise)
-# e.g.: rotator.py '[10, 14, 23, 24, 25, 26,27,28]' '[0,0.5,0.75]' '[np.sqrt(2),0,1]' 60
+# Usage: rotator.py '[ions line number as a list]' '[rotation center vector in direct coords as a list]' '[axis directional vector in cartesian coords as a list(no need to be normalized)]' angle(counter-clockwise) POSCAR_file_name
+# e.g.: rotator.py '[10, 14, 23, 24, 25, 26,27,28]' '[0,0.5,0.75]' '[np.sqrt(2),0,1]' 60 POSCAR
 
 import numpy as np
 import sys
@@ -17,7 +17,8 @@ angle = eval(sys.argv[4]) / 180. * np.pi
 A = np.eye(3) * np.cos(angle) + np.array([[0, -u_z, u_y], [u_z, 0, -u_x], [-u_y, u_x, 0]]) * np.sin(angle) + np.array([[u_x**2, u_x*u_y, u_x*u_z], [u_x*u_y, u_y**2, u_y*u_z], [u_x*u_z, u_y*u_z, u_z**2]]) * (1 - np.cos(angle))
 
 # open the file that has ions' position part
-f = open('POSCAR','r')
+#f = open('POSCAR','r')
+f = open(sys.argv[5],'r')
 file = f.readlines()
 f.close
 
@@ -50,7 +51,7 @@ ions_position_new = np.dot(ions_position, A.transpose())
 #ions_position_new = np.dot(ions_position_new, cartesian_to_direct.transpose())
 ions_position_new = np.dot(ions_position_new, np.linalg.inv(basis_vectors))
 
-ions_position_new = ions_position_new / np.cos(angle)
+#ions_position_new = ions_position_new / np.cos(angle)
 
 # add the translational vector
 ions_position_new = ions_position_new + rotation_center_direct_vector
@@ -61,12 +62,13 @@ for i in ions_position_new:
 
 ions_position_new_raw = np.array(ions_position_new, dtype=np.str).tolist()
 for i in range(len(ions_position_new_raw)):
-    ions_position_new_raw[i] = ' '.join(ions_position_new_raw[i])+' F F F\n'
+    ions_position_new_raw[i] = ' '.join(ions_position_new_raw[i])+'\n'
 
 count = 0
 for i in ions_line_number:
     file[i] = ions_position_new_raw[count]
     count += 1
-f = open('POSCAR', 'w')
+#f = open('POSCAR', 'w')
+f = open(sys.argv[5],'w')
 f.writelines(file)
 f.close()
