@@ -181,7 +181,6 @@ elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                
         if [ -d 0.025n ]; then rm -r 0.025n; fi
         if [ -d 0.040 ]; then rm -r 0.040; fi
         cp -r 0.025 0.025n
-#        cp -r 0.015 0.015n
         cp -r 0.040n 0.040
     fi
     if [ -d 0.000 ]; then rm -r 0.000; fi

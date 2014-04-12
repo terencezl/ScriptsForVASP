@@ -3,7 +3,7 @@
 # Change element.dat first
 
 element_list=$(echo $(cat INPUT_ELEMENT/element.dat))
-echo "Tell me what you wish to do: prepare / lctest / display / equi-relax / elastic / solve / scrun / dosrun / plot-ldos / plot-tdos / bader-prerun / bader"
+echo "Tell me what you wish to do: prepare / lctest / display / equi-relax / copy-CONTCAR / elastic / solve / scrun / dosrun / plot-ldos / plot-tdos / bader-prerun / bader"
 read -r test_type
 
 # create INPUT folder in the selected cryst structure of each element
@@ -37,6 +37,7 @@ elif [ $test_type == display ]; then
     do
         cd "$n" || exit 1
         Display.sh lctest
+        echo
         cd ..
     done
 
@@ -45,8 +46,16 @@ elif [ $test_type == equi-relax ]; then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Prepare.sh equi-relax
+        Prep-fast.sh equi-relax
         F equi-relax
+        cd ..
+    done
+
+elif [ $test_type == copy-CONTCAR ];then
+    for n in $element_list
+    do
+        cd "$n" || exit 1
+        Display.sh equi-relax
         cd ..
     done
 
@@ -57,7 +66,7 @@ elif [ $test_type == elastic ]; then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Elastic.sh $cryst_sys prep-fire
+        Elastic.sh prep-fire $cryst_sys
         cd ..
     done
 
@@ -68,17 +77,21 @@ elif [ $test_type == solve ]; then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Elastic.sh $cryst_sys disp-solve
+        Elastic.sh disp-solve $cryst_sys
+        echo
         cd ..
     done
 
-# scrun - do the self-consistent run to get the CHGCAR
-# dosrun - do the dos run in the sc-dos-bs folder, putting the last run into a deeper folder called scrun
+# do the self-consistent run, find k-point dosrun, bandstructure run, and plot them."
 elif [ $test_type == scrun ] || [ $test_type == dosrun ] || [ $test_type == bsrun ] || [ $test_type == plot-ldos ] || [ $test_type == plot-tdos ]; then
+    if [ $test_type == plot-ldos ] || [ $test_type == plot-tdos ]; then
+        echo "Tell me the size of the frame. e.g. [-20,20,-5,5] for ldos, [-20,20,0,10] for tdos."
+        read -r frame_size
+    fi
     for n in $element_list
     do
         cd "$n" || exit 1
-        Dos-bs.sh $test_type
+        Dos-bs.sh $test_type "$frame_size"
         cd ..
     done
 

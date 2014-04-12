@@ -1,44 +1,38 @@
 #!/bin/bash
 # Use: In the top working directory
 # S. K. R. Patil, S. V. Khare, B. R. Tuttle, J. K. Bording, and S. Kodambaka, Mechanical stability of possible structures of PtN investigated using first-principles calculations, PHYSICAL REVIEW B 73, 104118 2006, DOI: 10.1103/PhysRevB.73.104118
-# Elastic.sh cubic / tetragonal /... prep-fire / disp-solve
+# Elastic.sh  prep-fire / disp-solve / solve    cubic / tetragonal /...
 
-if [ $1 == cubic ]; then
-    dir_list="c11+2c12 c11-c12 c44"
+if [ $2 == cubic ]; then
     dir_list="c11-c12 c44"
-elif [ $1 == cubic_A ]; then
+elif [ $2 == cubic_A ]; then
     dir_list="A1 A2 A3 A4 A5 A6"
-elif [ $1 == tetragonal ]; then echo
+elif [ $2 == tetragonal ]; then echo
     dir_list="c11 c33 c44 5c11-4c12-2c13+c33 c11+c12-4c13+2c33 c11+c12-4c13+2c33+2c66"
-elif [ $1 == orthorhombic ]; then echo
+elif [ $2 == orthorhombic ]; then echo
     dir_list="c11 c22 c33 c44 c55 c66 4c11-4c12-4c13+c22+2c23+c33 c11-4c12+2c13+4c22-4c23+c33 c11+2c12-4c13+c22-4c23+4c33"
-elif [ $1 == hexagonal ]; then echo
-elif [ $1 == trigonal ]; then echo
-elif [ $1 == monoclinic ]; then echo
-elif [ $1 == triclinic ]; then echo
+elif [ $2 == hexagonal ]; then echo
+elif [ $2 == trigonal ]; then echo
+elif [ $2 == monoclinic ]; then echo
+elif [ $2 == triclinic ]; then echo
 fi
 
-if [ $2 == prep-fire ]; then
+if [ $1 == prep-fire ]; then
     mkdir elastic 2> /dev/null
     cd elastic
     cp -r ../INPUT .
-#    scaling_factor=$(grep "Equilibrium scaling factor is" ../lctest/lctest_output.txt | head -1 | awk '{print $5}')
-#    sed -i "2c $scaling_factor" INPUT/POSCAR
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
-    sed -i '/IBRION/c IBRION = 2' INPUT/INCAR
-    sed -i '/ISIF/c ISIF = 2' INPUT/INCAR
-    sed -i '/POTIM/c POTIM = 0.5' INPUT/INCAR
-    sed -i '/EDIFFG/c EDIFFG = -0.01' INPUT/INCAR
-#    sed -i '4c 13 13 13' INPUT/KPOINTS
-
+#    sed -i '/IBRION/c IBRION = 2' INPUT/INCAR
+#    sed -i '/ISIF/c ISIF = 2' INPUT/INCAR
+#    sed -i '/POTIM/c POTIM = 0.5' INPUT/INCAR
+#    sed -i '/EDIFFG/c EDIFFG = -0.01' INPUT/INCAR
     for n in $dir_list
     do
-        Prep-fire.sh $n $1
+        Prep-fire.sh $n $2
     done
 
-elif [ $2 == disp-solve ]; then
+elif [ $1 == disp-solve ]; then
     cd elastic || exit 1
-
     for n in $dir_list
     do
         Display.sh $n
@@ -46,6 +40,27 @@ elif [ $2 == disp-solve ]; then
 
     echo $PWD | tee elastic_output.txt
     cd ..
-    Elastic-solve.sh $1 O
-    
+    Elastic.sh solve $2
+
+elif [ $1 == solve ]; then
+    cd elastic
+    echo >> elastic_output.txt
+#    Vpcell=$(grep 'volume of cell' $(cut -d' ' -f1 <<< $dir_list)/0.000/OUTCAR | tail -1 | awk '{print $5;}')
+    Vpcell=$(grep 'volume of cell' ../equi-relax/OUTCAR | tail -1 | awk '{print $5;}')
+    econst_raw=$(echo "print $(grep 'B0 =' ../lctest/lctest_output.txt | tail -1 | awk '{print $3}')/160.2*$Vpcell" | python)
+    for n in $dir_list
+    do
+        if [ $2 == cubic ]; then
+            econst_raw=$econst_raw" "$(grep "Fitting result" $n/$n"_output.txt" | tail -1 | awk '{print $5}')
+        elif [ $2 == cubic_A ]; then
+            declare ${n}1=$(grep "Fitting result" $n/$n"_output.txt" | tail -1 | awk '{print $8}')
+            declare ${n}2=$(grep "Fitting result" $n/$n"_output.txt" | tail -1 | awk '{print $5}')
+        fi
+    done
+
+    econst_raw=$econst_raw' '$A11' '$A21' '$A61' '$A12' '$A22' '$A32' '$A42' '$A52' '$A62
+#    echo $econst_raw
+    econst_raw=$(echo $econst_raw)
+    econst_raw=[${econst_raw// /,}]
+    _Elastic-solver.py $2 $Vpcell $econst_raw | tee -a elastic_output.txt
 fi

@@ -76,7 +76,7 @@ elif [[ "$test_type" == "lctest" ]]; then
         cp ../../INPUT/POSCAR .
         cp ../../INPUT/POTCAR .
         cp ../../INPUT/KPOINTS .
-        cp ../../INPUT/WAVECAR .
+#        cp ../../INPUT/WAVECAR .
         cp ../../INPUT/qsub.parallel .
         sed -i "2c $n" POSCAR
         qsub_replacer
@@ -126,10 +126,10 @@ elif [[ "$test_type" == "agltest" ]]; then
         cd ..
     done
 
-elif [[ "$test_type" == "equi-relax" ]]; then
-    cd ..
+#elif [[ "$test_type" == "equi-relax" ]]; then
+#    cd ..
 #    scaling_factor=$(grep "Equilibrium scaling factor is" lctest/lctest_output.txt | head -1 | awk '{print $5}')
-    Prep-fast.sh $test_type
+#    Prep-fast.sh $test_type
 #    sed -i "2c $scaling_factor" equi-relax/POSCAR
 
 #elif [ "$test_type" == "mesh2d" ]; then

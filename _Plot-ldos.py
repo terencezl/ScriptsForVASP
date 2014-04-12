@@ -128,7 +128,7 @@ else:
     plt.plot(E, -dos2_s, label= str(atom_2nd) + '_s')
     plt.plot(E, -dos2_p, label= str(atom_2nd) + '_p')
     plt.plot(E, -dos2_d, label= str(atom_2nd) + '_d')
-    plt.legend()
+    plt.legend(loc=0)
     plt.axis(axis_lim)
     plt.xlabel('Energy (eV)')
     plt.ylabel('LDOS (State / atom / eV)')

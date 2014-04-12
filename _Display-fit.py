@@ -68,7 +68,6 @@ if test_type == 'entest':
     plt.plot(ENCUT, dE1, 'x', ENCUT, dE2, '*', ENCUT, dDE, 'o')
     plt.plot([ENCUT[0], ENCUT[-1]], [0.001, 0.001], 'k:')
     plt.grid()
-#    plt.legend()
     plt.xlabel('ENCUT (eV)')
     plt.ylabel('dDE (eV)')
 
@@ -82,7 +81,6 @@ elif test_type == 'kptest':
     plt.plot(nKP, dE1, 'x', nKP, dE2, '*', nKP, dDE, 'o')
     plt.plot([nKP[0], nKP[-1]], [0.001, 0.001], 'k:')
     plt.grid()
-#    plt.legend()
     plt.xlabel('nKP')
     plt.ylabel('dDE (eV)')
 
@@ -100,7 +98,7 @@ elif test_type == 'lctest':
     plt.plot(volume, energy, 'o', label="Original data")
 
     # fitting the polynomial
-    (p_vol, r_squared, volume_fit, energy_fit) = polyfit(volume, energy, 4)
+    (p_vol, r_squared, volume_fit, energy_fit) = polyfit(volume, energy, 3)
     volume_eqlbrm_by_polynomial = volume_fit[energy_fit.argmin()]
     scaling_factor_eqlbrm_by_polynomial = (volume_eqlbrm_by_polynomial*V_a_conversion_multiplier)**(1/3.)
     
@@ -114,7 +112,6 @@ elif test_type == 'lctest':
     plt.text(volume_fit_M[len(volume_fit_M)/4], energy_fit_M[6], result_str)
 
     # standrad output, directed to files by the bash script calling this python script
-    #print "Birch-Murnaghan equation of state fitting results (better for a large span of lattice constants):"
     print "%s" % result_str
     print("Equilibrium scaling factor is {0} , or {1} (polynomial)".format(scaling_factor_eqlbrm, scaling_factor_eqlbrm_by_polynomial))
     if scaling_factor_eqlbrm <= scaling_factor[0] or scaling_factor_eqlbrm >= scaling_factor[-1]:
@@ -122,12 +119,12 @@ elif test_type == 'lctest':
     else:
         print("V0 = %f\nB0 = %f\nB0' = %f" % (coeffs_vol_M[0], coeffs_vol_M[1] * 160.2, coeffs_vol_M[2]))
         print("Total energy is {0} , or {1} (minimum of polynomial)".format(coeffs_vol_M[3], energy_fit.min()))
-        np.savetxt(test_type+'_eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)), '%.6f', '\t')
+        np.savetxt('eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)), '%.6f', '\t')
 
     plt.xlabel(r'Volume ($\AA^{3}$)')
     plt.ylabel('E (eV)')
-    plt.legend()
-    np.savetxt(test_type+'_orig_data.dat', np.column_stack((volume, energy)), '%.6f', '\t')
+    plt.legend(loc=0)
+    np.savetxt('orig_data.dat', np.column_stack((volume, energy)), '%.6f', '\t')
 
 elif test_type == 'rttest':
     ratio = []; volume = []; energy = []
@@ -145,10 +142,10 @@ elif test_type == 'rttest':
 
     print("R-squared is {0}\nEquilibrium ratio is {1}\nThe polynomial is\n{2}".format(r_squared, ratio_eqlbrm, p_ratio))
     print("Minimal total energy is %f" % energy_fit.min())
-    np.savetxt(test_type+'_polyfit_data.dat', np.column_stack((ratio_fit, energy_fit)), '%.6f', '\t')
+    np.savetxt('polyfit_data.dat', np.column_stack((ratio_fit, energy_fit)), '%.6f', '\t')
     plt.xlabel('raito')
     plt.ylabel('E (eV)')
-    np.savetxt(test_type+'_orig_data.dat', np.column_stack((ratio, energy)), '%.6f', '\t')
+    np.savetxt('orig_data.dat', np.column_stack((ratio, energy)), '%.6f', '\t')
 
 elif test_type == 'agltest':
     angle = []; energy = []
@@ -158,13 +155,6 @@ elif test_type == 'agltest':
     angle = np.array(angle)
     energy = np.array(energy)
     plt.plot(angle, energy, 'o')
-#    (p_angle, r_squared, angle_fit, energy_fit) = polyfit(angle, energy, 4)
-#    angle_eqlbrm = angle_fit[energy_fit.argmin()]
-#    plt.plot(angle_fit, energy_fit, '-')
-
-#    print("R-squared is {0}\nMinimal angle is {1}\nThe polynomial coefficients are {2}".format(r_squared, angle_eqlbrm, p_angle))
-#    print("Minimal total energy is %f" % energy_fit.min())
-#    np.savetxt(test_type+'_polyfit_data.dat', np.column_stack((angle_fit, energy_fit)), '%.6f', '\t')
     plt.xlabel('angle')
     plt.ylabel('E (eV)')
     np.savetxt(test_type+'_orig_data.dat', np.column_stack((angle, energy)), '%.6f', '\t')

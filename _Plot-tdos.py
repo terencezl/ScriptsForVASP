@@ -25,8 +25,6 @@ else:
     print "Can't read DOSCAR properly!"
     sys.exit(0)
 
-# The total DOS and the integrated DOS
-
 if spin_calc == True:
     E = np.zeros(N_steps)
     dos_tot_up = np.zeros(N_steps)
@@ -54,11 +52,11 @@ if spin_calc == True:
     plt.ylabel('TDOS (States / Unit Cell / eV)')
     plt.savefig('TDOS-spin-total.png')
 
-    table = np.column_stack((E, dos_tot_up, dos_int_down, dos_tot_up + dos_tot_down))
+    table = np.column_stack((E, dos_tot_up + dos_tot_down, np.zeros(len(E))))
     np.savetxt('TDOS.txt', table, '%.6f', '\t')
-    #slice = dos_int[np.abs(np.array(E) - 0.2).argmin()] - dos_int[np.abs(np.array(E) + 0.2).argmin()]
-    #slice = dos_tot[np.abs(np.array(E)).argmin()]
-    #np.savetxt('TDOS@Ef.txt', [slice], '%.6f')
+    slice = dos_int_up[np.abs(np.array(E) - 0.2).argmin()] - dos_int_up[np.abs(np.array(E) + 0.2).argmin()] + dos_int_down[np.abs(np.array(E) - 0.2).argmin()] - dos_int_down[np.abs(np.array(E) + 0.2).argmin()]
+    #slice = dos_tot_up[np.abs(np.array(E)).argmin()] + dos_tot_down[np.abs(np.array(E)).argmin()]
+    np.savetxt('TDOS@Ef.txt', [slice], '%.6f')
     
 else:
     E = np.zeros(N_steps)
@@ -69,7 +67,6 @@ else:
         dos_tot[i] = float(list[i+6][1])
         dos_int[i] = float(list[i+6][2])
     plt.plot(E, dos_tot)
-    #plt.plot(E, dos_int, label="Integrated")
     plt.axis([axis_lim[0], axis_lim[1], 0, axis_lim[3]])
     plt.xlabel('Energy (eV)')
     plt.ylabel('TDOS (States / Unit Cell / eV)')
@@ -77,6 +74,6 @@ else:
 
     table = np.column_stack((E, dos_tot))
     np.savetxt('TDOS.txt', table, '%.6f', '\t')
-    #slice = dos_int[np.abs(np.array(E) - 0.2).argmin()] - dos_int[np.abs(np.array(E) + 0.2).argmin()]
+    slice = dos_int[np.abs(np.array(E) - 0.2).argmin()] - dos_int[np.abs(np.array(E) + 0.2).argmin()]
     #slice = dos_tot[np.abs(np.array(E)).argmin()]
-    #np.savetxt('TDOS@Ef.txt', [slice], '%.6f')
+    np.savetxt('TDOS@Ef.txt', [slice], '%.6f')
