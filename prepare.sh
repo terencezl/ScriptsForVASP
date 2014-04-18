@@ -161,13 +161,9 @@ elif [[ "$test_type" == "agltest" ]]; then
     
 elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
     if [ $test_type == c44 ]; then
-#        dir_list="0.040n 0.025n 0.025 0.040"
-#        dir_list="0.050n 0.030n 0.030 0.050"
-        dir_list="0.030 0.050n"
+        dir_list="0.020 0.035 0.050n"
     elif [ $test_type == c11-c12 ]; then
-        dir_list="0.025 0.040n"
-#        dir_list="0.015"
-#        dir_list="0.040n 0.025n 0.025 0.040"
+        dir_list="0.020 0.030 0.040n"
     fi
     for n in $dir_list
     do

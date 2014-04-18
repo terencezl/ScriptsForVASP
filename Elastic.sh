@@ -22,10 +22,6 @@ if [ $1 == prep-fire ]; then
     cd elastic
     cp -r ../INPUT .
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
-#    sed -i '/IBRION/c IBRION = 2' INPUT/INCAR
-#    sed -i '/ISIF/c ISIF = 2' INPUT/INCAR
-#    sed -i '/POTIM/c POTIM = 0.5' INPUT/INCAR
-#    sed -i '/EDIFFG/c EDIFFG = -0.01' INPUT/INCAR
     for n in $dir_list
     do
         Prep-fire.sh $n $2
@@ -59,7 +55,6 @@ elif [ $1 == solve ]; then
     done
 
     econst_raw=$econst_raw' '$A11' '$A21' '$A61' '$A12' '$A22' '$A32' '$A42' '$A52' '$A62
-#    echo $econst_raw
     econst_raw=$(echo $econst_raw)
     econst_raw=[${econst_raw// /,}]
     _Elastic-solver.py $2 $Vpcell $econst_raw | tee -a elastic_output.txt

@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 import numpy as np
 np.set_printoptions(suppress=True)
 

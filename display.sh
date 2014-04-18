@@ -5,7 +5,7 @@
 function force_entropy_detector {
     force_max=$(grep "FORCES:" $1/OUTCAR | tail -1 | awk '{print $5}')
     force_max=${force_max#-}
-    if [ $(echo "$force_max > 0.01" | bc) == 1 ]; then force_converge_flag="$force_converge_flag\n$1 $force_max"; fi
+    if [ $(echo "$force_max > 0.04" | bc) == 1 ]; then force_converge_flag="$force_converge_flag\n$1 $force_max"; fi
     entropy=$(grep "entropy T\*S" $1/OUTCAR | tail -1 | awk '{print $5}')
     entropy=${entropy#-}
     atom_sum_expr=$(echo $(sed -n '6p' $1/POSCAR))
@@ -173,14 +173,18 @@ elif [[ $test_type == "equi-relax" ]]; then
 
 elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                              # meaning elastic const.
     if [[ $test_type == c44 ]]; then
-        if [ -d 0.030n ]; then rm -r 0.030n; fi
+        if [ -d 0.020n ]; then rm -r 0.020n; fi
+        if [ -d 0.035n ]; then rm -r 0.035n; fi
         if [ -d 0.050 ]; then rm -r 0.050; fi
-        cp -r 0.030 0.030n
+        cp -r 0.020 0.020n
+        cp -r 0.035 0.035n
         cp -r 0.050n 0.050
     elif [[ $test_type == c11-c12 ]]; then
-        if [ -d 0.025n ]; then rm -r 0.025n; fi
+        if [ -d 0.020n ]; then rm -r 0.020n; fi
+        if [ -d 0.030n ]; then rm -r 0.030n; fi
         if [ -d 0.040 ]; then rm -r 0.040; fi
-        cp -r 0.025 0.025n
+        cp -r 0.020 0.020n
+        cp -r 0.030 0.030n
         cp -r 0.040n 0.040
     fi
     if [ -d 0.000 ]; then rm -r 0.000; fi

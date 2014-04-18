@@ -1,4 +1,4 @@
-#!/usr/local/python/2.7.1/bin/python
+#!/usr/bin/env python
 # _Display_fit.py test_type line_from line_to P/M
 
 import sys
@@ -6,6 +6,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import re
+
+from ase.units import GPa
+from ase.utils.eos import EquationOfState
 
 #def centralfit(x, y):
 #    list = []
@@ -24,6 +27,7 @@ import re
 #    r_squared = 1 - ss_resid/ss_total
 #    return (the_one[1], the_one[2], r_squared, y_fit)
 #
+
 def polyfit(x, y, degree):
     popts = np.polyfit(x, y, degree, full=True)
     p = np.poly1d(popts[0])
@@ -42,7 +46,6 @@ def murnaghan_eqn(V, V0, B0, B0_prime, E0):
 
 def murnaghan_fit(x, y):
     coeffs, pcov = curve_fit(murnaghan_eqn, x, y, [np.average(x), 2.5, 4, np.average(y)])
-#    coeffs, pcov = curve_fit(murnaghan_eqn, x, y, [20, 2.5, 4, -20])
     x_fit = np.linspace(sorted(x)[0], sorted(x)[-1], 1000)
     y_fit = murnaghan_eqn(x_fit, *coeffs)
     y_fit_eqlen = murnaghan_eqn(x, *coeffs)
@@ -106,10 +109,14 @@ elif test_type == 'lctest':
     (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(volume, energy)
     scaling_factor_eqlbrm = (coeffs_vol_M[0]*V_a_conversion_multiplier)**(1/3.)
 
+    # fitting B-M eos with ase module
+    eos = EquationOfState(volume, energy)
+    volume_eqlbrm_by_ase, energy_eqlbrm_by_ase, B_by_ase = eos.fit()
+
     # plotting the Birch-Murnaghan equation of state
     plt.plot(volume_fit_M, energy_fit_M, '-', label="Birch-Murnaghan eqn of state")
     result_str = "R-squared is %f" % r_squared_M
-    plt.text(volume_fit_M[len(volume_fit_M)/4], energy_fit_M[6], result_str)
+    plt.text(volume_fit_M[len(volume_fit_M)/4], energy_fit_M[60], result_str)
 
     # standrad output, directed to files by the bash script calling this python script
     print "%s" % result_str
@@ -119,6 +126,12 @@ elif test_type == 'lctest':
     else:
         print("V0 = %f\nB0 = %f\nB0' = %f" % (coeffs_vol_M[0], coeffs_vol_M[1] * 160.2, coeffs_vol_M[2]))
         print("Total energy is {0} , or {1} (minimum of polynomial)".format(coeffs_vol_M[3], energy_fit.min()))
+        print "\nEquation of state parameters by ase"
+        print "----------------------------"
+        print "V0: %8.4f A^3" % (volume_eqlbrm_by_ase)
+        print "B: %8.2f GPa" % (B_by_ase/GPa)
+        print "E0: %8.6f eV" % (energy_eqlbrm_by_ase)
+
         np.savetxt('eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)), '%.6f', '\t')
 
     plt.xlabel(r'Volume ($\AA^{3}$)')

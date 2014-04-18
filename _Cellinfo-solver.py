@@ -1,4 +1,4 @@
-#!/usr/local/python/2.7.1/bin/python
+#!/usr/bin/env python
 # Used by Cellinfo.sh to solve equations
 # _Cellinfo_solver.py task volumn_of_primitive_cell input_data(in the form of a python list)
 
