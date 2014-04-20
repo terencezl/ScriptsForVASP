@@ -35,28 +35,30 @@ Due to the low level of "abstraction", it is assumed that the user of this scrip
 Scripts structure
 ---------------------
 
-### For single-element runs
+### Basic level
+
+* Prep-fast.sh - a fast way to create a folder with necessary input files
 * Prepare.sh entest / lctest / c11 cubic / ... - to create a list of runs
 * Fire.sh entest / lctest / c11 / ... - to submit a list of jobs
 * Display.sh entest / lctest / c11 / ... - to do the analysis of a list of runs and determine physical quantities
-
-
 * Prep-fire.sh - a wrapper on Prepare.sh and Fire.sh
-* Prep-fast.sh - a fast way to create a folder with necessary input files
 
+### Scripts that are built upon the basic level
 
 * Elastic.sh prep-fire / disp-solve / solve - to do a set of elastic constant determination runs, built on Prepare.sh, Fire.sh and Display.sh
 * Dos-bs.sh scrun / dosrun / bsrun / plot-tdos / plot-ldos / plot-bs - to carry out self-consistent runs, density of states runs, band structure runs, to plot the total and local density of states, and to plot the band structure
 * Bader.sh prerun /bader - to perform Bader charge transfer analysis
 
 ### For multi-element runs
+
 * ElementRun.sh - an interactive script to execute the above subroutines for multiple elements
 
 ### Useful scripts
+
 * Cellinfo.sh - to show the important info from OUTCAR
-* Swap-file-name.sh - to exchange the names of two files
 * Delfiles.sh - to delete the output files and start over for failed runs
 * Re-relax.sh - to copy CONTCAR to POSCAR and start over relaxation
+* Swap-file-name.sh - to exchange the names of two files
 
 General subroutines
 ---------------------
@@ -79,4 +81,4 @@ General subroutines
 
 1. Create a directory, i.e. TMN
 2. Create a folder INPUT, putting in necessary input files with necessary @R@ and @N@
-2. Go into the directory and execute Element-run.sh. Do as suggested by the script
+3. Go into the directory and execute Element-run.sh. Do as suggested by the script
