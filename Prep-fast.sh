@@ -1,8 +1,6 @@
 #!/bin/bash
 
 function qsub_replacer {
-    #qname=${PWD//\//_}
-    #qname=${qname##*utl0268_}
     qname_1=${PWD##*/}
     PWD_2=${PWD%/*}
     qname_2=${PWD_2##*/}

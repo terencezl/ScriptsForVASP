@@ -10,8 +10,6 @@
 # Note: Change the value of ENCUT of INCAR (when doing entest), nKP of KPOINTS (when kptest) and scaling factor of POSCAR (when both) to @R@ before executing the batch file.
 
 function qsub_replacer {
-    #qname=${PWD//\//_}
-    #qname=${qname##*utl0268_}
     qname_1=${PWD##*/}
     PWD_2=${PWD%/*}
     qname_2=${PWD_2##*/}

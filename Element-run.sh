@@ -12,7 +12,7 @@ if [ $test_type == prepare ]; then
     do
         mkdir -p "$n"/INPUT
         cp -r INPUT_ELEMENT/{INCAR,KPOINTS,POSCAR,qsub.parallel,qbader.serial} "$n"/INPUT
-        cat ~/terencelz/library/PP-LDA/POTCAR_{"$n",N} > "$n"/INPUT/POTCAR
+        cat ~/terencelz/local/potential-database/PAW-GGA/POTCAR_{"$n",N} > "$n"/INPUT/POTCAR
         cd "$n"/INPUT
         sed -i "s/@N@/"$n" N/g" INCAR
         sed -i "s/@N@/"$n" N/g" POSCAR
