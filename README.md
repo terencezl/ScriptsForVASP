@@ -40,8 +40,10 @@ Scripts structure
 * Fire.sh entest / lctest / c11 / ... - to submit a list of jobs
 * Display.sh entest / lctest / c11 / ... - to do the analysis of a list of runs and determine physical quantities
 
+
 * Prep-fire.sh - a wrapper on Prepare.sh and Fire.sh
 * Prep-fast.sh - a fast way to create a folder with necessary input files
+
 
 * Elastic.sh prep-fire / disp-solve / solve - to do a set of elastic constant determination runs, built on Prepare.sh, Fire.sh and Display.sh
 * Dos-bs.sh scrun / dosrun / bsrun / plot-tdos / plot-ldos / plot-bs - to carry out self-consistent runs, density of states runs, band structure runs, to plot the total and local density of states, and to plot the band structure
@@ -67,15 +69,13 @@ General subroutines
 6. Using Display.sh xxx [M/P (lctest only)] to get the (step, energy) pairs written into xxx_output.txt and other instructive information. For lctest and elastic constant runs the fitting results and plot figures are also written
 7. Rename the folder created during the process under the top working directory to whatever looks neat and tidy, i.e. labeling them with numbers
 
-To perform a complete set of elastic constant runs
----------------------
+### To perform a complete set of elastic constant runs
 
 1. Under the top working directory, execute Elastic.sh xxx prep-fire, i.e. cubic
 2. Elastic.sh xxx disp-solve after every batched job is finished
 3. Go check the elastic/elastic_output.txt for the results
 
-To perform runs for multiple elements
----------------------
+### To perform runs for multiple elements
 
 1. Create a directory, i.e. TMN
 2. Create a folder INPUT, putting in necessary input files with necessary @R@ and @N@

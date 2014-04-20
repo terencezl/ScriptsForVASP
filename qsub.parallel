@@ -1,8 +1,0 @@
-#PBS -l walltime=00:20:00
-#PBS -l nodes=1:ppn=8:pvfs
-#PBS -N @N@
-#PBS -S /bin/ksh
-#PBS -j oe
-
-cd @R@
-time mpiexec -verbose /nfs/02/utl0268/library/vasp.4.6_opt_mpi
