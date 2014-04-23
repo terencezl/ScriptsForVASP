@@ -10,13 +10,14 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-
+   introduction
+   Script structure <script-structure>
 
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
+.. * :ref:`modindex`
 * :ref:`search`
 
