@@ -3,13 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ScriptsForVASP's documentation!
-==========================================
+ScriptsForVASP documentation
+============================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
+
    introduction
    Script structure <script-structure>
 
@@ -18,6 +19,6 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-.. * :ref:`modindex`
 * :ref:`search`
+.. * :ref:`modindex`
 

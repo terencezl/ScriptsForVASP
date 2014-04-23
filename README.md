@@ -69,7 +69,7 @@ Scripts structure
 * `_Plot-bs.py` - to plot the band structure along certain chosen points in the 1st BZ
 * `_Cellinfo-solver.py` - to obtain the RWIGS values for different species to 100 % fill the cell
 
-__Non-job-related__ contains some interesting physics or computational experiments, and __Archived-scripts__ contains scripts that are obsolete or less used, but may contain jems.
+__Non-job-related__ contains some interesting physics or computational experiments, and __Archived__ contains scripts that are obsolete or less used, but may contain jems.
 
 General routines
 ---------------------
