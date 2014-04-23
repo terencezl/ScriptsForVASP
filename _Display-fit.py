@@ -101,17 +101,17 @@ elif test_type == 'lctest':
     plt.plot(volume, energy, 'o', label="Original data")
 
     # fitting the polynomial
-    (p_vol, r_squared, volume_fit, energy_fit) = polyfit(volume, energy, 3)
-    volume_eqlbrm_by_polynomial = volume_fit[energy_fit.argmin()]
-    scaling_factor_eqlbrm_by_polynomial = (volume_eqlbrm_by_polynomial*V_a_conversion_multiplier)**(1/3.)
+#    (p_vol, r_squared, volume_fit, energy_fit) = polyfit(volume, energy, 3)
+#    volume_eqlbrm_by_polynomial = volume_fit[energy_fit.argmin()]
+#    scaling_factor_eqlbrm_by_polynomial = (volume_eqlbrm_by_polynomial*V_a_conversion_multiplier)**(1/3.)
     
     # fitting the Birch-Murnaghan equation of state
     (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(volume, energy)
     scaling_factor_eqlbrm = (coeffs_vol_M[0]*V_a_conversion_multiplier)**(1/3.)
 
     # fitting B-M eos with ase module
-    eos = EquationOfState(volume, energy)
-    volume_eqlbrm_by_ase, energy_eqlbrm_by_ase, B_by_ase = eos.fit()
+#    eos = EquationOfState(volume, energy)
+#    volume_eqlbrm_by_ase, energy_eqlbrm_by_ase, B_by_ase = eos.fit()
 
     # plotting the Birch-Murnaghan equation of state
     plt.plot(volume_fit_M, energy_fit_M, '-', label="Birch-Murnaghan eqn of state")
@@ -120,17 +120,19 @@ elif test_type == 'lctest':
 
     # standrad output, directed to files by the bash script calling this python script
     print "%s" % result_str
-    print("Equilibrium scaling factor is {0} , or {1} (polynomial)".format(scaling_factor_eqlbrm, scaling_factor_eqlbrm_by_polynomial))
+#    print("Equilibrium scaling factor is {0} , or {1} (polynomial)".format(scaling_factor_eqlbrm, scaling_factor_eqlbrm_by_polynomial))
+    print("Equilibrium scaling factor is {0}".format(scaling_factor_eqlbrm))
     if scaling_factor_eqlbrm <= scaling_factor[0] or scaling_factor_eqlbrm >= scaling_factor[-1]:
         print("!Equilibrium point is out of the considered range!")
     else:
         print("V0 = %f\nB0 = %f\nB0' = %f" % (coeffs_vol_M[0], coeffs_vol_M[1] * 160.2, coeffs_vol_M[2]))
-        print("Total energy is {0} , or {1} (minimum of polynomial)".format(coeffs_vol_M[3], energy_fit.min()))
-        print "\nEquation of state parameters by ase"
-        print "----------------------------"
-        print "V0: %8.4f A^3" % (volume_eqlbrm_by_ase)
-        print "B: %8.2f GPa" % (B_by_ase/GPa)
-        print "E0: %8.6f eV" % (energy_eqlbrm_by_ase)
+#        print("Total energy is {0} , or {1} (minimum of polynomial)".format(coeffs_vol_M[3], energy_fit.min()))
+        print("Total energy is {0}".format(coeffs_vol_M[3]))
+#        print "\nEquation of state parameters by ase"
+#        print "----------------------------"
+#        print "V0: %8.4f A^3" % (volume_eqlbrm_by_ase)
+#        print "B: %8.2f GPa" % (B_by_ase/GPa)
+#        print "E0: %8.6f eV" % (energy_eqlbrm_by_ase)
 
         np.savetxt('eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)), '%.6f', '\t')
 

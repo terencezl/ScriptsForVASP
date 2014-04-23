@@ -1,13 +1,10 @@
 #!/bin/bash
 # The four input files and qsub.parallel should be prepared in the top working directory.
-# In the top working directory:
 # Prepare.sh entest min max step LC1
 # Prepare.sh kptest min max step LC1
 # Prepare.sh lctest min max step
 # Prepare.sh rttest min max step
-# Prepare.sh mesh2d LC_min LC_max RT_min RT_max step
 # Prepare.sh c11-c12 cubic
-# Note: Change the value of ENCUT of INCAR (when doing entest), nKP of KPOINTS (when kptest) and scaling factor of POSCAR (when both) to @R@ before executing the batch file.
 
 function qsub_replacer {
     qname_1=${PWD##*/}
@@ -25,10 +22,10 @@ function qsub_replacer {
     sed -i s%@R@%$PWD%g qsub.parallel
 }
 
-test_type=$1
-mkdir "$test_type" 2> /dev/null
-cd "$test_type" || exit 1
-test_type=${test_type%%_*}
+directory_name=$1
+mkdir "$directory_name" 2> /dev/null
+cd "$directory_name" || exit 1
+test_type=${directory_name%%_*}
 fname="$test_type""_output.txt"
 
 if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then

@@ -2,14 +2,16 @@
 # Use: In the top working directory,
 # Fire.sh TEST_TYPE
 
-cd "$1" || exit 1
+directory_name=$1
+cd "$directory_name" || exit 1
+test_type=${directory_name%%_*}
 
 for n in $(ls -F)
 do
     if [[ "$n" == */ ]]; then dir_list=$dir_list" "${n%/}; fi
 done
 
-if [[ $1 == lctest && $2 && $3 && $4 ]]; then
+if [[ $test_type == lctest && $2 && $3 && $4 ]]; then
     unset dir_list
     for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
     do

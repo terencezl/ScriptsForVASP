@@ -13,9 +13,9 @@ function force_entropy_detector {
     if [ $(echo "$entropy > 0.001 * $atom_sum" | bc) == 1 ]; then entropy_converge_flag="$entropy_converge_flag\n$1 $entropy"; fi
 }
 
-if [[ "$1" == */ ]]; then test_type=${1%/}; else test_type=$1; fi
-cd "$test_type" || exit 1
-test_type=${test_type%%_*}
+if [[ "$1" == */ ]]; then directory_name=${1%/}; else directory_name=$1; fi
+cd "$directory_name" || exit 1
+test_type=${directory_name%%_*}
 fname=$test_type"_output.txt"
 echo $PWD > $fname
 for n in $(ls -F)
@@ -101,7 +101,7 @@ elif [[ $test_type == "lctest" ]]; then
     grep "Total energy is" $fname
 
     cd ..
-    scaling_factor=$(grep "Equilibrium scaling factor is" lctest/lctest_output.txt | head -1 | awk '{print $5}')
+    scaling_factor=$(grep "Equilibrium scaling factor is" $directory_name/lctest_output.txt | head -1 | awk '{print $5}')
     closest_lc=$(echo $dir_list | awk '{print $1}')
     for n in $dir_list; do
         diffn=$(echo "$n - $scaling_factor" | bc)
@@ -110,9 +110,9 @@ elif [[ $test_type == "lctest" ]]; then
         difflc=${difflc#-}
         if [[ $(echo "$diffn < $difflc" | bc) == 1 ]]; then closest_lc=$n; fi
     done
-    cp lctest/$closest_lc/CONTCAR INPUT/POSCAR
+    cp $directory_name/$closest_lc/CONTCAR INPUT/POSCAR
     sed -i "2c $scaling_factor" INPUT/POSCAR
-    cd $test_type
+    cd $directory_name
 
 elif [[ $test_type == "rttest" ]]; then
     dir_list=$(echo -e ${dir_list// /\\n} | sort -n)

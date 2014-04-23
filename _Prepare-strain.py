@@ -17,7 +17,7 @@ vectors = np.array(vectors_raw, dtype=np.float)
 delta = float(sys.argv[3])
 
 if sys.argv[2] == 'cubic' or sys.argv[2] == 'cubic_A':
-    if sys.argv[1] == "c11+2c12":    # sequence is a little different. Switching 1 and 2
+    if sys.argv[1] == "c11+2c12":
         transformation_matrix = np.array([[1 + delta, 0, 0],
                                           [0, 1 + delta, 0],
                                           [0, 0, 1 + delta]])
