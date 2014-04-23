@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ $1 == scrun ]; then
-    Prep-fast.sh sc-dos-bs/scrun
+    Fast-prep.sh sc-dos-bs/scrun
 #    rwig1=$(cd equi-relax; Cellinfo.sh rwigs |awk '{print $4}')
 #    rwig2=$(cd equi-relax; Cellinfo.sh rwigs |awk '{print $5}')
     cd sc-dos-bs/scrun
@@ -11,7 +11,7 @@ if [ $1 == scrun ]; then
     qsub qsub.parallel
 
 elif [ $1 == dosrun ]; then
-    Prep-fast.sh sc-dos-bs/dosrun
+    Fast-prep.sh sc-dos-bs/dosrun
     cd sc-dos-bs/dosrun
     cp ../scrun/{INCAR,POSCAR,POTCAR,CHGCAR,WAVECAR} .
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
@@ -23,7 +23,7 @@ elif [ $1 == dosrun ]; then
     qsub qsub.parallel
 
 elif [ $1 == bsrun ]; then
-    Prep-fast.sh sc-dos-bs/bsrun
+    Fast-prep.sh sc-dos-bs/bsrun
     cd sc-dos-bs/bsrun
     cp ../scrun/{INCAR,POSCAR,POTCAR,CHGCAR,WAVECAR} .
     sed -i "/ICHARG/c ICHARG = 11" INCAR

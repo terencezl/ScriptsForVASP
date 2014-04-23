@@ -17,7 +17,7 @@ function qbader_replacer {
 }
 
 if [ $1 == prerun ]; then
-    Prep-fast.sh bader
+    Fast-prep.sh bader
     cd bader || exit 1
     echo 'LAECHG = .TRUE.' >> INCAR
     echo -e 'NGXF = 250\nNGYF = 250\nNGZF = 250' >> INCAR

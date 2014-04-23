@@ -124,7 +124,7 @@ elif [[ "$test_type" == "agltest" ]]; then
 #elif [[ "$test_type" == "equi-relax" ]]; then
 #    cd ..
 #    scaling_factor=$(grep "Equilibrium scaling factor is" lctest/lctest_output.txt | head -1 | awk '{print $5}')
-#    Prep-fast.sh $test_type
+#    Fast-prep.sh $test_type
 #    sed -i "2c $scaling_factor" equi-relax/POSCAR
 
 #elif [ "$test_type" == "mesh2d" ]; then
