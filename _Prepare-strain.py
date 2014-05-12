@@ -25,10 +25,12 @@ if sys.argv[2] == 'cubic' or sys.argv[2] == 'cubic_A':
         transformation_matrix = np.array([[1 + delta, 0, 0],
                                           [0, 1 - delta, 0],
                                           [0, 0, 1 + delta**2 / (1-delta**2)]])
+
     elif sys.argv[1] == "c44":
         transformation_matrix = np.array([[1, delta/2., 0],
                                           [delta/2., 1, 0],
                                           [0, 0, 1 + delta**2 / (4-delta**2)]])
+
     elif sys.argv[1] == "2c11+2c12+c44":
         transformation_matrix = np.array([[1 + delta, 0, 0],
                                          [0, 1 + delta, delta/2],

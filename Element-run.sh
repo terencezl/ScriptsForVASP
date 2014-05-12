@@ -2,7 +2,7 @@
 # Use: In the TMN working directory where there is a list of folders by the name of elements
 # Change element.dat first
 
-element_list=$(echo $(cat INPUT_ELEMENT/element.dat))
+element_list=$(echo $(cat $1))
 echo "Tell me what you wish to do: prepare / lctest / display / equi-relax / copy-CONTCAR / elastic / solve / scrun / dosrun / plot-ldos / plot-tdos / bader-prerun / bader"
 read -r test_type
 
@@ -26,8 +26,7 @@ elif [ $test_type == lctest ]; then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Prepare.sh lctest $start $end $step
-        Fire.sh lctest
+        Prep-fire.sh lctest $start $end $step
         cd ..
     done
 
