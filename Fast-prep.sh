@@ -20,4 +20,4 @@ mkdir -p $1 2> /dev/null
 cp INPUT/* $1/
 cd $1
 qsub_replacer qsub.parallel
-qsub_replacer qsub.parallel.lobster
+if [[ -n $2 ]]; then qsub_replacer $2; fi
