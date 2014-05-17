@@ -48,20 +48,21 @@ elif [ $1 == bsrun ]; then
     fi
     qsub qsub.parallel
 
-elif [ $1 == lobster-pre ]; then
-    Fast-prep.sh lobster-pre qlobster.pre.serial
-    cd lobster-pre
+elif [ $1 == lobster-kp ]; then
+    Fast-prep.sh lobster-kp qlobster.kp.serial
+    cd lobster-kp
     sed -i "/ISYM/c ISYM = 0" INCAR
     sed -i "/LSORBIT/c LSORBIT = .TRUE." INCAR
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
 #    sed -i '4c 17 17 17' KPOINTS
-    qsub qlobster.pre.serial
+    qsub qlobster.kp.serial
 
-elif [ $1 == lobster ]; then
+elif [ $1 == lobster-prerun ]; then
     Fast-prep.sh lobster qlobster.serial
     cd lobster
     cp -l ../scrun/CHGCAR .
-    cp ../lobster-pre/IBZKPT KPOINTS
+    mv ../lobster-kp .
+    cp lobster-kp/IBZKPT KPOINTS
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
     if [[ -n $2 ]]; then
         sed -i "/NBANDS/c NBANDS = $2" INCAR
@@ -75,7 +76,7 @@ elif [ $1 == lobster ]; then
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
     qsub qsub.parallel
 
-elif [ $1 == lobster-post ]; then
+elif [ $1 == lobster ]; then
     cd lobster
     qsub qlobster.serial
 
