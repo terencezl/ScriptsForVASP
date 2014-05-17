@@ -17,9 +17,9 @@ elif [ $2 == monoclinic ]; then echo
 elif [ $2 == triclinic ]; then echo
 fi
 
+cd elastic 2> /dev/null
 if [ $1 == prep-fire ]; then
-    mkdir elastic 2> /dev/null
-    cd elastic
+    mkdir elastic && cd elastic
     cp -r ../INPUT .
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
     for n in $dir_list
@@ -28,7 +28,6 @@ if [ $1 == prep-fire ]; then
     done
 
 elif [ $1 == disp-solve ]; then
-    cd elastic || exit 1
     for n in $dir_list
     do
         Display.sh $n
@@ -39,7 +38,6 @@ elif [ $1 == disp-solve ]; then
     Elastic.sh solve $2
 
 elif [ $1 == solve ]; then
-    cd elastic
     echo >> elastic_output.txt
 #    Vpcell=$(grep 'volume of cell' $(cut -d' ' -f1 <<< $dir_list)/0.000/OUTCAR | tail -1 | awk '{print $5;}')
     Vpcell=$(grep 'volume of cell' ../equi-relax/OUTCAR | tail -1 | awk '{print $5;}')

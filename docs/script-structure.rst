@@ -14,7 +14,7 @@ Scripts that are built upon the basic level
 -------------------
 
 * ``Elastic.sh prep-fire / disp-solve / solve`` - to do a full set of independent elastic constant determination runs, built on ``Prepare.sh``, ``Fire.sh`` and ``Display.sh``
-* ``Dos-bs.sh scrun / dosrun / bsrun / plot-tdos / plot-ldos / plot-bs`` - to carry out self-consistent runs, density of states runs, band structure runs, to plot the total and local density of states, and to plot the band structure
+* ``Electronic.sh scrun / dosrun / bsrun / plot-tdos / plot-ldos / plot-bs`` - to carry out self-consistent runs, density of states runs, band structure runs, to plot the total and local density of states, and to plot the band structure
 * ``Bader.sh prerun / bader`` - to perform Bader charge transfer analysis
 
 Scripts that are for multiple species, each requiring runs above

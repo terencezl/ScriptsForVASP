@@ -90,7 +90,7 @@ elif [ $test_type == scrun ] || [ $test_type == dosrun ] || [ $test_type == bsru
     for n in $element_list
     do
         cd "$n" || exit 1
-        Dos-bs.sh $test_type "$frame_size"
+        Electronic.sh $test_type "$frame_size"
         cd ..
     done
 

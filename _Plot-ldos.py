@@ -137,6 +137,7 @@ if is_spin_calc == True and is_m_decomposed == True:
     plt.plot(E, dos1_d_yz + dos1_d_xy + dos1_d_xz, 'k', label= str(atom_1st) + '_d_t2g')
     plt.plot(E, -dos1_d_z2 - dos1_d_x2_y2, 'k', label= str(atom_1st) + '_d_eg')
     plt.axhline(y=0)
+    plt.axvline(x=0, ls='--')
 
 #    plt.plot(E, -dos2_s, label= str(atom_2nd) + '_s')
  #   plt.plot(E, -dos2_p_y, label= str(atom_2nd) + '_p_y')

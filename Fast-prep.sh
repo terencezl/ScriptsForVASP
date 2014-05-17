@@ -12,11 +12,12 @@ function qsub_replacer {
     if [[ $(echo $qname | wc -c) > 17 ]]; then
         qname="T$qname_3$qname_2$qname_1"
     fi
-    sed -i s/@N@/$qname/g qsub.parallel
-    sed -i s%@R@%$PWD%g qsub.parallel
+    sed -i "/#PBS -N/c #PBS -N $qname" $1
+    sed -i "/^cd/c cd $PWD" $1
 }
 
 mkdir -p $1 2> /dev/null
 cp INPUT/* $1/
 cd $1
-qsub_replacer
+qsub_replacer qsub.parallel
+qsub_replacer qsub.parallel.lobster
