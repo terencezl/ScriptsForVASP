@@ -4,7 +4,7 @@ cd electronic 2>/dev/null
 if [ $1 == scrun ]; then
     mkdir electronic && cd electronic
     cp -r ../INPUT .
-    sed -i "/ISMEAR/c ISMEAR = 1" INPUT/INCAR
+#    sed -i "/ISMEAR/c ISMEAR = 1" INPUT/INCAR
     sed -i "/NSW/c NSW = 0" INPUT/INCAR
     sed -i "/LCHARG/c LCHARG = .TRUE." INPUT/INCAR
     sed -i "/LMAXMIX/c LMAXMIX = 4" INPUT/INCAR
@@ -63,7 +63,7 @@ elif [ $1 == lobster ]; then
     cp ../scrun/INCAR .
     cp ../lobster-kp/IBZKPT KPOINTS
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
-    sed -i "/NBANDS/c NBANDS = 60" INCAR
+#    sed -i "/NBANDS/c NBANDS = 60" INCAR
     sed -i "/NEDOS/c NEDOS = 2101" INCAR
     sed -i "/ICHARG/c ICHARG = 11" INCAR
     sed -i "/LORBIT/c LORBIT = 11"  INCAR

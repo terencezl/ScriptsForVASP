@@ -18,8 +18,8 @@ function qsub_replacer {
     if [[ $(echo $qname | wc -c) > 17 ]]; then
         qname="T$qname_3$qname_2$qname_1"
     fi
-    sed -i s/@N@/$qname/g qsub.parallel
-    sed -i s%@R@%$PWD%g qsub.parallel
+    sed -i "/#PBS -N/c #PBS -N $qname" $1
+    sed -i "/^cd/c cd $PWD" $1
 }
 
 directory_name=$1
@@ -52,7 +52,7 @@ if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
             else
                 sed -i "2c $lc2" POSCAR
             fi
-            qsub_replacer
+            qsub_replacer qsub.parallel
             cd ..
         done
     done
@@ -74,7 +74,7 @@ elif [[ "$test_type" == "lctest" ]]; then
 #        cp ../../INPUT/WAVECAR .
         cp ../../INPUT/qsub.parallel .
         sed -i "2c $n" POSCAR
-        qsub_replacer
+        qsub_replacer qsub.parallel
         cd ..
     done
 
@@ -95,7 +95,7 @@ elif [[ "$test_type" == "rttest" ]]; then
         cp ../../INPUT/WAVECAR .
         cp ../../INPUT/qsub.parallel .
         sed -i "s/@R@/$n/g" POSCAR
-        qsub_replacer
+        qsub_replacer qsub.parallel
         cd ..
     done
 
@@ -117,15 +117,9 @@ elif [[ "$test_type" == "agltest" ]]; then
         cp ../../INPUT/qsub.parallel .
         if [[ "$n" == *n ]]; then n=-${n%n}; fi
         _ions-position-rotator.py $n
-        qsub_replacer
+        qsub_replacer qsub.parallel
         cd ..
     done
-
-#elif [[ "$test_type" == "equi-relax" ]]; then
-#    cd ..
-#    scaling_factor=$(grep "Equilibrium scaling factor is" lctest/lctest_output.txt | head -1 | awk '{print $5}')
-#    Fast-prep.sh $test_type
-#    sed -i "2c $scaling_factor" equi-relax/POSCAR
 
 #elif [ "$test_type" == "mesh2d" ]; then
 #    for x in $(awk "BEGIN{for(i=$2;i<=$3;i+=$6)print i}")                   # generate subfolders specified by float numbers
@@ -169,7 +163,7 @@ elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
         cp ../../INPUT/POTCAR .
         cp ../../INPUT/KPOINTS .
         cp ../../INPUT/qsub.parallel .
-        qsub_replacer
+        qsub_replacer qsub.parallel
         if [[ "$n" == *n ]]; then n=-${n%n}; fi
         _Prepare-strain.py $test_type $2 $n
         cd ..

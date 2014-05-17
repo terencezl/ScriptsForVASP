@@ -14,8 +14,8 @@ if [ $test_type == prepare ]; then
         cp -r INPUT_ELEMENT/{INCAR,KPOINTS,POSCAR,qsub.parallel,qbader.serial} "$n"/INPUT
         cat ~/terencelz/local/potential-database/PAW-GGA/POTCAR_{"$n",N} > "$n"/INPUT/POTCAR
         cd "$n"/INPUT
-        sed -i "s/@N@/"$n" N/g" INCAR
-        sed -i "s/@N@/"$n" N/g" POSCAR
+        sed -i "/SYSTEM/c SYSTEM = $n" INCAR
+        sed -i "1c $n" POSCAR
         cd ../..
     done
 

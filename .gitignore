@@ -1,2 +1,1 @@
-qsub.parallel
-qbader.serial
+.nfs*
