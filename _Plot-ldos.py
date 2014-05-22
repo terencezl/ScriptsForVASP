@@ -24,7 +24,7 @@ N_steps = int(list[5][2])
 Fermi_E = float(list[5][3])
 
 if len(list[6]) == 5:
-    is_spin_calc = True
+    is_spin = True
     if len(list[6+N_steps+1]) == 19:
         is_m_decomposed = True
     elif len(list[6+N_steps+1]) == 7:
@@ -32,7 +32,7 @@ if len(list[6]) == 5:
     else:
         raise Exception("Can't read DOSCAR properly!")
 elif len(list[6]) == 3:
-    is_spin_calc = False
+    is_spin = False
     if len(list[6+N_steps+1]) == 10:
         is_m_decomposed = True
     elif len(list[6+N_steps+1]) == 4:
@@ -42,7 +42,7 @@ elif len(list[6]) == 3:
 else:
     raise Exception("Can't read DOSCAR properly!")
 
-if is_spin_calc == True and is_m_decomposed == True:
+if is_spin and is_m_decomposed:
     E = np.zeros(N_steps)
     dos1_s = np.zeros(N_steps)
     dos1_p_y = np.zeros(N_steps)
@@ -204,7 +204,7 @@ if is_spin_calc == True and is_m_decomposed == True:
 #    table = np.column_stack((E, dos1_s, dos1_p, dos1_d, dos2_s, dos2_p, dos2_d))
 #    np.savetxt('LDOS.txt', table, '%.6f', '\t')
 
-elif is_spin_calc == True and is_m_decomposed == False:
+elif is_spin and not is_m_decomposed:
     E = np.zeros(N_steps)
     dos1_up_s = np.zeros(N_steps)
     dos1_up_p = np.zeros(N_steps)
@@ -278,10 +278,10 @@ elif is_spin_calc == True and is_m_decomposed == False:
 #    table = np.column_stack((E, dos1_s, dos1_p, dos1_d, dos2_s, dos2_p, dos2_d))
 #    np.savetxt('LDOS.txt', table, '%.6f', '\t')
 
-elif is_spin_calc == False and is_m_decomposed == True:
+elif not is_spin and is_m_decomposed:
     pass
 
-elif is_spin_calc == False and is_m_decomposed == False:
+elif not is_spin and not is_m_decomposed:
     E = np.zeros(N_steps)
     dos1_s = np.zeros(N_steps)
     dos1_p = np.zeros(N_steps)

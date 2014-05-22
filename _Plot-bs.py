@@ -22,7 +22,7 @@ with open('EIGENVAL','r') as f:
 N_steps = int(EIGENVAL[5][1])   # How many KPs in total? Can be found in EIGENVAL, 6th line, 2nd number
 N_bands = int(EIGENVAL[5][2])   # How many bands are to be drawn? 6th line, 3rd number
 
-with open('KPOINTS', 'r') as f:
+with open('KPOINTS','r') as f:
     KPOINTS = f.readlines()
 
 end_letter_list = KPOINTS[0][:-1].split('-')
