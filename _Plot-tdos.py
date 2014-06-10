@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 import sys
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #import pdb
 
 if len(sys.argv) == 2:
     axis_lim = eval(sys.argv[1])
 else:
-    axis_lim = [-20, 10, 0, 15]
+    axis_lim = [-25, 10, 0, 15]
 
 with open('DOSCAR','r') as f:
     list = f.readlines()
