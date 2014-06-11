@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import re
 
-from ase.units import GPa
-from ase.utils.eos import EquationOfState
+#from ase.units import GPa
+#from ase.utils.eos import EquationOfState
 
 #def centralfit(x, y):
 #    list = []

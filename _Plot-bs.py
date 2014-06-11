@@ -5,8 +5,10 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import re
+import pandas as pd
 
-if len(sys.argv) == 2:
+
+if len(sys.argv) == 2 and isinstance(eval(sys.argv[1]), list) :
     [ylim0, ylim1] = eval(sys.argv[1])
 else:
     ylim0 = -5
@@ -53,13 +55,15 @@ end_letter_list = head_kp_list_in_cart.split('-')
 
 kp_section_start_end_pair_array = np.zeros((N_sections, 2, 3))
 for section in range(6):
-    kp_section_start_end_pair_array[section] = [ kp_list[N_kps_per_section * section], kp_list[N_kps_per_section * (section + 1) - 1] ]
+    kp_section_start_end_pair_array[section] = [ kp_list[N_kps_per_section * section], 
+                                    kp_list[N_kps_per_section * (section + 1) - 1] ]
 
 # Intermediate approach. No longer used.
 # kp_section_start_end_array = np.zeros((N_sections * 2, 3))
 # for section in range(6):
 #     kp_section_start_end_array[2 * section] = kp_list[N_kps_per_section * section]
-#     kp_section_start_end_array[2 * section + 1] = kp_list[N_kps_per_section * (section + 1) - 1]
+#     kp_section_start_end_array[2 * section + 1] = \
+#                                      kp_list[N_kps_per_section * (section + 1) - 1]
 
 
 # From KPOINTS. No longer used.
@@ -70,20 +74,23 @@ for section in range(6):
 #
 # kp_section_start_end_pair_array = []
 # for i in range(0, len(kp_section_start_end_array) - 2, 2):
-#     kp_section_start_end_pair_array.append((np.array(kp_section_start_end_array[i], dtype=float), np.array(kp_section_start_end_array[i+1], dtype=float)))
+#     kp_section_start_end_pair_array.append((np.array(kp_section_start_end_array[i],
+#              dtype=float), np.array(kp_section_start_end_array[i+1], dtype=float)))
 
 
-# Gerenate the linearized kp_array as x-axis.
+# Gerenate the linearized kp_linearized_array as x-axis.
 section_end_point = 0
 kp_end_point_array = np.zeros(N_sections + 1)
 kp_section_linearized_array = np.zeros((N_sections, N_kps_per_section))
 for section, section_coord_pair in enumerate(kp_section_start_end_pair_array):
-    section_end_point_next = section_end_point + np.linalg.norm(section_coord_pair[1] - section_coord_pair[0])
+    section_end_point_next = section_end_point + np.linalg.norm(
+                                section_coord_pair[1] - section_coord_pair[0])
     kp_end_point_array[section + 1] = section_end_point_next
-    kp_section_linearized_array[section] = np.linspace(section_end_point, section_end_point_next, N_kps_per_section)
+    kp_section_linearized_array[section] = np.linspace(section_end_point,
+                                    section_end_point_next, N_kps_per_section)
     section_end_point = section_end_point_next
 
-kp_array = kp_section_linearized_array.flatten()
+kp_linearized_array = kp_section_linearized_array.flatten()
 
 
 # Get energy for each band, each kpoint step.
@@ -98,18 +105,50 @@ E = E - Ef
 
 
 # Plot the bands.
-for i in range(0, N_bands):
-    plt.plot(kp_array, E[i])
+ax = plt.subplot(111)
+for band in range(0, N_bands):
+    plt.plot(kp_linearized_array, E[band])
 
 # Set the axis properties.
 plt.axis([kp_end_point_array[0], kp_end_point_array[-1], ylim0, ylim1])
 
 for section_end_point in range(len(kp_end_point_array)):
     plt.axvline(kp_end_point_array[section_end_point], ls='--', c='k')
-    plt.text(kp_end_point_array[section_end_point] - 0.02, -abs(ylim0) * 1.1, end_letter_list[section_end_point])
+    plt.text(kp_end_point_array[section_end_point], -abs(ylim0) * 1.1, 
+                                   end_letter_list[section_end_point], ha='center')
 plt.axhline(0, ls='--', c='k')
 
-ax = plt.gca()
 ax.get_xaxis().set_ticks([])
 plt.ylabel('Energy (eV)')
 plt.savefig('BS.png')
+
+
+
+
+# Effective mass calculation funcitons.
+def find_band_edges(kp_edge, within):
+    # First identify the k-point where band edges are located: kp_edge
+    # Examine valence band edge.
+    print "The possible valence bands are", \
+                    np.where(np.logical_and(E[:,kp_edge] > -within, E[:,kp_edge] < 0))[0]
+    # Examine conduction band edge.
+    print "The possible conduction bands are", \
+                    np.where(np.logical_and(E[:,kp_edge] < within, E[:,kp_edge] > 0))[0]
+
+
+def effective_mass_reduced(band, kp_start, kp_end):
+    h_bar = 1.054571726e-34
+    e = 1.6021176462e-19
+    m_e = 9.10938291e-31
+    scaling_const = 6.3743775177e-10
+
+    df = pd.DataFrame({'E':E[band,:]}, index=pd.Series(kp_linearized_array, name='kp'))
+
+    # Decide on the fitting range, characterized by indices.
+    p = np.poly1d(np.polyfit(df.index[kp_start:kp_end], df.E.iloc[kp_start:kp_end], 2))
+    k_fit = np.linspace(df.index[kp_start],df.index[kp_end],200)
+    plt.plot(k_fit, p(k_fit), lw=2)
+
+    d2E_dk2 = e * p[2] / (2*np.pi/scaling_const)**2
+    effective_mass_reduced = (h_bar)**2 / d2E_dk2  / m_e
+    return effective_mass_reduced
