@@ -9,7 +9,7 @@ import re
 import pandas as pd
 
 
-if len(sys.argv) == 2 and isinstance(eval(sys.argv[1]), list):
+if len(sys.argv) == 2 and re.match(r'[.*]', sys.argv[1]):
     [ylim0, ylim1] = eval(sys.argv[1])
 else:
     ylim0 = -5
@@ -143,7 +143,7 @@ def effective_mass_reduced(band, kp_start, kp_end):
     df = pd.DataFrame({'E': E[band, :]}, index=pd.Series(kp_linearized_array, name='kp'))
 
     # Decide on the fitting range, characterized by indices.
-    p = np.poly1d(np.polyfit(df.index[kp_start:kp_end], df.E.iloc[kp_start:kp_end], 2))
+    p = np.poly1d(np.polyfit(df.index[kp_start:kp_end + 1], df.E.iloc[kp_start:kp_end + 1], 2))
     k_fit = np.linspace(df.index[kp_start], df.index[kp_end], 200)
     plt.plot(k_fit, p(k_fit), lw=2)
 
