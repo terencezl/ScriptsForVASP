@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 with open('DOSCAR','r') as f:
     for i in range(0,6):
         a = f.readline()
-Fermi_E = float(a.split()[3])    # Found in DOSCAR, 6th line, 4th number
+Ef = float(a.split()[3])    # Found in DOSCAR, 6th line, 4th number
 
 f = open('EIGENVAL','r')
 file_contents_list_separated_by_line_split = []
@@ -40,9 +40,9 @@ for n_b in range(0, N_bands):
     for n_s in range(0, N_steps):
         E[n_b, n_s] = float(file_contents_list_separated_by_line_split[8 + n_b + (N_bands + 2) * n_s][1])
 
-E = E - (Fermi_E)
+E = E - (Ef)
 # Relative Fermi energy, choosing the valence band top at Gamma point.
-#Fermi_E = E[3][10]
+#Ef = E[3][10]
 
 # Plot the bands.
 for i in range(0, N_bands):

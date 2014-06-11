@@ -18,15 +18,15 @@ for line in f2:
 f2.close()
 
 # the total DOS and the integrated DOS
-Fermi_E1 = float(list1[5][3])
+Ef1 = float(list1[5][3])
 for i in range( 6, 6 + N_steps ):
-    E1.append(float(list1[i][0]) - Fermi_E1)
+    E1.append(float(list1[i][0]) - Ef1)
     dos1_tot.append(float(list1[i][1]))
 #plt.plot(E1, dos1_tot, label="Terence")
 
-Fermi_E2 = float(list2[5][3])
+Ef2 = float(list2[5][3])
 for i in range( 6, 6 + N_steps ):
-    E2.append(float(list2[i][0]) - Fermi_E2)
+    E2.append(float(list2[i][0]) - Ef2)
     dos2_tot.append(float(list2[i][1]))
 #plt.plot(E2, dos2_tot, label="Jason")
 

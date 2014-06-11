@@ -20,10 +20,10 @@ for line in f2:
 f2.close()
 
 # The projected DOS
-Fermi_E1 = float(list1[5][3])
+Ef1 = float(list1[5][3])
 E1 = []; dos1_s = []; dos1_p = []; dos1_d = []
 for n_s in range(0, N_steps):
-    E1.append(float(list1[6+(N_steps+1)*Nth_atom+n_s][0]) - Fermi_E1)
+    E1.append(float(list1[6+(N_steps+1)*Nth_atom+n_s][0]) - Ef1)
     dos1_s.append(float(list1[6+(N_steps+1)*Nth_atom+n_s][1]))
     dos1_p.append(float(list1[6+(N_steps+1)*Nth_atom+n_s][2]))
     dos1_d.append(float(list1[6+(N_steps+1)*Nth_atom+n_s][3]))
@@ -31,10 +31,10 @@ for n_s in range(0, N_steps):
 #plt.plot(E1, dos1_p, label='Terence_p')
 #plt.plot(E1, dos1_d, label='Terence_d')
 
-Fermi_E2 = float(list2[5][3])
+Ef2 = float(list2[5][3])
 E2 = []; dos2_s = []; dos2_p = []; dos2_d = []
 for n_s in range(0, N_steps):
-    E2.append(float(list2[6+(N_steps+1)*Nth_atom+n_s][0]) - Fermi_E2)
+    E2.append(float(list2[6+(N_steps+1)*Nth_atom+n_s][0]) - Ef2)
     dos2_s.append(float(list2[6+(N_steps+1)*Nth_atom+n_s][1]))
     dos2_p.append(float(list2[6+(N_steps+1)*Nth_atom+n_s][2]))
     dos2_d.append(float(list2[6+(N_steps+1)*Nth_atom+n_s][3]))

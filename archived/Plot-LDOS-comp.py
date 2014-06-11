@@ -15,10 +15,10 @@ f.close()
 
 # The projected DOS
 Nth_atom = 1
-Fermi_E = float(list[5][3])
+Ef = float(list[5][3])
 E = []; dos_s = []; dos_p = []; dos_d = []
 for n_s in range(0, N_steps):
-    E.append(float(list[6+(N_steps+1)*Nth_atom+n_s][0]) - Fermi_E)
+    E.append(float(list[6+(N_steps+1)*Nth_atom+n_s][0]) - Ef)
     dos_s.append(float(list[6+(N_steps+1)*Nth_atom+n_s][1]))
     dos_p.append(float(list[6+(N_steps+1)*Nth_atom+n_s][2]))
     dos_d.append(float(list[6+(N_steps+1)*Nth_atom+n_s][3]))
@@ -27,10 +27,10 @@ plt.plot(E, dos_p, label= metal+'_p')
 plt.plot(E, dos_d, label= metal+'_d')
 
 Nth_atom = 2
-Fermi_E = float(list[5][3])
+Ef = float(list[5][3])
 E = []; dos_s = []; dos_p = []; dos_d = []
 for n_s in range(0, N_steps):
-    E.append(float(list[6+(N_steps+1)*Nth_atom+n_s][0]) - Fermi_E)
+    E.append(float(list[6+(N_steps+1)*Nth_atom+n_s][0]) - Ef)
     dos_s.append(-float(list[6+(N_steps+1)*Nth_atom+n_s][1]))
     dos_p.append(-float(list[6+(N_steps+1)*Nth_atom+n_s][2]))
     dos_d.append(-float(list[6+(N_steps+1)*Nth_atom+n_s][3]))

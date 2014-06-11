@@ -5,12 +5,12 @@
 import sys
 import numpy as np
 
-f = open('POSCAR','r')
+f = open('POSCAR', 'r')
 file = f.readlines()
 f.close()
 
 vectors_raw = []
-for n in [2,3,4]:
+for n in [2, 3, 4]:
     vectors_raw.append(file[n].split())
 
 vectors = np.array(vectors_raw, dtype=np.float)
@@ -24,17 +24,17 @@ if sys.argv[2] == 'cubic' or sys.argv[2] == 'cubic_A':
     elif sys.argv[1] == "c11-c12":
         transformation_matrix = np.array([[1 + delta, 0, 0],
                                           [0, 1 - delta, 0],
-                                          [0, 0, 1 + delta**2 / (1-delta**2)]])
+                                          [0, 0, 1 + delta ** 2 / (1 - delta ** 2)]])
 
     elif sys.argv[1] == "c44":
-        transformation_matrix = np.array([[1, delta/2., 0],
-                                          [delta/2., 1, 0],
-                                          [0, 0, 1 + delta**2 / (4-delta**2)]])
+        transformation_matrix = np.array([[1, delta / 2., 0],
+                                          [delta / 2., 1, 0],
+                                          [0, 0, 1 + delta ** 2 / (4 - delta ** 2)]])
 
     elif sys.argv[1] == "2c11+2c12+c44":
         transformation_matrix = np.array([[1 + delta, 0, 0],
-                                         [0, 1 + delta, delta/2],
-                                         [0, delta/2, 1]])
+                                          [0, 1 + delta, delta / 2],
+                                          [0, delta / 2, 1]])
     elif sys.argv[1] == "A1":
         transformation_matrix = np.array([[1 + delta, 0, 0],
                                           [0, 1, 0],
@@ -101,15 +101,15 @@ elif sys.argv[2] == 'orthorhombic':
                                           [0, 0, 1 + delta]])
     elif sys.argv[1] == "c44":
         transformation_matrix = np.array([[1, 0, 0],
-                                          [0, 1, delta/2],
-                                          [0, delta/2, 1]])
+                                          [0, 1, delta / 2],
+                                          [0, delta / 2, 1]])
     elif sys.argv[1] == "c55":
-        transformation_matrix = np.array([[1, 0, delta/2],
+        transformation_matrix = np.array([[1, 0, delta / 2],
                                           [0, 1, 0],
-                                          [delta/2, 0, 1]])
+                                          [delta / 2, 0, 1]])
     elif sys.argv[1] == "c66":
-        transformation_matrix = np.array([[1, delta/2, 0],
-                                          [delta/2, 1, 0],
+        transformation_matrix = np.array([[1, delta / 2, 0],
+                                          [delta / 2, 1, 0],
                                           [0, 0, 1]])
     elif sys.argv[1] == "4c11-4c12-4c13+c22+2c23+c33":
         transformation_matrix = np.array([[1 + 2 * delta, 0, 0],
@@ -126,8 +126,8 @@ elif sys.argv[2] == 'orthorhombic':
 
 new_vectors = np.array(np.dot(vectors, transformation_matrix), dtype=np.str).tolist()
 for n in range(len(new_vectors)):
-    new_vectors[n] = ' '.join(new_vectors[n])+'\n'
+    new_vectors[n] = ' '.join(new_vectors[n]) + '\n'
 file[2:5] = new_vectors
-f = open('POSCAR','w')
+f = open('POSCAR', 'w')
 f.writelines(file)
 f.close()

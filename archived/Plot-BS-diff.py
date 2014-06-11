@@ -47,14 +47,14 @@ for n_s in range(0, N_steps * 4):
     for n_b in range(0, N_bands):
         E1[n_b].append(float(list1[8+n_b+(N_bands+2)*n_s][1]))
 # Relative Fermi energy, choosing the valence band top at Gamma point.
-Fermi_E1 = E1[3][10]
-E1 = np.array(E1) - Fermi_E1
+Ef1 = E1[3][10]
+E1 = np.array(E1) - Ef1
 
 for n_s in range(0, N_steps * 4):
     for n_b in range(0, N_bands):
         E2[n_b].append(float(list2[8+n_b+(N_bands+2)*n_s][1]))
-Fermi_E2 = E2[3][10]
-E2 = np.array(E2) - Fermi_E2
+Ef2 = E2[3][10]
+E2 = np.array(E2) - Ef2
 
 dE = E1 - E2
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 N_steps = 10   # How many KPs in total? Can be found in EIGENVAL, 6th line, 2nd number
 N_bands = 22    # How many bands are to be drawn? 6th line, 3rd number
-#Fermi_E = 6.29558169
+#Ef = 6.29558169
 # Found in DOSCAR, 6th line, 4th number
 
 f = open('EIGENVAL','rU')
@@ -34,8 +34,8 @@ for i in range(0, N_bands):
 for n_s in range(0, N_steps * 3):
     for n_b in range(0, N_bands):
         E[n_b].append(float(list[8+n_b+(N_bands+2)*n_s][1]))
-Fermi_E = E[17][0]
-E = np.array(E) - Fermi_E
+Ef = E[17][0]
+E = np.array(E) - Ef
 
 # Plot the bands
 for i in range(0, N_bands):
