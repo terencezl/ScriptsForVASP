@@ -33,7 +33,7 @@ N_bands = int(EIGENVAL[5][2])
 
 with open('KPOINTS', 'r') as f:
     KPOINTS = f.readlines()
-# end_letter_list = KPOINTS[0].strip().split('-')
+# kp_end_letter_list = KPOINTS[0].strip().split('-')
 N_kps_per_section = int(KPOINTS[1])
 N_sections = N_kps / N_kps_per_section
 
@@ -49,7 +49,7 @@ with open('OUTCAR', 'r') as f:
     for kp in range(N_kps):
         kp_list[kp] = f.next().split()[:3]
 
-end_letter_list = head_kp_list_in_cart.split('-')
+kp_end_letter_list = head_kp_list_in_cart.split('-')
 
 kp_section_start_end_pair_array = np.zeros((N_sections, 2, 3))
 for section in range(6):
@@ -111,12 +111,14 @@ for band in range(0, N_bands):
 plt.axis([kp_end_point_array[0], kp_end_point_array[-1], ylim0, ylim1])
 
 for section_end_point in range(len(kp_end_point_array)):
-    plt.axvline(kp_end_point_array[section_end_point], ls='--', c='k')
-    plt.text(kp_end_point_array[section_end_point], -abs(ylim0) * 1.1,
-             end_letter_list[section_end_point], ha='center')
-plt.axhline(0, ls='--', c='k')
+    plt.axvline(kp_end_point_array[section_end_point], ls='--', c='k', alpha=0.5)
+    # plt.text(kp_end_point_array[section_end_point], -abs(ylim0) * 1.1,
+    #          kp_end_letter_list[section_end_point], ha='center')
+# ax.get_xaxis().set_ticks([])
 
-ax.get_xaxis().set_ticks([])
+ax.xaxis.set_ticks(kp_end_point_array)
+ax.xaxis.set_ticklabels(kp_end_letter_list)
+plt.axhline(0, ls='--', c='k', alpha=0.5)
 plt.ylabel('Energy (eV)')
 plt.savefig('BS.png')
 
