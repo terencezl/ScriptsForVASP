@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-# _Display_fit.py test_type line_from line_to P/M
+# _Display_fit.py test_type line_from line_to
 
 import sys
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import re
@@ -133,7 +135,7 @@ elif test_type == 'lctest':
 
     # standrad output, directed to files by the bash script calling this python script
     print "%s" % result_str
-    #    print("Equilibrium scaling factor is {0} , or {1} (polynomial)".format(scaling_factor_eqlbrm, scaling_factor_eqlbrm_by_polynomial))
+    # print("Equilibrium scaling factor is {0} , or {1} (polynomial)".format(scaling_factor_eqlbrm, scaling_factor_eqlbrm_by_polynomial))
     print("Equilibrium scaling factor is {0}".format(scaling_factor_eqlbrm))
     if scaling_factor_eqlbrm <= scaling_factor[0] or scaling_factor_eqlbrm >= scaling_factor[-1]:
         print("!Equilibrium point is out of the considered range!")
@@ -212,4 +214,3 @@ elif re.search('.*c[1-9][1-9].*', test_type) or re.search('A.*', test_type):  # 
     print "Fitting result:", result_str
 
 plt.savefig('fit_curve.png')
-#plt.show()

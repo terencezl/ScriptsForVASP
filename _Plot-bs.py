@@ -2,7 +2,6 @@
 import sys
 import numpy as np
 import matplotlib
-
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import re
@@ -17,9 +16,9 @@ else:
 
 with open('DOSCAR', 'r') as f:
     for i in range(6):
-        a = f.readline()
+        DOSCAR = f.readline()
 # Fermi energy. Found in DOSCAR, 6th line, 4th number.
-Ef = float(a.split()[3])
+Ef = float(DOSCAR.split()[3])
 
 with open('EIGENVAL', 'r') as f:
     EIGENVAL = f.readlines()
@@ -33,10 +32,8 @@ N_bands = int(EIGENVAL[5][2])
 
 with open('KPOINTS', 'r') as f:
     KPOINTS = f.readlines()
-# kp_end_letter_list = KPOINTS[0].strip().split('-')
 N_kps_per_section = int(KPOINTS[1])
 N_sections = N_kps / N_kps_per_section
-
 
 # Get the start and end point coordinate of each section. From OUTCAR.
 kp_list = [''] * N_kps
@@ -44,7 +41,7 @@ with open('OUTCAR', 'r') as f:
     for line in f:
         if re.match(r".*k-points in units of 2pi/SCALE and weight:.*", line):
             head_kp_list_in_cart = line.replace(
-                "k-points in units of 2pi/SCALE and weight:", '').strip()
+                'k-points in units of 2pi/SCALE and weight:', '').strip()
             break
     for kp in range(N_kps):
         kp_list[kp] = f.next().split()[:3]
@@ -55,26 +52,6 @@ kp_section_start_end_pair_array = np.zeros((N_sections, 2, 3))
 for section in range(6):
     kp_section_start_end_pair_array[section] = [kp_list[N_kps_per_section * section],
                                                 kp_list[N_kps_per_section * (section + 1) - 1]]
-
-# Intermediate approach. No longer used.
-# kp_section_start_end_array = np.zeros((N_sections * 2, 3))
-# for section in range(6):
-# kp_section_start_end_array[2 * section] = kp_list[N_kps_per_section * section]
-#     kp_section_start_end_array[2 * section + 1] = \
-#                                      kp_list[N_kps_per_section * (section + 1) - 1]
-
-
-# From KPOINTS. No longer used.
-# kp_section_start_end_array = []
-# for line in KPOINTS[4:]:
-#     if line != '\n':
-#         kp_section_start_end_array.append(line.split())
-#
-# kp_section_start_end_pair_array = []
-# for i in range(0, len(kp_section_start_end_array) - 2, 2):
-#     kp_section_start_end_pair_array.append((np.array(kp_section_start_end_array[i],
-#              dtype=float), np.array(kp_section_start_end_array[i+1], dtype=float)))
-
 
 # Gerenate the linearized kp_linearized_array as x-axis.
 section_end_point = 0
@@ -90,7 +67,6 @@ for section, section_coord_pair in enumerate(kp_section_start_end_pair_array):
 
 kp_linearized_array = kp_section_linearized_array.flatten()
 
-
 # Get energy for each band, each kpoint step.
 E = np.zeros((N_bands, N_kps))
 for n_b in range(0, N_bands):
@@ -100,7 +76,6 @@ for n_b in range(0, N_bands):
 E = E - Ef
 # Relative Fermi energy, choosing the valence band top at Gamma point.
 #Ef = E[3][10]
-
 
 # Plot the bands.
 ax = plt.subplot(111)
@@ -112,9 +87,6 @@ plt.axis([kp_end_point_array[0], kp_end_point_array[-1], ylim0, ylim1])
 
 for section_end_point in range(len(kp_end_point_array)):
     plt.axvline(kp_end_point_array[section_end_point], ls='--', c='k', alpha=0.5)
-    # plt.text(kp_end_point_array[section_end_point], -abs(ylim0) * 1.1,
-    #          kp_end_letter_list[section_end_point], ha='center')
-# ax.get_xaxis().set_ticks([])
 
 ax.xaxis.set_ticks(kp_end_point_array)
 ax.xaxis.set_ticklabels(kp_end_letter_list)
@@ -123,16 +95,14 @@ plt.ylabel('Energy (eV)')
 plt.savefig('BS.png')
 
 
-
-
 # Effective mass calculation funcitons.
 def find_band_edges(kp_edge, within):
     # First identify the k-point where band edges are located: kp_edge
     # Examine valence band edge.
-    print "The possible valence bands are", \
+    print 'The possible valence bands are', \
         np.where(np.logical_and(E[:, kp_edge] > -within, E[:, kp_edge] < 0))[0]
     # Examine conduction band edge.
-    print "The possible conduction bands are", \
+    print 'The possible conduction bands are', \
         np.where(np.logical_and(E[:, kp_edge] < within, E[:, kp_edge] > 0))[0]
 
 
@@ -150,5 +120,5 @@ def effective_mass_reduced(band, kp_start, kp_end):
     plt.plot(k_fit, p(k_fit), lw=2)
 
     d2E_dk2 = e * p[2] / (2 * np.pi / scaling_const) ** 2
-    effective_mass_reduced = (h_bar) ** 2 / d2E_dk2 / m_e
+    effective_mass_reduced = h_bar ** 2 / d2E_dk2 / m_e
     return effective_mass_reduced
