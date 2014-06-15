@@ -1,14 +1,16 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 import sys
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import mpltools.style
+mpltools.style.use('ggplot')
 import re
 import pandas as pd
 
 
-if len(sys.argv) == 2 and re.match(r'[.*]', sys.argv[1]):
+if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
     [ylim0, ylim1] = eval(sys.argv[1])
 else:
     ylim0 = -5
@@ -49,7 +51,7 @@ with open('OUTCAR', 'r') as f:
 kp_end_letter_list = head_kp_list_in_cart.split('-')
 
 kp_section_start_end_pair_array = np.zeros((N_sections, 2, 3))
-for section in range(6):
+for section in range(N_sections):
     kp_section_start_end_pair_array[section] = [kp_list[N_kps_per_section * section],
                                                 kp_list[N_kps_per_section * (section + 1) - 1]]
 

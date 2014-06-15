@@ -14,7 +14,7 @@ if [ $1 == scrun ]; then
 
     sed -i "/NPAR/c NPAR = 8"  INPUT/INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
-    sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" INPUT/qsub.parallel
+    sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
     Fast-prep.sh scrun
     cd scrun
     qsub qsub.parallel
@@ -36,10 +36,10 @@ elif [ $1 == dosrun ]; then
         sed -i "/NPAR/c NPAR = 1" INCAR
         sed -i "/LORBIT/c LORBIT = 1"  INCAR
     else
+        sed -i "/NPAR/c NPAR = 8"  INCAR
         sed -i "/LORBIT/c LORBIT = 11"  INCAR
     fi
 
-    sed -i "/NPAR/c NPAR = 8"  INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=04:00:00" qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
     qsub qsub.parallel
