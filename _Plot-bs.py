@@ -8,6 +8,37 @@ import mpltools.style
 mpltools.style.use('ggplot')
 import re
 
+# Effective mass calculation funcitons.
+def find_band_edges(kp_edge, within):
+    # First identify the k-point where band edges are located: kp_edge
+    # Examine valence band edge.
+    print 'The possible valence bands are', \
+        np.where(np.logical_and(E[:, kp_edge] > -within, E[:, kp_edge] < 0))[0]
+    # Examine conduction band edge.
+    print 'The possible conduction bands are', \
+        np.where(np.logical_and(E[:, kp_edge] < within, E[:, kp_edge] > 0))[0]
+
+
+def effective_mass_reduced(band, kp_start, kp_end):
+    h_bar = 1.054571726e-34
+    e = 1.6021176462e-19
+    m_e = 9.10938291e-31
+    scaling_const = 6.3743775177e-10
+
+    # Decide on the fitting range, characterized by indices.
+    selected_kp_array = kp_linearized_array[kp_start:kp_end + 1]
+    selected_energy_array = E[band, kp_start:kp_end + 1]
+    p = np.poly1d(np.polyfit(selected_kp_array, selected_energy_array, 2))
+    axis_fitted = -p[1]/2/p[2]
+    axis_actual = selected_kp_array[selected_energy_array.argmin() if p[2] > 0 else selected_energy_array.argmax()]
+    print "The fitted x coord at energy extrema is {0}, and the actual is {1}.".format(axis_fitted, axis_actual)
+    k_fit = np.linspace(kp_linearized_array[kp_start], kp_linearized_array[kp_end], 200)
+    plt.plot(k_fit, p(k_fit), lw=2)
+
+    d2E_dk2 = e * p[2] / (2 * np.pi / scaling_const) ** 2
+    effective_mass_reduced = h_bar ** 2 / d2E_dk2 / m_e
+    return effective_mass_reduced
+
 
 if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
     [ylim0, ylim1] = eval(sys.argv[1])
@@ -94,36 +125,3 @@ ax.xaxis.set_ticklabels(kp_end_letter_list)
 plt.axhline(0, ls='--', c='k', alpha=0.5)
 plt.ylabel('Energy (eV)')
 plt.savefig('BS.png')
-
-
-# Effective mass calculation funcitons.
-def find_band_edges(kp_edge, within):
-    # First identify the k-point where band edges are located: kp_edge
-    # Examine valence band edge.
-    print 'The possible valence bands are', \
-        np.where(np.logical_and(E[:, kp_edge] > -within, E[:, kp_edge] < 0))[0]
-    # Examine conduction band edge.
-    print 'The possible conduction bands are', \
-        np.where(np.logical_and(E[:, kp_edge] < within, E[:, kp_edge] > 0))[0]
-
-
-def effective_mass_reduced(band, kp_start, kp_end):
-    h_bar = 1.054571726e-34
-    e = 1.6021176462e-19
-    m_e = 9.10938291e-31
-    scaling_const = 6.3743775177e-10
-
-    # Decide on the fitting range, characterized by indices.
-    p = np.poly1d(np.polyfit(kp_linearized_array[kp_start:kp_end + 1], E[band, kp_start:kp_end + 1], 2))
-
-    axis_fitted = -p[1]/2/p[2]
-    axis_actual_choices_array = kp_linearized_array[[kp_start, kp_end]]
-    axis_actual = axis_actual_choices_array[abs(axis_actual_choices_array - axis_fitted).argmin()]
-    print "The fitted x coord at energy extrema is {0}, and the actual is {1}.".format(axis_fitted, axis_actual)
-
-    k_fit = np.linspace(kp_linearized_array[kp_start], kp_linearized_array[kp_end], 200)
-    plt.plot(k_fit, p(k_fit), lw=2)
-
-    d2E_dk2 = e * p[2] / (2 * np.pi / scaling_const) ** 2
-    effective_mass_reduced = h_bar ** 2 / d2E_dk2 / m_e
-    return effective_mass_reduced
