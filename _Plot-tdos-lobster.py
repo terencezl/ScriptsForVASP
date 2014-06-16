@@ -4,15 +4,16 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import re
 
-if len(sys.argv) == 2:
+if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
     axis_lim = eval(sys.argv[1])
 else:
     axis_lim = [-20, 10, 0, 15]
 
 with open('DOSCAR.lobster', 'r') as f:
     DOS_list = f.readlines()
-for i in range(0, len(DOS_list)):
+for i in range(len(DOS_list)):
     DOS_list[i] = DOS_list[i].split()
 
 N_steps = int(DOS_list[5][2])

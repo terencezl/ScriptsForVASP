@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-# Usage: rotator.py '[ions line number as a list]' '[rotation center vector in direct coords as a list]'
+# Usage: _Ions-rotator.py '[ions line number as a list]' '[rotation center vector in direct coords as a list]'
 # '[axis directional vector in cartesian coords as a list(no need to be normalized)]'
 # angle(counter-clockwise) POSCAR_file_name
-# e.g.: rotator.py '[10, 14, 23, 24, 25, 26,27,28]' '[0,0.5,0.75]' '[np.sqrt(2),0,1]' 60 POSCAR
+# e.g.: rotator.py '[23,24,25,26,27,28]' '[0,0.5,0.75]' '[np.sqrt(2),0,1]' 60 POSCAR
 
 import numpy as np
 import sys
@@ -23,9 +23,8 @@ A = np.eye(3) * np.cos(angle) + np.array([[0, -u_z, u_y], [u_z, 0, -u_x], [-u_y,
                                                             [u_x * u_z, u_y * u_z, u_z ** 2]]) * (1 - np.cos(angle))
 
 # open the POSCAR that has ions' position part
-f = open(sys.argv[5], 'r')
-POSCAR = f.readlines()
-f.close()
+with open(sys.argv[5], 'r') as f:
+    POSCAR = f.readlines()
 
 # achieve the basis vectors from POSCAR
 basis_vectors_raw = []
@@ -66,6 +65,5 @@ for i in ions_line_number:
     POSCAR[i] = ions_position_new_raw[count]
     count += 1
 #f = open('POSCAR', 'w')
-f = open(sys.argv[5], 'w')
-f.writelines(POSCAR)
-f.close()
+with open(sys.argv[5], 'w') as f:
+    f.writelines(POSCAR)

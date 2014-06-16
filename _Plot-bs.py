@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import mpltools.style
 mpltools.style.use('ggplot')
 import re
-import pandas as pd
 
 
 if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
@@ -24,8 +23,8 @@ Ef = float(DOSCAR.split()[3])
 
 with open('EIGENVAL', 'r') as f:
     EIGENVAL = f.readlines()
-    for i in range(len(EIGENVAL)):
-        EIGENVAL[i] = EIGENVAL[i].split()
+for i in range(len(EIGENVAL)):
+    EIGENVAL[i] = EIGENVAL[i].split()
 
 # How many KPs in total? Can be found in EIGENVAL, 6th line, 2nd number.
 N_kps = int(EIGENVAL[5][1])
@@ -114,11 +113,15 @@ def effective_mass_reduced(band, kp_start, kp_end):
     m_e = 9.10938291e-31
     scaling_const = 6.3743775177e-10
 
-    df = pd.DataFrame({'E': E[band, :]}, index=pd.Series(kp_linearized_array, name='kp'))
-
     # Decide on the fitting range, characterized by indices.
-    p = np.poly1d(np.polyfit(df.index[kp_start:kp_end + 1], df.E.iloc[kp_start:kp_end + 1], 2))
-    k_fit = np.linspace(df.index[kp_start], df.index[kp_end], 200)
+    p = np.poly1d(np.polyfit(kp_linearized_array[kp_start:kp_end + 1], E[band, kp_start:kp_end + 1], 2))
+
+    axis_fitted = -p[1]/2/p[2]
+    axis_actual_choices_array = kp_linearized_array[[kp_start, kp_end]]
+    axis_actual = axis_actual_choices_array[abs(axis_actual_choices_array - axis_fitted).argmin()]
+    print "The fitted x coord at energy extrema is {0}, and the actual is {1}.".format(axis_fitted, axis_actual)
+
+    k_fit = np.linspace(kp_linearized_array[kp_start], kp_linearized_array[kp_end], 200)
     plt.plot(k_fit, p(k_fit), lw=2)
 
     d2E_dk2 = e * p[2] / (2 * np.pi / scaling_const) ** 2

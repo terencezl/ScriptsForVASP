@@ -4,15 +4,16 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import re
 
-if len(sys.argv) == 2:
+if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
     axis_lim = eval(sys.argv[1])
 # else:
 #    axis_lim = [-20, 10, -15, 15]
 
 with open('COHPCAR.lobster', 'r') as f:
     COHP_list = f.readlines()
-for i in range(0, len(COHP_list)):
+for i in range(len(COHP_list)):
     COHP_list[i] = COHP_list[i].split()
 
 N_steps = int(COHP_list[1][2])

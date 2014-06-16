@@ -4,8 +4,9 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import re
 
-if len(sys.argv) == 3:
+if len(sys.argv) == 3 and re.match(r'\[.*\]', sys.argv[1]):
     atom_1st = int(sys.argv[1])
     atom_2nd = int(sys.argv[2])
 else:
@@ -19,7 +20,7 @@ else:
 
 with open('DOSCAR', 'r') as f:
     DOS_list = f.readlines()
-for i in range(0, len(DOS_list)):
+for i in range(len(DOS_list)):
     DOS_list[i] = DOS_list[i].split()
 
 N_steps = int(DOS_list[5][2])
