@@ -8,6 +8,7 @@ import mpltools.style
 mpltools.style.use('ggplot')
 import re
 
+
 # Effective mass calculation funcitons.
 def find_band_edges(kp_edge, within):
     # First identify the k-point where band edges are located: kp_edge
@@ -68,17 +69,15 @@ N_kps_per_section = int(KPOINTS[1])
 N_sections = N_kps / N_kps_per_section
 
 # Get the start and end point coordinate of each section. From OUTCAR.
-kp_list = [''] * N_kps
+kp_list = np.zeros((N_kps, 3))
 with open('OUTCAR', 'r') as f:
     for line in f:
         if re.match(r".*k-points in units of 2pi/SCALE and weight:.*", line):
-            head_kp_list_in_cart = line.replace(
-                'k-points in units of 2pi/SCALE and weight:', '').strip()
+            kp_end_letter_list = line.replace(
+                'k-points in units of 2pi/SCALE and weight:', '').strip().split('-')
             break
     for kp in range(N_kps):
         kp_list[kp] = f.next().split()[:3]
-
-kp_end_letter_list = head_kp_list_in_cart.split('-')
 
 kp_section_start_end_pair_array = np.zeros((N_sections, 2, 3))
 for section in range(N_sections):
