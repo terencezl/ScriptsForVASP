@@ -6,57 +6,80 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import re
 
-if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
+
+def plot_helper():
+    plt.axhline(y=0, c='k')
+    plt.axvline(x=0, ls='--', c='k')
+    plt.axis([axis_lim[0], axis_lim[1], axis_lim[2], axis_lim[3]])
+    plt.xlabel('Energy (eV)')
+    plt.ylabel('-pCOHP (Arbituary Unit / Unit Cell / eV)')
+    plt.legend(loc=0,  fontsize='x-small')
+    plt.tight_layout()
+
+
+if len(sys.argv) == 3 and re.match(r'\[.*\]', sys.argv[1]) and re.match(r'\d', sys.argv[2]):
     axis_lim = eval(sys.argv[1])
-# else:
-#    axis_lim = [-20, 10, -15, 15]
+    n_bond_to_plot = int(sys.argv[2])
+else:
+    axis_lim = [-25, 10, -2, 5]
+    n_bond_to_plot = 1
 
 with open('COHPCAR.lobster', 'r') as f:
-    COHP_list = f.readlines()
-for i in range(len(COHP_list)):
-    COHP_list[i] = COHP_list[i].split()
+    COHPCAR = f.readlines()
 
-N_steps = int(COHP_list[1][2])
+for N_headerlines, line in enumerate(COHPCAR):
+    if re.match(r'No\.\d*:.*\(.*\)', line):
+        break
+for N_bonds, line in enumerate(COHPCAR[N_headerlines:]):
+    if not re.match(r'No\.\d*:.*\(.*\)', line):
+        break
+data_start_line = N_headerlines + N_bonds
 
-print COHP_list[4]
-if len(COHP_list[5]) == 13:
-    is_spin = True
-elif len(COHP_list[5]) == 5:
-    is_spin = False
+for i in range(len(COHPCAR)):
+    COHPCAR[i] = COHPCAR[i].split()
+
+N_steps = int(COHPCAR[1][2])
+
+with open('OUTCAR', 'r') as f:
+    for line in f:
+        if 'ISPIN' in line:
+            ISPIN = int(line.split()[2])
+
+if ISPIN == 2:
+    col_names = ['E', 'avg_up', 'avg_integrated_up']
+    for n_bond in range(1, N_bonds + 1):
+        col_names.extend(['No.{0}_up'.format(n_bond), 'No.{0}_integrated_up'.format(n_bond)])
+    col_names.extend(['avg_down', 'avg_integrated_down'])
+    for n_bond in range(1, N_bonds + 1):
+        col_names.extend(['No.{0}_down'.format(n_bond), 'No.{0}_integrated_down'.format(n_bond)])
+    COHP_data = np.array(COHPCAR[data_start_line:data_start_line + N_steps], dtype=float)
+
+    col_up = n_bond_to_plot * 2 + 1
+    col_down = (n_bond_to_plot + N_bonds + 1) * 2 + 1
+
+    # Plot the separated COHP
+    plt.plot(COHP_data[:, 0], -COHP_data[:, col_up],
+             label=col_names[col_up])
+    plt.plot(COHP_data[:, 0], -COHP_data[:, col_down],
+             label=col_names[col_down])
+    plot_helper()
+    plt.savefig('COHP-spin-separated.png')
+    plt.close()
+
+    # Plot the combined COHP
+    plt.plot(COHP_data[:, 0], -COHP_data[:, col_up] - COHP_data[:, col_down])
+    plot_helper()
+    plt.savefig('COHP-spin-combined.png')
+    plt.close()
+
 else:
-    raise Exception("Can't read COHPCAR.lobster properly!")
+    col_names = ['E', 'avg', 'avg_integrated']
+    for n_bond in range(1, N_bonds + 1):
+        col_names.extend(['No.{0}'.format(n_bond), 'No.{0}_integrated'.format(n_bond)])
 
-if is_spin:
-    E = np.zeros(N_steps)
-    cohp1 = np.zeros(N_steps)
-    cohp2 = np.zeros(N_steps)
-    for i in range(0, N_steps):
-        E[i] = float(COHP_list[i + 5][0])
-        cohp1[i] = float(COHP_list[i + 5][3]) + float(COHP_list[i + 5][9])
-        cohp2[i] = float(COHP_list[i + 5][5]) + float(COHP_list[i + 5][11])
+    COHP_data = np.array(COHPCAR[data_start_line:data_start_line + N_steps], dtype=float)
 
-    plt.plot(E, -cohp1, label="M-M")
-    plt.plot(E, -cohp2, label="M-N")
-    plt.axhline(y=0, color='k')
-    plt.axvline(x=0, ls='--', color='k')
-    plt.axis([axis_lim[0], axis_lim[1], axis_lim[2], axis_lim[3]])
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('-COHP (Arbituary Unit / Unit Cell / eV)')
+    plt.plot(COHP_data[:, 0], -COHP_data[:, n_bond_to_plot * 2 + 1])
+    plot_helper()
     plt.savefig('COHP.png')
     plt.close()
-
-elif not is_spin:
-    E = np.zeros(N_steps)
-    cohp = np.zeros(N_steps)
-    for i in range(0, N_steps):
-        E[i] = float(COHP_list[i + 4][0])
-        cohp[i] = float(COHP_list[i + 4][1])
-    plt.plot(E, -cohp)
-    plt.axhline(y=0, color='k')
-    plt.axvline(x=0, ls='--', color='k')
-    plt.axis([axis_lim[0], axis_lim[1], axis_lim[2], axis_lim[3]])
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('-COHP (Arbituary Unit / Unit Cell / eV)')
-    plt.savefig('COHP.png')
-    plt.close()
-

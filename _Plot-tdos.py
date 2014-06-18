@@ -1,24 +1,33 @@
 #!/usr/bin/env python
 import sys
 import numpy as np
-import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import re
 
+
+def plot_helper():
+    plt.axvline(x=0, ls='--', c='k')
+    plt.axis([axis_lim[0], axis_lim[1], 0, axis_lim[2]])
+    plt.xlabel('Energy (eV)')
+    plt.ylabel('TDOS (States / Unit Cell / eV)')
+    plt.legend(loc=0,  fontsize='x-small')
+    plt.tight_layout()
+
+
 if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
     axis_lim = eval(sys.argv[1])
 else:
-    axis_lim = [-25, 10, 0, 15]
+    axis_lim = [-25, 10, 10]
 
 with open('DOSCAR', 'r') as f:
-    DOS_list = f.readlines()
-for i in range(len(DOS_list)):
-    DOS_list[i] = DOS_list[i].split()
+    DOSCAR = f.readlines()
+for i in range(len(DOSCAR)):
+    DOSCAR[i] = DOSCAR[i].split()
 
-N_steps = int(DOS_list[5][2])
-Ef = float(DOS_list[5][3])
+N_steps = int(DOSCAR[5][2])
+Ef = float(DOSCAR[5][3])
 
 with open('OUTCAR', 'r') as f:
     for line in f:
@@ -26,60 +35,41 @@ with open('OUTCAR', 'r') as f:
             ISPIN = int(line.split()[2])
 
 if ISPIN == 2:
-    # E = np.zeros(N_steps)
-    # dos_tot_up = np.zeros(N_steps)
-    # dos_tot_down = np.zeros(N_steps)
-    # dos_int_up = np.zeros(N_steps)
-    # dos_int_down = np.zeros(N_steps)
-    # for i in range(0, N_steps):
-    #     E[i] = float(DOS_list[i + 6][0]) - Ef
-    #     dos_tot_up[i] = float(DOS_list[i + 6][1])
-    #     dos_tot_down[i] = float(DOS_list[i + 6][2])
-    #     dos_int_up[i] = float(DOS_list[i + 6][3])
-    #     dos_int_down[i] = float(DOS_list[i + 6][4])
     col_names = ['E', 'total_up', 'total_down', 'integrated_up', 'integrated_down']
-    DOS_data = pd.read_csv('DOSCAR', sep=' *', names=col_names, header=None, skiprows=6, nrows=N_steps)
-    DOS_data['E'] -= Ef
+    DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
+    DOS_data[:, 0] -= Ef
 
-    plt.plot(DOS_data['E'], DOS_data['total_up'])
-    plt.plot(DOS_data['E'], -DOS_data['total_down'])
-    plt.axhline(y=0)
-    plt.axis([axis_lim[0], axis_lim[1], -axis_lim[3] / 2., axis_lim[3] / 2.])
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('TDOS (States / Unit Cell / eV)')
+    # Plot the separated TDOS
+    plt.plot(DOS_data[:, 0], DOS_data[:, 1], label='spin up')
+    plt.plot(DOS_data[:, 0], DOS_data[:, 2], label='spin down')
+    plot_helper()
     plt.savefig('TDOS-spin-separated.png')
     plt.close()
 
-    plt.plot(DOS_data['E'], DOS_data['total_up'] + DOS_data['total_down'])
-    plt.axis([axis_lim[0], axis_lim[1], 0, axis_lim[3]])
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('TDOS (States / Unit Cell / eV)')
-    plt.savefig('TDOS-spin-total.png')
+    # Plot the combined TDOS
+    plt.plot(DOS_data[:, 0], DOS_data[:, 1] + DOS_data[:, 2])
+    plot_helper()
+    plt.savefig('TDOS-spin-combined.png')
+    plt.close()
 
-    DOS_data.to_csv('TDOS.txt', sep='\t', float_format='%12.6f', index=False)
-
-    slice = DOS_data['integrated_up'].iat[abs(DOS_data['E'] - 0.2).argmin()] - \
-            DOS_data['integrated_up'].iat[abs(DOS_data['E'] + 0.2).argmin()] + \
-            DOS_data['integrated_down'].iat[abs(DOS_data['E'] - 0.2).argmin()] - \
-            DOS_data['integrated_down'].iat[abs(DOS_data['E'] + 0.2).argmin()]
-
-    np.savetxt('TDOS@Ef.txt', [slice], '%.6f')
+    np.savetxt('TDOS.txt', DOS_data, '%15.6E', header=' '.join(col_names))
+    energy_slice = DOS_data[abs(DOS_data[0] - 0.2).argmin(), 3] - \
+            DOS_data[abs(DOS_data[0] + 0.2).argmin(), 3] + \
+            DOS_data[abs(DOS_data[0] - 0.2).argmin(), 4] - \
+            DOS_data[abs(DOS_data[0] + 0.2).argmin(), 4]
+    np.savetxt('TDOS@Ef.txt', [energy_slice], '%15.6E')
 
 else:
-    E = np.zeros(N_steps)
-    dos_tot = np.zeros(N_steps)
-    dos_int = np.zeros(N_steps)
-    for i in range(0, N_steps):
-        E[i] = float(DOS_list[i + 6][0]) - Ef
-        dos_tot[i] = float(DOS_list[i + 6][1])
-        dos_int[i] = float(DOS_list[i + 6][2])
-    plt.plot(E, dos_tot)
-    plt.axis([axis_lim[0], axis_lim[1], 0, axis_lim[3]])
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('TDOS (States / Unit Cell / eV)')
-    plt.savefig('TDOS.png')
+    col_names = ['E', 'total', 'integrated']
+    DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
+    DOS_data[:, 0] -= Ef
 
-    table = np.column_stack((E, dos_tot))
-    np.savetxt('TDOS.txt', table, '%.6f', '\t')
-    slice = dos_int[np.abs(np.array(E) - 0.2).argmin()] - dos_int[np.abs(np.array(E) + 0.2).argmin()]
-    np.savetxt('TDOS@Ef.txt', [slice], '%.6f')
+    plt.plot(DOS_data[:, 0], DOS_data[:, 1])
+    plot_helper()
+    plt.savefig('TDOS.png')
+    plt.close()
+
+    np.savetxt('TDOS.txt', DOS_data, '%15.6E', header=' '.join(col_names))
+    energy_slice = DOS_data[abs(DOS_data[0] - 0.2).argmin(), 2] - \
+                   DOS_data[abs(DOS_data[0] + 0.2).argmin(), 2]
+    np.savetxt('TDOS@Ef.txt', [energy_slice], '%15.6E')

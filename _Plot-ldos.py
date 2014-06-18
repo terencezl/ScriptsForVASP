@@ -6,331 +6,151 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import re
 
-if len(sys.argv) == 3 and re.match(r'\[.*\]', sys.argv[1]):
-    atom_1st = int(sys.argv[1])
-    atom_2nd = int(sys.argv[2])
-else:
-    atom_1st = 1
-    atom_2nd = 5
 
-if len(sys.argv) == 2:
+def plot_helper():
+    plt.axhline(y=0, c='k')
+    plt.axvline(x=0, ls='--', c='k')
+    plt.axis([axis_lim[0], axis_lim[1], -axis_lim[2], axis_lim[2]])
+    plt.xlabel('Energy (eV)')
+    plt.ylabel('LDOS (States / Unit Cell / eV)')
+    plt.legend(loc=0, fontsize='x-small')
+    plt.tight_layout()
+
+
+if len(sys.argv) == 3 and re.match(r'\[.*\]', sys.argv[1]) and re.match(r'\[.*\]', sys.argv[2]):
     axis_lim = eval(sys.argv[1])
+    atom_1, atom_2 = eval(sys.argv[2])
 else:
-    axis_lim = [-20, 10, -10, 10]
+    axis_lim = [-20, 10, 2]
+    atom_1, atom_2 = 1, 2
 
 with open('DOSCAR', 'r') as f:
-    DOS_list = f.readlines()
-for i in range(len(DOS_list)):
-    DOS_list[i] = DOS_list[i].split()
+    DOSCAR = f.readlines()
+for i in range(len(DOSCAR)):
+    DOSCAR[i] = DOSCAR[i].split()
 
-N_steps = int(DOS_list[5][2])
-Ef = float(DOS_list[5][3])
+N_steps = int(DOSCAR[5][2])
+Ef = float(DOSCAR[5][3])
 
-if len(DOS_list[6]) == 5:
-    is_spin = True
-    if len(DOS_list[6 + N_steps + 1]) == 19:
-        is_m_decomposed = True
-    elif len(DOS_list[6 + N_steps + 1]) == 7:
-        is_m_decomposed = False
-    else:
-        raise Exception("Can't read DOSCAR properly!")
-elif len(DOS_list[6]) == 3:
-    is_spin = False
-    if len(DOS_list[6 + N_steps + 1]) == 10:
-        is_m_decomposed = True
-    elif len(DOS_list[6 + N_steps + 1]) == 4:
-        is_m_decomposed = False
-    else:
-        raise Exception("Can't read DOSCAR properly!")
-else:
-    raise Exception("Can't read DOSCAR properly!")
+with open('OUTCAR', 'r') as f:
+    for line in f:
+        if 'ISPIN' in line:
+            ISPIN = int(line.split()[2])
+        if 'LORBIT' in line:
+            LORBIT = int(line.split()[2])
 
-if is_spin and is_m_decomposed:
-    E = np.zeros(N_steps)
-    dos1_s = np.zeros(N_steps)
-    dos1_p_y = np.zeros(N_steps)
-    dos1_p_z = np.zeros(N_steps)
-    dos1_p_x = np.zeros(N_steps)
-    dos1_d_xy = np.zeros(N_steps)
-    dos1_d_yz = np.zeros(N_steps)
-    dos1_d_z2 = np.zeros(N_steps)
-    dos1_d_xz = np.zeros(N_steps)
-    dos1_d_x2_y2 = np.zeros(N_steps)
-    dos2_s = np.zeros(N_steps)
-    dos2_p_y = np.zeros(N_steps)
-    dos2_p_z = np.zeros(N_steps)
-    dos2_p_x = np.zeros(N_steps)
-    dos2_d_xy = np.zeros(N_steps)
-    dos2_d_yz = np.zeros(N_steps)
-    dos2_d_z2 = np.zeros(N_steps)
-    dos2_d_xz = np.zeros(N_steps)
-    dos2_d_x2_y2 = np.zeros(N_steps)
+if ISPIN == 2 and (LORBIT == 11 or LORBIT == 1):
+    col_names = ['E', 's_up', 's_down', 'p_y_up', 'p_y_down', 'p_z_up', 'p_z_down', 'p_x_up', 'p_x_down',
+                 'd_xy_up', 'd_xy_down', 'd_yz_up', 'd_yz_down', 'd_z2_up', 'd_z2_down',
+                 'd_xz_up', 'd_xz_down', 'd_x2y2_up', 'd_x2y2_down']
+    DOS_data_1 = np.array(DOSCAR[(6 + (N_steps + 1) * atom_1):(6 + (N_steps + 1) * atom_1 + N_steps)], dtype=float)
+    DOS_data_1[:, 0] -= Ef
+    DOS_data_2 = np.array(DOSCAR[(6 + (N_steps + 1) * atom_2):(6 + (N_steps + 1) * atom_2 + N_steps)], dtype=float)
+    DOS_data_2[:, 0] -= Ef
 
-    for i in range(0, N_steps):
-        E[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][0]) - Ef
-        dos1_s[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][1]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][2])
-        dos1_p_y[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][3]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][4])
-        dos1_p_z[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][5]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][6])
-        dos1_p_x[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][7]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][8])
-        dos1_d_xy[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][9]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][10])
-        dos1_d_yz[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][11]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][12])
-        dos1_d_z2[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][13]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][14])
-        dos1_d_xz[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][15]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][16])
-        dos1_d_x2_y2[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][17]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_1st + i][18])
-
-        dos2_s[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][1]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][2])
-        dos2_p_y[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][3]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][4])
-        dos2_p_z[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][5]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][6])
-        dos2_p_x[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][7]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][8])
-        dos2_d_xy[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][9]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][10])
-        dos2_d_yz[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][11]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][12])
-        dos2_d_z2[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][13]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][14])
-        dos2_d_xz[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][15]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][16])
-        dos2_d_x2_y2[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][17]) + float(
-            DOS_list[6 + (N_steps + 1) * atom_2nd + i][18])
-
-
-        # E = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 0], dtype=float ) - Ef
-        # dos1_s = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 1], dtype=float ) + \
-        # np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 2], dtype=float )
-        # dos1_p_y = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 3], dtype=float ) + \
-        # np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 4], dtype=float )
-        # dos1_p_z = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 5], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 6], dtype=float )
-        # dos1_p_x = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 7], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 8], dtype=float )
-        # dos1_d_xy = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 9], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 10], dtype=float )
-        # dos1_d_yz = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 11], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 12], dtype=float )
-        # dos1_d_z2 = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 13], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 14], dtype=float )
-        # dos1_d_xz = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 15], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 16], dtype=float )
-        # dos1_d_x2_y2 = np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 17], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_1st):(6+(N_steps+1)*atom_1st+N_steps), 18], dtype=float )
-
-        # dos2_s = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 1], dtype=float ) + \
-        #          np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 2], dtype=float )
-        # dos2_p_y = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 3], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 4], dtype=float )
-        # dos2_p_z = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 5], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 6], dtype=float )
-        # dos2_p_x = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 7], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 8], dtype=float )
-        # dos2_d_xy = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 9], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 10], dtype=float )
-        # dos2_d_yz = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 11], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 12], dtype=float )
-        # dos2_d_z2 = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 13], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 14], dtype=float )
-        # dos2_d_xz = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 15], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 16], dtype=float )
-        # dos2_d_x2_y2 = np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 17], dtype=float ) + \
-        #            np.array( DOSCAR_list[(6+(N_steps+1)*atom_2nd):(6+(N_steps+1)*atom_2nd+N_steps), 18], dtype=float )
-
-        # plt.plot(E, dos1_s, label= str(atom_1st) + '_s')
-        #   plt.plot(E, dos1_p_y, label= str(atom_1st) + '_p_y')
-        #   plt.plot(E, dos1_p_z, label= str(atom_1st) + '_p_z')
-        #   plt.plot(E, dos1_p_x, label= str(atom_1st) + '_p_x')
-    plt.plot(E, dos1_d_xy, '--', label=str(atom_1st) + '_d_xy')
-    plt.plot(E, dos1_d_yz, '--', label=str(atom_1st) + '_d_yz')
-    plt.plot(E, dos1_d_xz, '--', label=str(atom_1st) + '_d_xz')
-    plt.plot(E, -dos1_d_z2, '--', label=str(atom_1st) + '_d_z2')
-    plt.plot(E, -dos1_d_x2_y2, '--', label=str(atom_1st) + '_d_x2_y2')
-    plt.plot(E, dos1_d_yz + dos1_d_xy + dos1_d_xz, 'k', label=str(atom_1st) + '_d_t2g')
-    plt.plot(E, -dos1_d_z2 - dos1_d_x2_y2, 'k', label=str(atom_1st) + '_d_eg')
-    plt.axhline(y=0)
-    plt.axvline(x=0, ls='--')
-
-    # plt.plot(E, -dos2_s, label= str(atom_2nd) + '_s')
-    # plt.plot(E, -dos2_p_y, label= str(atom_2nd) + '_p_y')
-    #   plt.plot(E, -dos2_p_z, label= str(atom_2nd) + '_p_z')
-    #   plt.plot(E, -dos2_p_x, label= str(atom_2nd) + '_p_x')
-    #   plt.plot(E, -dos2_d_xy, label= str(atom_2nd) + '_d_xy')
-    #   plt.plot(E, -dos2_d_yz, label= str(atom_2nd) + '_d_yz')
-    #   plt.plot(E, -dos2_d_z2, label= str(atom_2nd) + '_d_z2')
-    #   plt.plot(E, -dos2_d_xz, label= str(atom_2nd) + '_d_xz')
-    #   plt.plot(E, -dos2_d_x2_y2, label= str(atom_2nd) + '_d_x2_y2')
-
-    plt.legend(loc=0)
-    plt.axis([axis_lim[0], axis_lim[1], axis_lim[2], axis_lim[3]])
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('LDOS (State / atom / eV)')
-    plt.savefig('LDOS.png')
-    #   plt.show()
-
-
-    # # spin-up
-    # plt.plot(E, dos1_up_s, label= str(atom_1st) + '_s')
-    # plt.plot(E, dos1_up_p, label= str(atom_1st) + '_p')
-    # plt.plot(E, dos1_up_d, label= str(atom_1st) + '_d')
-    # plt.plot(E, -dos2_up_s, label= str(atom_2nd) + '_s')
-    # plt.plot(E, -dos2_up_p, label= str(atom_2nd) + '_p')
-    # plt.plot(E, -dos2_up_d, label= str(atom_2nd) + '_d')
-    # plt.legend(loc=0)
-    # plt.axis([axis_lim[0], axis_lim[1], axis_lim[2]/2., axis_lim[3]/2.])
-    # plt.xlabel('Energy (eV)')
-    # plt.ylabel('LDOS (State / atom / eV)')
-    # plt.savefig('LDOS-spin-up.png')
-    # plt.close()
-
-    # # spin-down
-    # plt.plot(E, dos1_down_s, label= str(atom_1st) + '_s')
-    # plt.plot(E, dos1_down_p, label= str(atom_1st) + '_p')
-    # plt.plot(E, dos1_down_d, label= str(atom_1st) + '_d')
-    # plt.plot(E, -dos2_down_s, label= str(atom_2nd) + '_s')
-    # plt.plot(E, -dos2_down_p, label= str(atom_2nd) + '_p')
-    # plt.plot(E, -dos2_down_d, label= str(atom_2nd) + '_d')
-    # plt.legend(loc=0)
-    # plt.axis([axis_lim[0], axis_lim[1], axis_lim[2]/2., axis_lim[3]/2.])
-    # plt.xlabel('Energy (eV)')
-    # plt.ylabel('LDOS (State / atom / eV)')
-    # plt.savefig('LDOS-spin-down.png')
-    # plt.close()
-
-    # # spin-total
-    # plt.plot(E, dos1_up_s + dos1_down_s, label= str(atom_1st) + '_s')
-    # plt.plot(E, dos1_up_p + dos1_down_p, label= str(atom_1st) + '_p')
-    # plt.plot(E, dos1_up_d + dos1_down_d, label= str(atom_1st) + '_d')
-    # plt.plot(E, -dos2_up_s - dos2_down_s, label= str(atom_2nd) + '_s')
-    # plt.plot(E, -dos2_up_p - dos2_down_p, label= str(atom_2nd) + '_p')
-    # plt.plot(E, -dos2_up_d - dos2_down_d, label= str(atom_2nd) + '_d')
-    # plt.legend(loc=0)
-    # plt.axis(axis_lim)
-    # plt.xlabel('Energy (eV)')
-    # plt.ylabel('LDOS (State / atom / eV)')
-    # plt.savefig('LDOS-spin-total.png')
-    # plt.close()
-
-
-
-# table = np.column_stack((E, dos1_s, dos1_p, dos1_d, dos2_s, dos2_p, dos2_d))
-# np.savetxt('LDOS.txt', table, '%.6f', '\t')
-
-elif is_spin and not is_m_decomposed:
-    E = np.zeros(N_steps)
-    dos1_up_s = np.zeros(N_steps)
-    dos1_up_p = np.zeros(N_steps)
-    dos1_up_d = np.zeros(N_steps)
-    dos1_down_s = np.zeros(N_steps)
-    dos1_down_p = np.zeros(N_steps)
-    dos1_down_d = np.zeros(N_steps)
-    dos2_up_s = np.zeros(N_steps)
-    dos2_up_p = np.zeros(N_steps)
-    dos2_up_d = np.zeros(N_steps)
-    dos2_down_s = np.zeros(N_steps)
-    dos2_down_p = np.zeros(N_steps)
-    dos2_down_d = np.zeros(N_steps)
-    for i in range(0, N_steps):
-        E[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][0]) - Ef
-        dos1_up_s[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][1])
-        dos1_up_p[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][3])
-        dos1_up_d[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][5])
-        dos1_down_s[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][2])
-        dos1_down_p[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][4])
-        dos1_down_d[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][6])
-        dos2_up_s[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][1])
-        dos2_up_p[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][3])
-        dos2_up_d[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][5])
-        dos2_down_s[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][2])
-        dos2_down_p[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][4])
-        dos2_down_d[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][6])
-
-    # spin-up
-    plt.plot(E, dos1_up_s, label=str(atom_1st) + '_s')
-    plt.plot(E, dos1_up_p, label=str(atom_1st) + '_p')
-    plt.plot(E, dos1_up_d, label=str(atom_1st) + '_d')
-    plt.plot(E, -dos2_up_s, label=str(atom_2nd) + '_s')
-    plt.plot(E, -dos2_up_p, label=str(atom_2nd) + '_p')
-    plt.plot(E, -dos2_up_d, label=str(atom_2nd) + '_d')
-    plt.legend(loc=0)
-    plt.axis([axis_lim[0], axis_lim[1], axis_lim[2] / 2., axis_lim[3] / 2.])
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('LDOS (State / atom / eV)')
+    # Spin up for both atoms, above and below
+    for i in range(1, 18, 2):
+        plt.plot(DOS_data_1[:, 0], DOS_data_1[:, i], label=col_names[i])
+    ax = plt.gca()
+    ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
+    for i in range(1, 18, 2):
+        plt.plot(DOS_data_2[:, 0], -DOS_data_2[:, i])
+    plot_helper()
     plt.savefig('LDOS-spin-up.png')
     plt.close()
 
-    # spin-down
-    plt.plot(E, dos1_down_s, label=str(atom_1st) + '_s')
-    plt.plot(E, dos1_down_p, label=str(atom_1st) + '_p')
-    plt.plot(E, dos1_down_d, label=str(atom_1st) + '_d')
-    plt.plot(E, -dos2_down_s, label=str(atom_2nd) + '_s')
-    plt.plot(E, -dos2_down_p, label=str(atom_2nd) + '_p')
-    plt.plot(E, -dos2_down_d, label=str(atom_2nd) + '_d')
-    plt.legend(loc=0)
-    plt.axis([axis_lim[0], axis_lim[1], axis_lim[2] / 2., axis_lim[3] / 2.])
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('LDOS (State / atom / eV)')
+    # Spin down for both atoms, above and below
+    for i in range(1, 18, 2):
+        plt.plot(DOS_data_1[:, 0], DOS_data_1[:, i + 1], label=col_names[i + 1])
+    ax = plt.gca()
+    ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
+    for i in range(1, 18, 2):
+        plt.plot(DOS_data_2[:, 0], -DOS_data_2[:, i + 1])
+    plot_helper()
     plt.savefig('LDOS-spin-down.png')
     plt.close()
 
-    # spin-total
-    plt.plot(E, dos1_up_s + dos1_down_s, label=str(atom_1st) + '_s')
-    plt.plot(E, dos1_up_p + dos1_down_p, label=str(atom_1st) + '_p')
-    plt.plot(E, dos1_up_d + dos1_down_d, label=str(atom_1st) + '_d')
-    plt.plot(E, -dos2_up_s - dos2_down_s, label=str(atom_2nd) + '_s')
-    plt.plot(E, -dos2_up_p - dos2_down_p, label=str(atom_2nd) + '_p')
-    plt.plot(E, -dos2_up_d - dos2_down_d, label=str(atom_2nd) + '_d')
-    plt.legend(loc=0)
-    plt.axis(axis_lim)
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('LDOS (State / atom / eV)')
-    plt.savefig('LDOS-spin-total.png')
+    # Spin up + down for both atoms, above and below
+    for i in range(1, 18, 2):
+        plt.plot(DOS_data_1[:, 0], DOS_data_1[:, i] + DOS_data_1[:, i + 1], label=col_names[i] + '+' + col_names[i + 1])
+    ax = plt.gca()
+    ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
+    for i in range(1, 18, 2):
+        plt.plot(DOS_data_2[:, 0], -DOS_data_2[:, i] - DOS_data_1[:, i + 1])
+    plot_helper()
+    plt.savefig('LDOS-spin-combined.png')
     plt.close()
 
-#    table = np.column_stack((E, dos1_s, dos1_p, dos1_d, dos2_s, dos2_p, dos2_d))
-#    np.savetxt('LDOS.txt', table, '%.6f', '\t')
+elif ISPIN == 2 and (LORBIT == 10 or LORBIT == 0):
+    col_names = ['E', 's_up', 's_down', 'p_up', 'p_down', 'd_up', 'd_down']
+    DOS_data_1 = np.array(DOSCAR[(6 + (N_steps + 1) * atom_1):(6 + (N_steps + 1) * atom_1 + N_steps)], dtype=float)
+    DOS_data_1[:, 0] -= Ef
+    DOS_data_2 = np.array(DOSCAR[(6 + (N_steps + 1) * atom_2):(6 + (N_steps + 1) * atom_2 + N_steps)], dtype=float)
+    DOS_data_2[:, 0] -= Ef
 
-elif not is_spin and is_m_decomposed:
-    pass
-
-elif not is_spin and not is_m_decomposed:
-    E = np.zeros(N_steps)
-    dos1_s = np.zeros(N_steps)
-    dos1_p = np.zeros(N_steps)
-    dos1_d = np.zeros(N_steps)
-    dos2_s = np.zeros(N_steps)
-    dos2_p = np.zeros(N_steps)
-    dos2_d = np.zeros(N_steps)
-    for i in range(0, N_steps):
-        E[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][0]) - Ef
-        dos1_s[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][1])
-        dos1_p[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][2])
-        dos1_d[i] = float(DOS_list[6 + (N_steps + 1) * atom_1st + i][3])
-        dos2_s[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][1])
-        dos2_p[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][2])
-        dos2_d[i] = float(DOS_list[6 + (N_steps + 1) * atom_2nd + i][3])
-
-    plt.plot(E, dos1_s, label=str(atom_1st) + '_s')
-    plt.plot(E, dos1_p, label=str(atom_1st) + '_p')
-    plt.plot(E, dos1_d, label=str(atom_1st) + '_d')
-    plt.plot(E, -dos2_s, label=str(atom_2nd) + '_s')
-    plt.plot(E, -dos2_p, label=str(atom_2nd) + '_p')
-    plt.plot(E, -dos2_d, label=str(atom_2nd) + '_d')
-    plt.legend(loc=0)
-    plt.axis(axis_lim)
-    plt.xlabel('Energy (eV)')
-    plt.ylabel('LDOS (State / atom / eV)')
+    # Spin up for both atoms, above and below
+    for i in range(1, 6, 2):
+        plt.plot(DOS_data_1[:, 0], DOS_data_1[:, i], label=col_names[i])
+    ax = plt.gca()
+    ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
+    for i in range(1, 6, 2):
+        plt.plot(DOS_data_2[:, 0], -DOS_data_2[:, i])
+    plot_helper()
     plt.savefig('LDOS-spin-up.png')
     plt.close()
 
-# table = np.column_stack((E, dos1_s, dos1_p, dos1_d, dos2_s, dos2_p, dos2_d))
-# np.savetxt('LDOS.txt', table, '%.6f', '\t')
+    # Spin down for both atoms, above and below
+    for i in range(1, 6, 2):
+        plt.plot(DOS_data_1[:, 0], DOS_data_1[:, i + 1], label=col_names[i + 1])
+    ax = plt.gca()
+    ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
+    for i in range(1, 6, 2):
+        plt.plot(DOS_data_2[:, 0], -DOS_data_2[:, i + 1])
+    plot_helper()
+    plt.savefig('LDOS-spin-down.png')
+    plt.close()
+
+    # Spin up + down for both atoms, above and below
+    for i in range(1, 6, 2):
+        plt.plot(DOS_data_1[:, 0], DOS_data_1[:, i] + DOS_data_1[:, i + 1], label=col_names[i] + '+' + col_names[i + 1])
+    ax = plt.gca()
+    ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
+    for i in range(1, 6, 2):
+        plt.plot(DOS_data_2[:, 0], -DOS_data_2[:, i] - DOS_data_1[:, i + 1])
+    plot_helper()
+    plt.savefig('LDOS-spin-combined.png')
+    plt.close()
+
+elif ISPIN == 1 and (LORBIT == 11 or LORBIT == 1):
+    col_names = ['E', 's', 'p_y', 'p_z', 'p_x', 'd_xy', 'd_yz', 'd_z2', 'd_xz', 'd_x2y2']
+    DOS_data_1 = np.array(DOSCAR[(6 + (N_steps + 1) * atom_1):(6 + (N_steps + 1) * atom_1 + N_steps)], dtype=float)
+    DOS_data_1[:, 0] -= Ef
+    DOS_data_2 = np.array(DOSCAR[(6 + (N_steps + 1) * atom_2):(6 + (N_steps + 1) * atom_2 + N_steps)], dtype=float)
+    DOS_data_2[:, 0] -= Ef
+
+    for i in range(1, 10):
+        plt.plot(DOS_data_1[:, 0], DOS_data_1[:, i], label=col_names[i])
+    ax = plt.gca()
+    ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
+    for i in range(1, 10):
+        plt.plot(DOS_data_2[:, 0], -DOS_data_2[:, i])
+    plot_helper()
+    plt.savefig('LDOS.png')
+    plt.close()
+
+elif ISPIN == 1 and (LORBIT == 10 or LORBIT == 0):
+    col_names = ['E', 's', 'p', 'd']
+    DOS_data_1 = np.array(DOSCAR[(6 + (N_steps + 1) * atom_1):(6 + (N_steps + 1) * atom_1 + N_steps)], dtype=float)
+    DOS_data_1[:, 0] -= Ef
+    DOS_data_2 = np.array(DOSCAR[(6 + (N_steps + 1) * atom_2):(6 + (N_steps + 1) * atom_2 + N_steps)], dtype=float)
+    DOS_data_2[:, 0] -= Ef
+
+    for i in range(1, 4):
+        plt.plot(DOS_data_1[:, 0], DOS_data_1[:, i], label=col_names[i])
+    ax = plt.gca()
+    ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
+    for i in range(1, 4):
+        plt.plot(DOS_data_2[:, 0], -DOS_data_2[:, i])
+    plot_helper()
+    plt.savefig('LDOS.png')
+    plt.close()
