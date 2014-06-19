@@ -80,7 +80,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
         data_line_count=$(($data_line_count + 1))
     done
 
-    _Display-fit.py $test_type 5 $((5 + data_line_count)) >> $fname
+    _display_fit.py $test_type 5 $((5 + data_line_count)) >> $fname
 
 elif [[ $test_type == "lctest" ]]; then
     dir_list=$(echo -e ${dir_list// /\\n} | sort -n)
@@ -102,7 +102,7 @@ elif [[ $test_type == "lctest" ]]; then
     echo '' >> $fname
     if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
     if [ "$entropy_converge_flag" ]; then echo -e "!Entropy doesn't converge during$entropy_converge_flag" | tee -a $fname; echo '' >> $fname; fi
-    _Display-fit.py $test_type 4 $((4 + data_line_count)) >> $fname
+    _display_fit.py $test_type 4 $((4 + data_line_count)) >> $fname
     grep "!Equilibrium point is out of the considered range!" $fname
     grep "R-squared is" $fname
     grep "Equilibrium scaling factor is" $fname
@@ -145,7 +145,7 @@ elif [[ $test_type == "rttest" ]]; then
     echo '' >> $fname
     if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
     if [ "$entropy_converge_flag" ]; then echo -e "!Entropy doesn't converge during$entropy_converge_flag" | tee -a $fname; echo '' >> $fname; fi
-    _Display-fit.py $test_type 4 $((4 + data_line_count)) >> $fname
+    _display_fit.py $test_type 4 $((4 + data_line_count)) >> $fname
     grep "!Equilibrium point is out of the considered range!" $fname
     grep "R-squared is" $fname
     grep "Equilibrium ratio is" $fname
@@ -173,7 +173,7 @@ elif [[ $test_type == "agltest" ]]; then
     echo '' >> $fname
     if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
     if [ "$entropy_converge_flag" ]; then echo -e "!Entropy doesn't converge during$entropy_converge_flag" | tee -a $fname; echo '' >> $fname; fi
-    _Display-fit.py $test_type 4 $((4 + data_line_count)) >> $fname
+    _display_fit.py $test_type 4 $((4 + data_line_count)) >> $fname
     grep "R-squared is" $fname
     grep "Minimal total energy is" $fname
 
@@ -237,7 +237,7 @@ elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
     echo '' >> $fname
     if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
     if [ "$entropy_converge_flag" ]; then echo -e "!Entropy doesn't converge during$entropy_converge_flag" | tee -a $fname; echo '' >> $fname; fi
-    _Display-fit.py $test_type 4 $((4 + data_line_count)) >> $fname
+    _display_fit.py $test_type 4 $((4 + data_line_count)) >> $fname
 
     grep "R-squared is" $fname
 

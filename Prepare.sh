@@ -147,7 +147,7 @@ elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
         cp ../../INPUT/qsub.parallel .
         qsub_replacer qsub.parallel
         if [[ "$n" == *n ]]; then n=-${n%n}; fi
-        _Prepare-strain.py $test_type $2 $n
+        _prepare_strain.py $test_type $2 $n
         cd ..
     done
 

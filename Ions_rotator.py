@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Usage: _Ions-rotator.py '[ions line number as a list]' '[rotation center vector in direct coords as a list]'
+# Usage: Ions_rotator.py '[ions line number as a list]' '[rotation center vector in direct coords as a list]'
 # '[axis directional vector in cartesian coords as a list(no need to be normalized)]'
 # angle(counter-clockwise) POSCAR_file_name
 # e.g.: rotator.py '[23,24,25,26,27,28]' '[0,0.5,0.75]' '[np.sqrt(2),0,1]' 60 POSCAR

@@ -39,7 +39,6 @@ elif [ $1 == disp-solve ]; then
 
 elif [ $1 == solve ]; then
     echo >> elastic_output.txt
-#    Vpcell=$(grep 'volume of cell' $(cut -d' ' -f1 <<< $dir_list)/0.000/OUTCAR | tail -1 | awk '{print $5;}')
     Vpcell=$(grep 'volume of cell' ../equi-relax/OUTCAR | tail -1 | awk '{print $5;}')
     econst_raw=$(echo "print $(grep 'B0 =' ../lctest/lctest_output.txt | tail -1 | awk '{print $3}')/160.2*$Vpcell" | python)
     for n in $dir_list
@@ -55,5 +54,5 @@ elif [ $1 == solve ]; then
     econst_raw=$econst_raw' '$A11' '$A21' '$A61' '$A12' '$A22' '$A32' '$A42' '$A52' '$A62
     econst_raw=$(echo $econst_raw)
     econst_raw=[${econst_raw// /,}]
-    _Elastic-solver.py $2 $Vpcell $econst_raw | tee -a elastic_output.txt
+    _elastic_solver.py $2 $Vpcell $econst_raw | tee -a elastic_output.txt
 fi
