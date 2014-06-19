@@ -120,9 +120,9 @@ elif [ $1 == plot-ldos ]; then
 
 elif [ $1 == plot-tdos ]; then
     cd dosrun
-    _Plot-tdos.py $2
+    _Plot-tdos.py
 
 elif [ $1 == plot-bs ]; then
     cd bsrun
-    _Plot-bs.py $2
+    _Plot-bs.py
 fi

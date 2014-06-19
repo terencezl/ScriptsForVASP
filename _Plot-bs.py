@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import mpltools.style
 mpltools.style.use('ggplot')
 import re
+import argparse
 
 
 # Effective mass calculation funcitons.
@@ -41,18 +42,30 @@ def get_effective_mass_reduced(band, kp_start, kp_end):
     return effective_mass_reduced
 
 
-if re.match(r'\[.*\]', sys.argv[1]):
-    [ylim0, ylim1] = eval(sys.argv[1])
+parser = argparse.ArgumentParser(description='''Plot the band structure, with consideration of spin-polarization.''')
+parser.add_argument('-a', '--axis-range', type=eval,
+                    help="the x and y range of axis in the form of '[Ymin,Ymax]'.")
+parser.add_argument('-e', '--Ef', type=float, help="manually override Fermi energy detection")
+parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
+parser.add_argument('-i', '--EIGENVAL', default='EIGENVAL', help="the input EIGENVAL file name")
+parser.add_argument('-o', '--output-prefix', default='BS', help="the output files' prefix")
+args = parser.parse_args()
+Ef = args.Ef
+ISPIN = args.ISPIN
+
+if args.Ef:
+    print "Using user specified Ef."
 else:
-    ylim0, ylim1 = -5, 5
+    try:
+        with open('DOSCAR', 'r') as f:
+            for i in range(6):
+                line = f.readline()
+        # Fermi energy. Found in DOSCAR, 6th line, 4th number.
+        Ef = float(line.split()[3])
+    except IOError:
+        raise IOError("Can't determine Ef! Either manually specify it, or provide DOSCAR")
 
-with open('DOSCAR', 'r') as f:
-    for i in range(6):
-        DOSCAR = f.readline()
-# Fermi energy. Found in DOSCAR, 6th line, 4th number.
-Ef = float(DOSCAR.split()[3])
-
-with open('EIGENVAL', 'r') as f:
+with open(args.EIGENVAL, 'r') as f:
     EIGENVAL = f.readlines()
 for i in range(len(EIGENVAL)):
     EIGENVAL[i] = EIGENVAL[i].split()
@@ -102,17 +115,14 @@ E = np.zeros((N_bands, N_kps))
 for n_b in range(0, N_bands):
     for n_s in range(0, N_kps):
         E[n_b, n_s] = float(EIGENVAL[8 + n_b + (N_bands + 2) * n_s][1])
-
 E = E - Ef
-# Relative Fermi energy, choosing the valence band top at Gamma point.
-#Ef = E[3][10]
 
 # Plot the bands.
 ax = plt.subplot(111)
 for band in range(N_bands):
     plt.plot(kp_linearized_array, E[band])
 
-plt.axis([kp_end_point_array[0], kp_end_point_array[-1], ylim0, ylim1])
+plt.axis([kp_end_point_array[0], kp_end_point_array[-1], args.axis_range[0], args.axis_range[1]])
 for section_end_point in range(len(kp_end_point_array)):
     plt.axvline(kp_end_point_array[section_end_point], ls='--', c='k', alpha=0.5)
 ax.xaxis.set_ticks(kp_end_point_array)
@@ -120,4 +130,4 @@ ax.xaxis.set_ticklabels(kp_end_letter_list)
 plt.axhline(0, ls='--', c='k', alpha=0.5)
 plt.ylabel('Energy (eV)')
 plt.tight_layout()
-plt.savefig('BS.png')
+plt.savefig(args.output_prefix + '.png')
