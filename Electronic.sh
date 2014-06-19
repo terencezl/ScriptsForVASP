@@ -125,4 +125,8 @@ elif [ $1 == plot-tdos ]; then
 elif [ $1 == plot-bs ]; then
     cd bsrun
     Plot_bs.py
+
+elif [ $1 == plot-bs ]; then
+    cd bsrun
+    Plot_cohp.py $2
 fi
