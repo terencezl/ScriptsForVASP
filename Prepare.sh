@@ -121,33 +121,7 @@ elif [[ "$test_type" == "agltest" ]]; then
         cd ..
     done
 
-#elif [ "$test_type" == "mesh2d" ]; then
-#    for x in $(awk "BEGIN{for(i=$2;i<=$3;i+=$6)print i}")                   # generate subfolders specified by float numbers
-#    do i=$(echo "scale=2;$x/1" | bc)                                        # change decimal format from 5.1 to 5.10
-#    dir_listx=$dir_listx" "$i                                                         # add dir_list of float numbers up
-#    done
-#    for y in $(awk "BEGIN{for(i=$4;i<=$5;i+=$6)print i}")                   # generate subfolders specified by float numbers
-#    do i=$(echo "scale=2;$y/1" | bc)                                        # change decimal format from 5.1 to 5.10
-#    dir_listy=$dir_listy" "$i                                                         # add dir_list of float numbers up
-#    done
-#    for x in $dir_listx
-#    do
-#        for y in $dir_listy
-#        do
-#            mkdir x$x-y$y
-#            cd x$x-y$y
-#            cp ../../INPUT/INCAR .
-#            cp ../../INPUT/POSCAR .
-#            cp ../../INPUT/POTCAR .
-#            cp ../../INPUT/KPOINTS .
-#            cp ../../INPUT/qsub.parallel .
-#            sed -i s/@Rx@/$x/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
-#            sed -i s/@Ry@/$y/g POSCAR                                            # use sed -i s/xx/yy/g FILE to do replacement. Arguments in INCAR/KPOINTS/POSCAR are reserved
-#            qsub_replacer
-#            cd ..
-#        done
-#    done
-    
+
 elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
     if [ $test_type == c44 ]; then
         dir_list="0.020 0.035 0.050n"

@@ -34,10 +34,10 @@ elif [ $1 == dosrun ]; then
         rwigs=$(cd ../scrun; Cellinfo.sh rwigs |awk '{print $4}')
         sed -i "/RWIGS/c RWIGS = ${rwigs//,/ }" INCAR
         sed -i "/NPAR/c NPAR = 1" INCAR
-        sed -i "/LORBIT/c LORBIT = 1"  INCAR
+        sed -i "/LORBIT/c LORBIT = 0"  INCAR
     else
         sed -i "/NPAR/c NPAR = 8"  INCAR
-        sed -i "/LORBIT/c LORBIT = 11"  INCAR
+        sed -i "/LORBIT/c LORBIT = 10"  INCAR
     fi
 
     sed -i "/#PBS -l walltime/c #PBS -l walltime=04:00:00" qsub.parallel
@@ -60,7 +60,7 @@ elif [ $1 == bsrun ]; then
     sed -i "/NSW/c NSW = 0" INCAR
     sed -i "/NEDOS/c NEDOS = 1501" INCAR
     sed -i "/ICHARG/c ICHARG = 11" INCAR
-    sed -i "/LORBIT/c LORBIT = 11" INCAR
+    sed -i "/LORBIT/c LORBIT = 10" INCAR
 
     sed -i "/NPAR/c NPAR = 8"  INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=04:00:00" qsub.parallel
@@ -84,8 +84,10 @@ elif [ $1 == lobster-prerun ]; then
     cd lobster
     if [[ -d ../lobster-kp ]]; then
         mv ../lobster-kp .
+        cp lobster-kp/IBZKPT KPOINTS
+    elif [[ -d lobster-kp ]]; then
+        cp lobster-kp/IBZKPT KPOINTS
     fi
-    cp lobster-kp/IBZKPT KPOINTS
 
     if [[ -f ../scrun/CHGCAR ]]; then
         cp ../scrun/CONTCAR POSCAR
