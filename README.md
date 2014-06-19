@@ -41,9 +41,9 @@ Scripts structure
 * `_Ions-rotator.py` - to rotate ions in selected lines in POSCAR at a certain point, around a certain axis, to a certain angle
 * `_Display-fit.py` - to perform different fitting techniques, including Birch-Murnaghan equation of state and polynomial
 * `_Elastic-solver.py` - to solve the independent elastic constants from the same number of combination runs with linear algebra
-* `_Plot-tdos.py` - to plot total density of states, spin states are supported (above or below x axis)
-* `_Plot-ldos.py` - to plot local projected density of states of two ions (above or below x axis), spin states are supported (in different files)
-* `_Plot-bs.py` - to plot the band structure along certain chosen points in the 1st BZ
+* `Plot_tdos.py` - to plot total density of states, spin states are supported (above or below x axis)
+* `Plot_ldos.py` - to plot local projected density of states of two ions (above or below x axis), spin states are supported (in different files)
+* `Plot_bs.py` - to plot the band structure along certain chosen points in the 1st BZ
 * `_Cellinfo-solver.py` - to obtain the RWIGS values for different species to 100 % fill the cell
 
 __others__ contains some interesting physics or computational experiments.

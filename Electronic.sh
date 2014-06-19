@@ -116,13 +116,13 @@ elif [ $1 == lobster ]; then
 
 elif [ $1 == plot-ldos ]; then
     cd dosrun
-    _Plot-ldos.py $2 $3
+    Plot_ldos.py $2 $3
 
 elif [ $1 == plot-tdos ]; then
     cd dosrun
-    _Plot-tdos.py
+    Plot_tdos.py
 
 elif [ $1 == plot-bs ]; then
     cd bsrun
-    _Plot-bs.py
+    Plot_bs.py
 fi
