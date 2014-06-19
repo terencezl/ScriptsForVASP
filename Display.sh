@@ -30,13 +30,13 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
         if [[ "$n" != *-1 ]]; then dir_list_enkp=$dir_list_enkp" "$n; fi
     done
     dir_list=$(echo -e ${dir_list_enkp// /\\n} | sort -n)
-    
+
     smallest=$(echo $dir_list | awk '{print $1}')
     largest=$(echo $dir_list | awk '{print $NF}')
     step=$(( $(echo $dir_list | awk '{print $2}') - $smallest ))
     lc1=$(sed -n '2p' $smallest/POSCAR)
     lc2=$(echo "$lc1+0.1" | bc)
-    
+
     if [ $test_type == "entest" ]; then
         echo -e "ENCUT from $smallest to $largest step $step" >> $fname
         echo -e "LC1 = $lc1, LC2 = $lc2 (directories with \"-1\")" >> $fname
@@ -46,30 +46,40 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
         echo -e "LC1 = $lc1, LC2 = $lc2 (directories with \"-1\")" >> $fname
         echo -e "\nnKP\tE_LC1(eV)\tdE_LC1 (eV)\tE_LC2(eV)\tdE_LC2 (eV)\tDE=E_LC2-E_LC1(eV)\t\tdDE(eV)" >> $fname
     fi
-    
+
     for n in $dir_list
     do
-        E_LC1=$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')        # get the total energy when LC1
-        E_LC2=$(grep sigma $n-1/OUTCAR | tail -1 | awk '{print $7;}')      # get the total energy when LC2, characterized by patterns like 160-1
-        DE=$(echo "($E_LC2)-($E_LC1)" | bc)                                # echo the expr into bc (calculator) to get DE. bash doesn't support floats
+        # get the total energy when LC1
+        E_LC1=$(grep sigma $n/OUTCAR | tail -1 | awk '{print $7;}')
+        # get the total energy when LC2, characterized by patterns like 160-1
+        E_LC2=$(grep sigma $n-1/OUTCAR | tail -1 | awk '{print $7;}')
+        # echo the expr into bc (calculator) to get DE. bash doesn't support floats
+        DE=$(echo "($E_LC2)-($E_LC1)" | bc)
         if [ $n == $smallest ]; then
             DE_pre=$DE
             E_LC1_pre=$E_LC1
             E_LC2_pre=$E_LC2
-        fi                                                                 # in the first cycle let dDE = 0
-        dDE=$(echo "($DE)-($DE_pre)" | bc)                                 # get dDE (the diff of energy difference between two adjacent rows)
+            # in the first cycle let dDE = 0
+        fi
+        # get dDE (the diff of energy difference between two adjacent rows)
+        dDE=$(echo "($DE)-($DE_pre)" | bc)
         dE_LC1=$(echo "($E_LC1)-($E_LC1_pre)" | bc)
         dE_LC2=$(echo "($E_LC2)-($E_LC2_pre)" | bc)
-        dDE=${dDE#-}                                                       # return the absolute value of dDE
-        dE_LC1=${dE_LC1#-}                                                       # return the absolute value of dDE
-        dE_LC2=${dE_LC2#-}                                                       # return the absolute value of dDE
-        echo -e "$n\t$E_LC1\t$dE_LC1\t$E_LC2\t$dE_LC2\t$DE\t\t$dDE" >> $fname                  # output into a file
-        DE_pre=$DE                                                         # set DE for this cycle as DE_pre for the next cycle to get the next dDE
+        # return the absolute value of dDE
+        dDE=${dDE#-}
+        # return the absolute value of dDE
+        dE_LC1=${dE_LC1#-}
+        # return the absolute value of dDE
+        dE_LC2=${dE_LC2#-}
+        # output into a file
+        echo -e "$n\t$E_LC1\t$dE_LC1\t$E_LC2\t$dE_LC2\t$DE\t\t$dDE" >> $fname
+        # set DE for this cycle as DE_pre for the next cycle to get the next dDE
+        DE_pre=$DE
         E_LC1_pre=$E_LC1
         E_LC2_pre=$E_LC2
         data_line_count=$(($data_line_count + 1))
     done
-    
+
     _Display-fit.py $test_type 5 $((5 + data_line_count)) >> $fname
 
 elif [[ $test_type == "lctest" ]]; then
@@ -79,7 +89,7 @@ elif [[ $test_type == "lctest" ]]; then
     step=$(echo "print($(echo $dir_list | awk '{print $2}') - ($smallest))" | python)
     echo -e "Scaling factor from $smallest to $largest step $step" >> $fname
     echo -e "\nScalingFactor(Ang)\tVolume(Ang^3)\tE(eV)" >> $fname
-    
+
     for n in $dir_list
     do
         Vpcell=$(cat $n/OUTCAR | grep 'volume of cell' | tail -1 | awk '{print $5;}')
@@ -87,7 +97,7 @@ elif [[ $test_type == "lctest" ]]; then
         data_line_count=$(($data_line_count + 1))
         force_entropy_detector $n
     done
-    
+
     echo $PWD
     echo '' >> $fname
     if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
@@ -130,7 +140,7 @@ elif [[ $test_type == "rttest" ]]; then
         data_line_count=$(($data_line_count + 1))
         force_entropy_detector $n
     done
-    
+
     echo $PWD
     echo '' >> $fname
     if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
@@ -158,7 +168,7 @@ elif [[ $test_type == "agltest" ]]; then
         data_line_count=$(($data_line_count + 1))
         force_entropy_detector $n
     done
-    
+
     echo $PWD
     echo '' >> $fname
     if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
@@ -171,7 +181,8 @@ elif [[ $test_type == "equi-relax" ]]; then
     cp CONTCAR ../INPUT/POSCAR
     exit 0
 
-elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                              # meaning elastic const.
+# meaning elastic const.
+elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
     if [[ $test_type == c44 ]]; then
         if [ -d 0.020n ]; then rm -r 0.020n; fi
         if [ -d 0.035n ]; then rm -r 0.035n; fi
@@ -206,7 +217,7 @@ elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                
     step=$(echo "print($(echo $dir_list_i | awk '{print $2}') - ($smallest))" | python)
     echo "Delta from $smallest to $largest with step $step" >> $fname
     echo -e "\nDelta(ratio)\tE(eV)" >> $fname
-    
+
     # still want to get the sorted original dir_list to easily go into the folder named 0.01n.
     unset dir_list
     for i in $dir_list_i
@@ -221,7 +232,7 @@ elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                
         data_line_count=$(($data_line_count + 1))
         force_entropy_detector $n
     done
-    
+
     echo $PWD
     echo '' >> $fname
     if [ "$force_converge_flag" ]; then echo -e "!Force doesn't converge during$force_converge_flag" | tee -a $fname; echo '' >> $fname; fi
@@ -229,7 +240,7 @@ elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then                
     _Display-fit.py $test_type 4 $((4 + data_line_count)) >> $fname
 
     grep "R-squared is" $fname
-    
+
 fi
 
 echo -e "\nMaximal time per run: \c" >> $fname

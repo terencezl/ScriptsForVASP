@@ -30,10 +30,12 @@ fname="$test_type""_output.txt"
 
 if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
     lc1=$5
-    lc2=$(echo "$lc1+0.1" | bc)                                                  # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
-    for ((n=$2; n<=$3; n=n+$4))                                             # create each subfolder
+    # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
+    lc2=$(echo "$lc1+0.1" | bc)
+    for ((n=$2; n<=$3; n=n+$4))
     do
-        for i in $n $n-1                                                    # subfolders for two LCs
+        # subfolders for two LCs
+        for i in $n $n-1
         do
             mkdir $i
             cd $i
@@ -47,7 +49,8 @@ if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
             else
                 sed -i "4c $n $n $n" KPOINTS
             fi
-            if [ $i == $n ]; then                                           # replace the two LCs in their own POSCAR. Arguments about the generalized length is reserved
+            # replace the two LCs in their own POSCAR. Arguments about the generalized length is reserved
+            if [ $i == $n ]; then
                 sed -i "2c $lc1" POSCAR
             else
                 sed -i "2c $lc2" POSCAR
@@ -58,10 +61,13 @@ if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
     done
 
 elif [[ "$test_type" == "lctest" ]]; then
-    for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
+    # generate subfolders specified by float numbers
+    for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")
     do
-        i=$(echo "scale=3;$n/1" | bc)                                        # change decimal format from 5.1 to 5.10
-        dir_list=$dir_list" "$i                                                         # add dir_list of float numbers up
+        # change decimal format from 5.1 to 5.10
+        i=$(echo "scale=3;$n/1" | bc)
+        # add dir_list of float numbers up
+        dir_list=$dir_list" "$i
     done
     for n in $dir_list
     do
@@ -79,10 +85,13 @@ elif [[ "$test_type" == "lctest" ]]; then
     done
 
 elif [[ "$test_type" == "rttest" ]]; then
-    for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")                   # generate subfolders specified by float numbers
+    # generate subfolders specified by float numbers
+    for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")
     do
-        i=$(echo "print('{0:.3f}'.format($n))" | python)                              # change decimal format from 5.1 to 5.10
-        dir_list=$dir_list" "$i                                                         # add dir_list of float numbers up
+        # change decimal format from 5.1 to 5.10
+        i=$(echo "print('{0:.3f}'.format($n))" | python)
+        # add dir_list of float numbers up
+        dir_list=$dir_list" "$i
     done
     for n in $dir_list
     do
@@ -120,7 +129,6 @@ elif [[ "$test_type" == "agltest" ]]; then
         qsub_replacer qsub.parallel
         cd ..
     done
-
 
 elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
     if [ $test_type == c44 ]; then

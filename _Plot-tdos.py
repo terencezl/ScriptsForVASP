@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import mpltools.style
+mpltools.style.use('ggplot')
 import re
 
 
@@ -12,11 +14,11 @@ def plot_helper():
     plt.axis([axis_lim[0], axis_lim[1], 0, axis_lim[2]])
     plt.xlabel('Energy (eV)')
     plt.ylabel('TDOS (States / Unit Cell / eV)')
-    plt.legend(loc=0,  fontsize='x-small')
+    plt.legend(loc=0,  fontsize='small')
     plt.tight_layout()
 
 
-if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
+if re.match(r'\[.*\]', sys.argv[1]):
     axis_lim = eval(sys.argv[1])
 else:
     axis_lim = [-25, 10, 10]
@@ -59,7 +61,7 @@ if ISPIN == 2:
             DOS_data[abs(DOS_data[0] + 0.2).argmin(), 4]
     np.savetxt('TDOS@Ef.txt', [energy_slice], '%15.6E')
 
-else:
+elif ISPIN == 1:
     col_names = ['E', 'total', 'integrated']
     DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
     DOS_data[:, 0] -= Ef

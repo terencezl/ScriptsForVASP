@@ -20,7 +20,7 @@ def find_band_edges(kp_edge, within):
         np.where(np.logical_and(E[:, kp_edge] < within, E[:, kp_edge] > 0))[0]
 
 
-def effective_mass_reduced(band, kp_start, kp_end):
+def get_effective_mass_reduced(band, kp_start, kp_end):
     h_bar = 1.054571726e-34
     e = 1.6021176462e-19
     m_e = 9.10938291e-31
@@ -41,11 +41,10 @@ def effective_mass_reduced(band, kp_start, kp_end):
     return effective_mass_reduced
 
 
-if len(sys.argv) == 2 and re.match(r'\[.*\]', sys.argv[1]):
+if re.match(r'\[.*\]', sys.argv[1]):
     [ylim0, ylim1] = eval(sys.argv[1])
 else:
-    ylim0 = -5
-    ylim1 = 5
+    ylim0, ylim1 = -5, 5
 
 with open('DOSCAR', 'r') as f:
     for i in range(6):
@@ -110,17 +109,15 @@ E = E - Ef
 
 # Plot the bands.
 ax = plt.subplot(111)
-for band in range(0, N_bands):
+for band in range(N_bands):
     plt.plot(kp_linearized_array, E[band])
 
-# Set the axis properties.
 plt.axis([kp_end_point_array[0], kp_end_point_array[-1], ylim0, ylim1])
-
 for section_end_point in range(len(kp_end_point_array)):
     plt.axvline(kp_end_point_array[section_end_point], ls='--', c='k', alpha=0.5)
-
 ax.xaxis.set_ticks(kp_end_point_array)
 ax.xaxis.set_ticklabels(kp_end_letter_list)
 plt.axhline(0, ls='--', c='k', alpha=0.5)
 plt.ylabel('Energy (eV)')
+plt.tight_layout()
 plt.savefig('BS.png')

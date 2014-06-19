@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import mpltools.style
+mpltools.style.use('ggplot')
 import re
 
 
@@ -17,7 +19,7 @@ def plot_helper():
     plt.tight_layout()
 
 
-if len(sys.argv) == 3 and re.match(r'\[.*\]', sys.argv[1]) and re.match(r'\[.*\]', sys.argv[2]):
+if re.match(r'\[.*\]', sys.argv[1]) and re.match(r'\[.*\]', sys.argv[2]):
     axis_lim = eval(sys.argv[1])
     atom_1, atom_2 = eval(sys.argv[2])
 else:
