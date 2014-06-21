@@ -2,7 +2,8 @@
 import sys
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+if not matplotlib.is_interactive():
+    matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import mpltools.style
 mpltools.style.use('ggplot')
@@ -11,7 +12,21 @@ import argparse
 import warnings
 
 
-def plot_helper(args):
+def plot_helper_figure(args, ISPIN):
+    if ISPIN == 2:
+        assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 2), \
+            'The number of figures should be 2!'
+    elif ISPIN == 1:
+        assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 1), \
+            'The number of figures should be 1!'
+    if args.figure is None:
+        plt.figure()
+    else:
+        plt.figure(args.figure.pop(0))
+
+
+def plot_helper_settings(args):
+    plt.axhline(y=0, c='k')
     plt.axvline(x=0, ls='--', c='k')
     if args.axis_range:
         plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2], args.axis_range[3]])
@@ -20,10 +35,34 @@ def plot_helper(args):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         plt.legend(loc=0,  fontsize='small')
-    plt.tight_layout()
+    try:
+        plt.tight_layout()
+    except RuntimeError:
+        print "Tight layout failed... Not a big deal though."
 
 
-def main(arguments=['-h']):
+def plot_helper_close():
+    if not matplotlib.is_interactive():
+        plt.close()
+
+            
+def main(arguments='-h'):
+    """
+    The main function that does the data grepping and plotting.
+
+    :param arguments: string
+        Command line arguments and options. Typically ' '.join(sys.argv[1:]).
+    :return:
+        col_names: list
+            The column names of data from DOSCAR in a list.
+        DOS_data: 2D numpy array
+            The data from DOSCAR.
+    Usages
+    ------
+    main(), main('-h') : as if ``Plot_tdos.py -h`` is executed from command line.
+    main(string) : as if ``Plot_tdos.py content_of_string`` is executed from command line.
+    """
+    arguments = arguments.split()
     parser = argparse.ArgumentParser(description='''Plot the total density of states, with
                 consideration of spin-polarization.''')
     parser.add_argument('-a', '--axis-range', type=eval, help='''the x and y range of axis in the form of
@@ -31,6 +70,8 @@ def main(arguments=['-h']):
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
     parser.add_argument('-i', '--DOSCAR', default='DOSCAR', help="the input DOSCAR file name")
     parser.add_argument('-o', '--output-prefix', default='TDOS', help="the output files' prefix")
+    parser.add_argument('-f', '--figure', type=eval, help='''the figure number one wishes to plot on,
+                                    in the form of '[1,2,...]'. Useful in interactive mode.''')
     args = parser.parse_args(arguments)
     ISPIN = args.ISPIN
 
@@ -66,23 +107,21 @@ def main(arguments=['-h']):
         DOS_data[:, 0] -= Ef
 
         # Plot the separated TDOS
-        plt.figure(1)
+        plot_helper_figure(args, ISPIN)
         plt.plot(DOS_data[:, 0], DOS_data[:, 1], label='spin up')
         plt.plot(DOS_data[:, 0], DOS_data[:, 2], label='spin down')
-        plot_helper(args)
+        plot_helper_settings(args)
         if args.axis_range:
             plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2], args.axis_range[3] / 2.])
         plt.savefig(args.output_prefix + '-spin-separated.png')
-        if not plt.isinteractive():
-            plt.close()
+        plot_helper_close()
 
         # Plot the combined TDOS
-        plt.figure(2)
+        plot_helper_figure(args, ISPIN)
         plt.plot(DOS_data[:, 0], DOS_data[:, 1] + DOS_data[:, 2], label='spin up + down')
-        plot_helper(args)
+        plot_helper_settings(args)
         plt.savefig(args.output_prefix + '-spin-combined.png')
-        if not plt.isinteractive():
-            plt.close()
+        plot_helper_close()
 
         np.savetxt(args.output_prefix + '.txt', DOS_data, '%15.6E', header=' '.join(col_names))
         energy_slice = DOS_data[abs(DOS_data[0] - 0.2).argmin(), 3] - \
@@ -96,18 +135,19 @@ def main(arguments=['-h']):
         DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
         DOS_data[:, 0] -= Ef
 
-        plt.figure(1)
+        plot_helper_figure(args, ISPIN)
         plt.plot(DOS_data[:, 0], DOS_data[:, 1])
-        plot_helper(args)
+        plot_helper_settings(args)
         plt.savefig(args.output_prefix + '.png')
-        if not plt.isinteractive():
-            plt.close()
+        plot_helper_close()
 
         np.savetxt(args.output_prefix + '.txt', DOS_data, '%15.6E', header=' '.join(col_names))
         energy_slice = DOS_data[abs(DOS_data[0] - 0.2).argmin(), 2] - \
                        DOS_data[abs(DOS_data[0] + 0.2).argmin(), 2]
         np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6E')
 
+    return col_names, DOS_data
+
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(' '.join(sys.argv[1:]))

@@ -1,11 +1,12 @@
+==============
 ScriptsForVASP
 ==============
-Making life easier using scripting languages (Bash and Python) to facilitate multiple VASP simulation job preparation, submission and analysis.
+Making life easier using scripting languages (Bash and Python) to facilitate multiple VASP simulation jobs preparation, submission and analysis.
 
 Introduction
-------------
+============
 
-There are multiple ways to carry out VASP calculations. Contrary to the Pythonic scheme the famous [ASE] (https://wiki.fysik.dtu.dk/ase/) uses
+There are multiple ways to carry out VASP calculations. Contrary to the Pythonic scheme the famous `ASE <https://wiki.fysik.dtu.dk/ase/>`_ uses
 , This project does things in an old-fashioned way, providing a collection of scripts, written in Bash, and accompanying them with
 scripts written in Python, in the same directory, with careful use of file names and input arguments, and letting users
 add this single directory into their PATH environmental variable to have direct access. The scripts will be used as executables.

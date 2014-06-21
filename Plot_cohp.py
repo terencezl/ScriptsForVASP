@@ -2,7 +2,8 @@
 import sys
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+if not matplotlib.is_interactive():
+    matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import mpltools.style
 mpltools.style.use('ggplot')
@@ -11,7 +12,20 @@ import argparse
 import warnings
 
 
-def plot_helper(args):
+def plot_helper_figure(args, ISPIN):
+    if ISPIN == 2:
+        assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 2), \
+            'The number of figures should be 2!'
+    elif ISPIN == 1:
+        assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 1), \
+            'The number of figures should be 1!'
+    if args.figure is None:
+        plt.figure()
+    else:
+        plt.figure(args.figure.pop(0))
+        
+        
+def plot_helper_settings(args):
     plt.axhline(y=0, c='k')
     plt.axvline(x=0, ls='--', c='k')
     if args.axis_range:
@@ -21,10 +35,34 @@ def plot_helper(args):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         plt.legend(loc=0,  fontsize='small')
-    plt.tight_layout()
+    try:
+        plt.tight_layout()
+    except RuntimeError:
+        print "Tight layout failed... Not a big deal though."
 
 
-def main(arguments=['-h']):
+def plot_helper_close():
+    if not matplotlib.is_interactive():
+        plt.close()
+
+
+def main(arguments='-h'):
+    """
+    The main function that does the data grepping and plotting.
+
+    :param arguments: string
+        Command line arguments and options. Typically ' '.join(sys.argv[1:]).
+    :return:
+        col_names: list
+            The column names of data from COHPCAR.lobster in a list.
+        COHP_data: 2D numpy array
+            The data from COHPCAR.lobster.
+    Usages
+    ------
+    main(), main('-h') : as if ``Plot_cohp.py -h`` is executed from command line.
+    main(string) : as if ``Plot_cohp.py content_of_string`` is executed from command line.
+    """
+    arguments = arguments.split()
     parser = argparse.ArgumentParser(description='''Plot the -COHP, with consideration of spin-polarization.''')
     parser.add_argument('bond_to_plot', type=int, help='No. of bond to plot')
     parser.add_argument('-a', '--axis-range', type=eval, help='''the x and y range of axis in the form of
@@ -32,6 +70,8 @@ def main(arguments=['-h']):
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
     parser.add_argument('-i', '--COHPCAR', default='COHPCAR.lobster', help="the input COHPCAR.lobster file name")
     parser.add_argument('-o', '--output-prefix', default='COHP', help="the output files' prefix")
+    parser.add_argument('-f', '--figure', type=eval, help='''the figure number one wishes to plot on,
+                                    in the form of '[1,2,...]'. Useful in interactive mode.''')
     args = parser.parse_args(arguments)
     n_bond_to_plot = args.bond_to_plot
     ISPIN = args.ISPIN
@@ -96,25 +136,22 @@ def main(arguments=['-h']):
 
         col_up_to_plot = n_bond_to_plot * 2 + 1
         col_down_to_plot = (n_bond_to_plot + N_bonds + 1) * 2 + 1
-
         # Plot the separated COHP
-        plt.figure(1)
+        plot_helper_figure(args, ISPIN)
         plt.plot(COHP_data[:, 0], -COHP_data[:, col_up_to_plot], label=col_names[col_up_to_plot])
         plt.plot(COHP_data[:, 0], -COHP_data[:, col_down_to_plot], label=col_names[col_down_to_plot])
-        plot_helper(args)
+        plot_helper_settings(args)
         if args.axis_range:
             plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2]/2., args.axis_range[3]/2.])
         plt.savefig(args.output_prefix + '-spin-separated.png')
-        if not plt.isinteractive():
-            plt.close()
+        plot_helper_close()
 
         # Plot the combined COHP
-        plt.figure(2)
+        plot_helper_figure(args, ISPIN)
         plt.plot(COHP_data[:, 0], -COHP_data[:, col_up_to_plot] - COHP_data[:, col_down_to_plot])
-        plot_helper(args)
+        plot_helper_settings(args)
         plt.savefig(args.output_prefix + '-spin-combined.png')
-        if not plt.isinteractive():
-            plt.close()
+        plot_helper_close()
 
     elif ISPIN == 1:
         col_names = ['E', 'avg', 'avg_integrated']
@@ -124,14 +161,14 @@ def main(arguments=['-h']):
         COHP_data = np.array(COHPCAR[data_start_line:data_start_line + N_steps], dtype=float)
 
         col_to_plot = n_bond_to_plot * 2 + 1
-
-        plt.figure(1)
+        plot_helper_figure(args, ISPIN)
         plt.plot(COHP_data[:, 0], -COHP_data[:, col_to_plot], label=col_names[col_to_plot])
-        plot_helper(args)
+        plot_helper_settings(args)
         plt.savefig(args.output_prefix + '.png')
-        if not plt.isinteractive():
-            plt.close()
+        plot_helper_close()
+
+    return (col_names, COHP_data)
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(' '.join(sys.argv[1:]))
