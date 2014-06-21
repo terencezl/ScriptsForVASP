@@ -43,7 +43,7 @@ These can also be used alone, and **can be readily imported and played with**.
 * ``Plot_cohp.py`` - to plot the pCOHP from LOBSTER runs
 * ``Ions-rotator.py`` - to rotate ions in selected lines in POSCAR at a certain point, around a certain axis, to a certain angle
 
-These are better left unvisited.
+These are used by Bash scripts and better left unvisited.
 
 * ``_prepare_strain.py`` - to add strain to the cell lattice vectors in POSCAR for a series of runs, determining the value of a combination of elastic constants
 * ``_display_fit.py`` - to perform different fitting techniques, including Birch-Murnaghan equation of state and polynomial

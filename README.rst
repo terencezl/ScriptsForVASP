@@ -7,7 +7,7 @@ Introduction
 ============
 
 There are multiple ways to carry out VASP calculations. Contrary to the Pythonic scheme the famous `ASE <https://wiki.fysik.dtu.dk/ase/>`_ uses
-, This project does things in an old-fashioned way, providing a collection of scripts, written in Bash, and accompanying them with
+, this project does things in an old-fashioned way, providing a collection of scripts, written in Bash, and accompanying them with
 scripts written in Python, in the same directory, with careful use of file names and input arguments, and letting users
 add this single directory into their PATH environmental variable to have direct access. The scripts will be used as executables.
 This approach is less systematic than the one ASE uses, but it is more file and directory aware,
@@ -58,7 +58,7 @@ These can also be used alone, and **can be readily imported and played with**.
 * ``Plot_cohp.py`` - to plot the pCOHP from LOBSTER runs
 * ``Ions-rotator.py`` - to rotate ions in selected lines in POSCAR at a certain point, around a certain axis, to a certain angle
 
-These are better left unvisited.
+These are used by Bash scripts and better left unvisited.
 
 * ``_prepare_strain.py`` - to add strain to the cell lattice vectors in POSCAR for a series of runs, determining the value of a combination of elastic constants
 * ``_display_fit.py`` - to perform different fitting techniques, including Birch-Murnaghan equation of state and polynomial
