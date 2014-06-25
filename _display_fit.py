@@ -54,7 +54,7 @@ for i, line in enumerate(test_output):
 if test_type == 'entest':
     col_names = ['ENCUT', 'E_LC1(eV)', 'dE_LC1 (eV)', 'E_LC2(eV)', 'dE_LC2 (eV)', 'DE=E_LC2-E_LC1(eV)', 'dDE(eV)']
     data = np.zeros((data_line_count, 7))
-    for i, row in test_output[line_begin:line_begin + data_line_count]:
+    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
@@ -68,7 +68,7 @@ if test_type == 'entest':
 elif test_type == 'kptest':
     col_names = ['nKP', 'E_LC1 (eV)', 'dE_LC1 (eV)', 'E_LC2 (eV)', 'dE_LC2 (eV)', 'DE=E_LC2-E_LC1 (eV)', 'dDE (eV)']
     data = np.zeros((data_line_count, 7))
-    for i, row in test_output[line_begin:line_begin + data_line_count]:
+    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
@@ -82,7 +82,7 @@ elif test_type == 'kptest':
 elif test_type == 'lctest':
     col_names = ['Scaling factor (Ang)', 'Volume (Ang^3)', 'E (eV)']
     data = np.zeros((data_line_count, 3))
-    for i, row in test_output[line_begin:line_begin + data_line_count]:
+    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
         data[i] = row
 
     V_a_conversion_multiplier = data[0, 0] ** 3 / data[0, 1]
@@ -116,7 +116,7 @@ elif test_type == 'lctest':
 elif test_type == 'rttest':
     col_names = ['Ratio', 'Volume (Ang^3)', 'E (eV)']
     data = np.zeros((data_line_count, 3))
-    for i, row in test_output[line_begin:line_begin + data_line_count]:
+    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 2], 'o')
@@ -135,7 +135,7 @@ elif test_type == 'rttest':
 elif test_type == 'agltest':
     col_names = ['Angle (degree)', 'E (eV)']
     data = np.zeros((data_line_count, 2))
-    for i, row in test_output[line_begin:line_begin + data_line_count]:
+    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 1], 'o')
@@ -146,7 +146,7 @@ elif test_type == 'agltest':
 elif re.search('.*c[1-9][1-9].*', test_type) or re.search('A.*', test_type):
     col_names = ['Delta', 'E (eV)']
     data = np.zeros((data_line_count, 2))
-    for i, row in test_output[line_begin:line_begin + data_line_count]:
+    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
         data[i] = row
 
     if re.search('.*c[1-9][1-9].*', test_type):
