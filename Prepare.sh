@@ -42,7 +42,7 @@ function change_dir_name_with_hyphen {
 
 
 directory_name="$1"
-[[ -d $directory_name ]] && [[ "$(ls -A $directory_name)" ]] && echo "Directory already exists!" && exit 1
+[[ -d $directory_name ]] && [[ "$(ls -A $directory_name)" ]] && echo "Warning: Directory contains files!"
 mkdir "$directory_name" 2> /dev/null
 cd "$directory_name"
 test_type="${directory_name%%_*}"
@@ -117,7 +117,7 @@ elif [[ $test_type == "lctest" ]]; then
 
 elif [[ $test_type == "rttest" ]]; then
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
-    dir_list=$(change_dir_name_with_hyphen $dir_list)
+    dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
     do
         create_copy_replace $dir
@@ -128,7 +128,7 @@ elif [[ $test_type == "rttest" ]]; then
 
 elif [[ $test_type == "agltest" ]]; then
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
-    dir_list=$(change_dir_name_with_hyphen $dir_list)
+    dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
     do
         create_copy_replace $dir
