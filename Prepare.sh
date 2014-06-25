@@ -58,7 +58,7 @@ function submission_trigger {
     fi
 }
 
-function argparse {
+function header_echo {
     echo -e "Creating test directory '$directory_name'..."
     if [[ -d $directory_name && "$(ls -A $directory_name)" ]]; then
         echo "  Directory contains files or sub-directories."
@@ -67,8 +67,10 @@ function argparse {
     cd "$directory_name"
     echo "  Preparing $test_type..."
     fname="$test_type"_output.txt
-    shift 1
+}
 
+function argparse {
+    shift 1
     while getopts ":s:e:n:i:c:y:r:mf" opt; do
         case $opt in
         s)
@@ -116,11 +118,12 @@ if [[ "$1" == */ ]]; then directory_name=${1%/}; else directory_name=$1; fi
 test_type="${directory_name%%_*}"
 
 if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
+    argparse
     if [[ -z $start || -z $end || -z $interval || -z $scaling_const ]]; then
-        echo " -s -e -i -c should be all set with valid values!" >&2
+        echo "-s -e -i -c should be all set with valid values!" >&2
         exit 1
     fi
-    argparse
+    header_echo
     lc1=$scaling_const
     lc2=$(echo "print($lc1+0.1)" | python)
     for ((dir=$start; dir<=$end; dir=$dir+$interval))
@@ -145,11 +148,12 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     done
 
 elif [[ $test_type == "lctest" ]]; then
+    argparse
     if [[ -z $start || -z $end || -z $num_points ]]; then
-        echo " -s -e -n should be all set with valid values!" >&2
+        echo "-s -e -n should be all set with valid values!" >&2
         exit 1
     fi
-    argparse
+    header_echo
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     for dir in $dir_list
     do
@@ -161,11 +165,12 @@ elif [[ $test_type == "lctest" ]]; then
     done
 
 elif [[ $test_type == "rttest" ]]; then
+    argparse
     if [[ -z $start || -z $end || -z $num_points ]]; then
-        echo " -s -e -n should be all set with valid values!" >&2
+        echo "-s -e -n should be all set with valid values!" >&2
         exit 1
     fi
-    argparse
+    header_echo
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
@@ -179,11 +184,12 @@ elif [[ $test_type == "rttest" ]]; then
     done
 
 elif [[ $test_type == "agltest" ]]; then
+    argparse
     if [[ -z $start || -z $end || -z $num_points || -z $ions_rotator_args ]]; then
-        echo " -s -e -n -r should be all set with valid values!" >&2
+        echo "-s -e -n -r should be all set with valid values!" >&2
         exit 1
     fi
-    argparse
+    header_echo
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
@@ -197,11 +203,12 @@ elif [[ $test_type == "agltest" ]]; then
     done
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then
+    argparse
     if [[ -z $cryst_sys ]]; then
-        echo " -y should be set with valid values!" >&2
+        echo "-y should be set with a valid value!" >&2
         exit 1
     fi
-    argparse
+    header_echo
     if [ $test_type == c44 ]; then
         dir_list="0.020 0.035 0.050n"
     elif [ $test_type == c11-c12 ]; then
