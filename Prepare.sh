@@ -118,7 +118,7 @@ if [[ "$1" == */ ]]; then directory_name=${1%/}; else directory_name=$1; fi
 test_type="${directory_name%%_*}"
 
 if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
-    argparse
+    argparse "$@"
     if [[ -z $start || -z $end || -z $interval || -z $scaling_const ]]; then
         echo "-s -e -i -c should be all set with valid values!" >&2
         exit 1
@@ -148,7 +148,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     done
 
 elif [[ $test_type == "lctest" ]]; then
-    argparse
+    argparse "$@"
     if [[ -z $start || -z $end || -z $num_points ]]; then
         echo "-s -e -n should be all set with valid values!" >&2
         exit 1
@@ -165,7 +165,7 @@ elif [[ $test_type == "lctest" ]]; then
     done
 
 elif [[ $test_type == "rttest" ]]; then
-    argparse
+    argparse "$@"
     if [[ -z $start || -z $end || -z $num_points ]]; then
         echo "-s -e -n should be all set with valid values!" >&2
         exit 1
@@ -184,7 +184,7 @@ elif [[ $test_type == "rttest" ]]; then
     done
 
 elif [[ $test_type == "agltest" ]]; then
-    argparse
+    argparse "$@"
     if [[ -z $start || -z $end || -z $num_points || -z $ions_rotator_args ]]; then
         echo "-s -e -n -r should be all set with valid values!" >&2
         exit 1
@@ -203,7 +203,7 @@ elif [[ $test_type == "agltest" ]]; then
     done
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then
-    argparse
+    argparse "$@"
     if [[ -z $cryst_sys ]]; then
         echo "-y should be set with a valid value!" >&2
         exit 1
