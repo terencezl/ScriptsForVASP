@@ -41,8 +41,9 @@ function change_dir_name_with_hyphen {
 }
 
 
-directory_name=$1
-mkdir "$directory_name" || exit 1
+directory_name="$1"
+[[ -d $directory_name ]] && [[ "$(ls -A $directory_name)" ]] && echo "Directory already exists!" && exit 1
+mkdir "$directory_name"
 cd "$directory_name"
 test_type="${directory_name%%_*}"
 fname="$test_type"_output.txt
@@ -67,6 +68,9 @@ while getopts ":s:e:n:i:c:y:" opt; do
       ;;
     y)
       cryst_sys=$OPTARG
+      ;;
+    r)
+      ions_rotator_args=$OPTARG
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -129,7 +133,7 @@ elif [[ $test_type == "agltest" ]]; then
     do
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
-        Ions_rotator.py "$@"
+        Ions_rotator.py "$ions_rotator_args"
         cd ..
     done
 
