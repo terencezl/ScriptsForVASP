@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# Used by Cellinfo.sh to solve equations
-# _Cellinfo_solver.py task volumn_of_primitive_cell input_data(in the form of a python list)
+# Used by Cell_info.sh to solve equations
+# _cell_info_solver.py task volumn_of_primitive_cell input_data(in the form of a python list)
 
 import sys
 import numpy as np

@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-# Used by Prepare.sh for altering the real space vectors in POSCAR
+# Used by VASP_start_test.sh for altering the real space vectors in POSCAR
 
 import sys
 import numpy as np
 
-f = open('POSCAR', 'r')
-POSCAR = f.readlines()
-f.close()
+with open('POSCAR', 'r') as f:
+    POSCAR = f.readlines()
 
 vectors_raw = []
 for n in [2, 3, 4]:
@@ -15,7 +14,7 @@ for n in [2, 3, 4]:
 vectors = np.array(vectors_raw, dtype=np.float)
 delta = float(sys.argv[3])
 
-if sys.argv[2] == 'cubic' or sys.argv[2] == 'cubic_A':
+if sys.argv[2] == 'cubic':
     if sys.argv[1] == "c11+2c12":
         transformation_matrix = np.array([[1 + delta, 0, 0],
                                           [0, 1 + delta, 0],

@@ -45,7 +45,7 @@ elif [ $test_type == equi-relax ]; then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Fast-prep.sh equi-relax
+        Fast_prep.sh equi-relax
         F equi-relax
         cd ..
     done

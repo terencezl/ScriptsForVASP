@@ -15,12 +15,12 @@ if [ $1 == scrun ]; then
     sed -i "/NPAR/c NPAR = 8"  INPUT/INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
-    Fast-prep.sh scrun
+    Fast_prep.sh scrun
     cd scrun
     qsub qsub.parallel
 
 elif [ $1 == dosrun ]; then
-    Fast-prep.sh dosrun
+    Fast_prep.sh dosrun
     cd dosrun
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
@@ -31,7 +31,7 @@ elif [ $1 == dosrun ]; then
     sed -i "/NEDOS/c NEDOS = 1501" INCAR
     sed -i "/ICHARG/c ICHARG = 11" INCAR
     if [[ $2 == rwigs ]]; then
-        rwigs=$(cd ../scrun; Cellinfo.sh rwigs |awk '{print $4}')
+        rwigs=$(cd ../scrun; Cell_info.sh rwigs |awk '{print $4}')
         sed -i "/RWIGS/c RWIGS = ${rwigs//,/ }" INCAR
         sed -i "/NPAR/c NPAR = 1" INCAR
         sed -i "/LORBIT/c LORBIT = 0"  INCAR
@@ -45,7 +45,7 @@ elif [ $1 == dosrun ]; then
     qsub qsub.parallel
 
 elif [ $1 == bsrun ]; then
-    Fast-prep.sh bsrun
+    Fast_prep.sh bsrun
     cd bsrun
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
@@ -68,7 +68,7 @@ elif [ $1 == bsrun ]; then
     qsub qsub.parallel
 
 elif [ $1 == lobster-kp ]; then
-    Fast-prep.sh lobster-kp qlobster.kp.serial
+    Fast_prep.sh lobster-kp qlobster.kp.serial
     cd lobster-kp
     cp ../scrun/CONTCAR POSCAR
     sed -i '4c 17 17 17' KPOINTS
@@ -80,7 +80,7 @@ elif [ $1 == lobster-kp ]; then
     qsub qlobster.kp.serial
 
 elif [ $1 == lobster-prerun ]; then
-    Fast-prep.sh lobster qlobster.parallel
+    Fast_prep.sh lobster qlobster.parallel
     cd lobster
     if [[ -d ../lobster-kp ]]; then
         mv ../lobster-kp .

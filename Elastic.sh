@@ -1,7 +1,7 @@
 #!/bin/bash
 # Use: In the top working directory
 # S. K. R. Patil, S. V. Khare, B. R. Tuttle, J. K. Bording, and S. Kodambaka, Mechanical stability of possible structures of PtN investigated using first-principles calculations, PHYSICAL REVIEW B 73, 104118 2006, DOI: 10.1103/PhysRevB.73.104118
-# Elastic.sh  prep-fire / disp-solve / solve    cubic / tetragonal /...
+# Elastic.sh  start_test / disp-solve / solve  -y cubic / tetragonal /...
 
 if [ $2 == cubic ]; then
     dir_list="c11-c12 c44"
@@ -18,13 +18,13 @@ elif [ $2 == triclinic ]; then echo
 fi
 
 cd elastic 2> /dev/null
-if [ $1 == prep-fire ]; then
+if [ $1 == start_test ]; then
     mkdir elastic && cd elastic
     cp -r ../INPUT .
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
     for n in $dir_list
     do
-        Prep-fire.sh $n $2
+        VASP_start_test.sh $n -y $2
     done
 
 elif [ $1 == disp-solve ]; then
@@ -51,7 +51,7 @@ elif [ $1 == solve ]; then
         fi
     done
 
-    econst_raw=$econst_raw' '$A11' '$A21' '$A61' '$A12' '$A22' '$A32' '$A42' '$A52' '$A62
+#    econst_raw=$econst_raw' '$A11' '$A21' '$A61' '$A12' '$A22' '$A32' '$A42' '$A52' '$A62
     econst_raw=$(echo $econst_raw)
     econst_raw=[${econst_raw// /,}]
     _elastic_solver.py $2 $Vpcell $econst_raw | tee -a elastic_output.txt

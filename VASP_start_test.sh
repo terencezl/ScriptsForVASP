@@ -1,10 +1,10 @@
 #!/bin/bash
-# Prepare.sh entest -s start -e end -i interval -c scaling_const
-# Prepare.sh kptest -s start -e end -i interval -c scaling_const
-# Prepare.sh lctest -s start -e end -n num_points
-# Prepare.sh rttest -s start -e end -n num_points
-# Prepare.sh agltest -s start -e end -n num_points -r Ion_rotator_args
-# Prepare.sh c11-c12 -y cubic
+# VASP_start_test.sh entest -s start -e end -i interval -c scaling_const
+# VASP_start_test.sh kptest -s start -e end -i interval -c scaling_const
+# VASP_start_test.sh lctest -s start -e end -n num_points
+# VASP_start_test.sh rttest -s start -e end -n num_points
+# VASP_start_test.sh agltest -s start -e end -n num_points -r Ion_rotator_args
+# VASP_start_test.sh c11-c12 -y cubic
 
 function qsub_replacer {
     qname_1=${PWD##*/}
@@ -219,7 +219,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
         (
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
-        _prepare_strain.py $test_type $cryst_sys $dir
+        Strain_applier.py $test_type $cryst_sys $dir
         submission_trigger
         )
     done
