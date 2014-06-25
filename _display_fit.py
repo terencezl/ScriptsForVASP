@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# _Display_fit.py test_type line_begin line_to
+# _Display_fit.py test_type line_start data_line_count
 import sys
 import numpy as np
 import matplotlib
@@ -44,7 +44,7 @@ def murnaghan_fit(x, y):
 
 
 test_type = sys.argv[1]
-line_begin = int(sys.argv[2])
+line_start = int(sys.argv[2])
 data_line_count = int(sys.argv[3])
 with open(test_type + '_output.txt', 'rU') as f:
     test_output = f.readlines()
@@ -52,9 +52,9 @@ for i, line in enumerate(test_output):
     test_output[i] = line.split()
 
 if test_type == 'entest':
-    col_names = ['ENCUT', 'E_LC1(eV)', 'dE_LC1 (eV)', 'E_LC2(eV)', 'dE_LC2 (eV)', 'DE=E_LC2-E_LC1(eV)', 'dDE(eV)']
+    col_names = ['ENCUT', 'E_LC1(eV)', 'dE_LC1(eV)', 'E_LC2(eV)', 'dE_LC2(eV)', 'DE=E_LC2-E_LC1(eV)', 'dDE(eV)']
     data = np.zeros((data_line_count, 7))
-    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
+    for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
@@ -66,9 +66,9 @@ if test_type == 'entest':
     plt.ylabel('Energy diff (eV)')
 
 elif test_type == 'kptest':
-    col_names = ['nKP', 'E_LC1 (eV)', 'dE_LC1 (eV)', 'E_LC2 (eV)', 'dE_LC2 (eV)', 'DE=E_LC2-E_LC1 (eV)', 'dDE (eV)']
+    col_names = ['nKP', 'E_LC1(eV)', 'dE_LC1(eV)', 'E_LC2(eV)', 'dE_LC2(eV)', 'DE=E_LC2-E_LC1(eV)', 'dDE(eV)']
     data = np.zeros((data_line_count, 7))
-    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
+    for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
@@ -80,9 +80,9 @@ elif test_type == 'kptest':
     plt.ylabel('Energy diff (eV)')
 
 elif test_type == 'lctest':
-    col_names = ['Scaling factor (Ang)', 'Volume (Ang^3)', 'E (eV)']
+    col_names = ['ScalingConst(Ang)', 'Volume(Ang^3)', 'E(eV)']
     data = np.zeros((data_line_count, 3))
-    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
+    for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
     V_a_conversion_multiplier = data[0, 0] ** 3 / data[0, 1]
@@ -90,7 +90,7 @@ elif test_type == 'lctest':
 
     # fitting the Birch-Murnaghan equation of state
     (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(data[:, 1], data[:, 2])
-    scaling_factor_eqlbrm = (coeffs_vol_M[0] * V_a_conversion_multiplier) ** (1 / 3.)
+    scaling_const_eqlbrm = (coeffs_vol_M[0] * V_a_conversion_multiplier) ** (1 / 3.)
 
     # plotting the Birch-Murnaghan equation of state
     plt.plot(volume_fit_M, energy_fit_M, '-', label="B-M eqn of state")
@@ -99,14 +99,14 @@ elif test_type == 'lctest':
 
     # standrad output, directed to files by the bash script calling this python script
     print "%s" % result_str
-    print("Equilibrium scaling factor is {0}".format(scaling_factor_eqlbrm))
-    if scaling_factor_eqlbrm <= data[0, 0] or scaling_factor_eqlbrm >= data[-1, 0]:
+    print("Equilibrium scaling constant is {0}".format(scaling_const_eqlbrm))
+    if scaling_const_eqlbrm <= data[0, 0] or scaling_const_eqlbrm >= data[-1, 0]:
         print("!Equilibrium point is out of the considered range!")
     else:
         print("V0 = %f\nB0 = %f\nB0' = %f" % (coeffs_vol_M[0], coeffs_vol_M[1] * 160.2, coeffs_vol_M[2]))
         print("Total energy is {0}".format(coeffs_vol_M[3]))
         np.savetxt('eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)),
-                   '%15.6E', header='Volume (Ang^3) E (eV) ')
+                   '%15.6E', header='Volume(Ang^3) E(eV)')
 
     plt.xlabel(r'Volume ($\AA^{3}$)')
     plt.ylabel('E (eV)')
@@ -114,9 +114,9 @@ elif test_type == 'lctest':
     np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
 elif test_type == 'rttest':
-    col_names = ['Ratio', 'Volume (Ang^3)', 'E (eV)']
+    col_names = ['Ratio', 'Volume(Ang^3)', 'E(eV)']
     data = np.zeros((data_line_count, 3))
-    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
+    for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 2], 'o')
@@ -127,15 +127,15 @@ elif test_type == 'rttest':
     print("R-squared is {0}\nEquilibrium ratio is {1}\nThe polynomial is\n{2}".format(r_squared, ratio_eqlbrm, p_ratio))
     print("Minimal total energy is %f" % energy_fit.min())
     np.savetxt('polyfit_data.dat', np.column_stack((ratio_fit, energy_fit)),
-               '%15.6E', header='Ratio E (eV) ')
+               '%15.6E', header='Ratio E(eV)')
     plt.xlabel('Raito')
     plt.ylabel('E (eV)')
     np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
 elif test_type == 'agltest':
-    col_names = ['Angle (degree)', 'E (eV)']
+    col_names = ['Angle(degree)', 'E(eV)']
     data = np.zeros((data_line_count, 2))
-    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
+    for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 1], 'o')
@@ -144,9 +144,9 @@ elif test_type == 'agltest':
     np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
 elif re.search('.*c[1-9][1-9].*', test_type) or re.search('A.*', test_type):
-    col_names = ['Delta', 'E (eV)']
+    col_names = ['Delta', 'E(eV)']
     data = np.zeros((data_line_count, 2))
-    for i, row in enumerate(test_output[line_begin:line_begin + data_line_count]):
+    for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
     if re.search('.*c[1-9][1-9].*', test_type):

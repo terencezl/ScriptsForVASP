@@ -2,5 +2,5 @@
 # Use: In the top working directory,
 # Prep-fire.sh TEST_TYPE ...
 
-Prepare.sh $1 $2 $3 $4 $5
-Fire.sh $1 $2 $3 $4 $5
+Prepare.sh "$@"
+Fire.sh "$@"

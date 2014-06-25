@@ -1,10 +1,9 @@
 #!/bin/bash
-# The four input files and qsub.parallel should be prepared in the top working directory.
-# Prepare.sh entest min max step LC1
-# Prepare.sh kptest min max step LC1
-# Prepare.sh lctest min max step
-# Prepare.sh rttest min max step
-# Prepare.sh c11-c12 cubic
+# Prepare.sh entest -s start -e end -i interval -c scaling_const
+# Prepare.sh kptest -s start -e end -i interval -c scaling_const
+# Prepare.sh lctest -s start -e end -n num_points
+# Prepare.sh rttest -s start -e end -n num_points
+# Prepare.sh c11-c12 -y cubic
 
 function qsub_replacer {
     qname_1=${PWD##*/}
@@ -22,135 +21,137 @@ function qsub_replacer {
     sed -i "/^cd/c cd $PWD" $1
 }
 
-directory_name=$1
-mkdir "$directory_name" 2> /dev/null
-cd "$directory_name" || exit 1
-test_type=${directory_name%%_*}
-fname="$test_type""_output.txt"
+function create_copy_replace {
+    mkdir $1
+    cd $1
+    cp ../../INPUT/INCAR .
+    cp ../../INPUT/POSCAR .
+    cp ../../INPUT/POTCAR .
+    cp ../../INPUT/KPOINTS .
+    cp ../../INPUT/qsub.parallel .
+    qsub_replacer qsub.parallel
+}
 
-if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
-    lc1=$5
-    # get LC2=LC1+0.1. bc is calculator; bash doesn't support floats
-    lc2=$(echo "$lc1+0.1" | bc)
-    for ((n=$2; n<=$3; n=n+$4))
+function change_dir_name_with_hyphen {
+    for dir in $1
+    do
+        if [[ $dir == -* ]]; then dir=${dir#-}n; fi
+        echo $dir
+    done
+}
+
+
+directory_name=$1
+mkdir "$directory_name"
+cd "$directory_name"
+test_type="${directory_name%%_*}"
+fname="$test_type"_output.txt
+shift 1
+
+while getopts ":s:e:n:i:c:y:" opt; do
+  case $opt in
+    s)
+      start=$OPTARG
+      ;;
+    e)
+      end=$OPTARG
+      ;;
+    n)
+      num_points=$OPTARG
+      ;;
+    i)
+      interval=$OPTARG
+      ;;
+    c)
+      scaling_const=$OPTARG
+      ;;
+    y)
+      cryst_sys=$OPTARG
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+
+if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
+    lc1=$scaling_const
+    lc2=$(echo "print($lc1+0.1)" | python)
+    for ((dir=$start; dir<=$end; dir=$dir+$interval))
     do
         # subfolders for two LCs
-        for i in $n $n-1
+        for i in $dir $dir-1
         do
-            mkdir $i
-            cd $i
-            cp ../../INPUT/INCAR .
-            cp ../../INPUT/POSCAR .
-            cp ../../INPUT/POTCAR .
-            cp ../../INPUT/KPOINTS .
-            cp ../../INPUT/qsub.parallel .
-            if [ "$test_type" == "entest" ]; then
-                sed -i "s/.*ENCUT.*/ENCUT = $n/g" INCAR
+            create_copy_replace $dir
+            if [ $test_type == "entest" ]; then
+                sed -i "s/.*ENCUT.*/ENCUT = $dir/g" INCAR
             else
-                sed -i "4c $n $n $n" KPOINTS
+                sed -i "4c $dir $dir $dir" KPOINTS
             fi
             # replace the two LCs in their own POSCAR. Arguments about the generalized length is reserved
-            if [ $i == $n ]; then
+            if [ $i == $dir ]; then
                 sed -i "2c $lc1" POSCAR
             else
                 sed -i "2c $lc2" POSCAR
             fi
-            qsub_replacer qsub.parallel
             cd ..
         done
     done
 
-elif [[ "$test_type" == "lctest" ]]; then
-    # generate subfolders specified by float numbers
-    for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")
+elif [[ $test_type == "lctest" ]]; then
+    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
+    for dir in $dir_list
     do
-        # change decimal format from 5.1 to 5.10
-        i=$(echo "scale=3;$n/1" | bc)
-        # add dir_list of float numbers up
-        dir_list=$dir_list" "$i
-    done
-    for n in $dir_list
-    do
-        mkdir $n
-        cd $n
-        cp ../../INPUT/INCAR .
-        cp ../../INPUT/POSCAR .
-        cp ../../INPUT/POTCAR .
-        cp ../../INPUT/KPOINTS .
-#        cp ../../INPUT/WAVECAR .
-        cp ../../INPUT/qsub.parallel .
-        sed -i "2c $n" POSCAR
-        qsub_replacer qsub.parallel
+        create_copy_replace $dir
+        sed -i "2c $dir" POSCAR
         cd ..
     done
 
-elif [[ "$test_type" == "rttest" ]]; then
-    # generate subfolders specified by float numbers
-    for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")
+elif [[ $test_type == "rttest" ]]; then
+    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
+    dir_list=$(change_dir_name_with_hyphen $dir_list)
+    for dir in $dir_list
     do
-        # change decimal format from 5.1 to 5.10
-        i=$(echo "print('{0:.3f}'.format($n))" | python)
-        # add dir_list of float numbers up
-        dir_list=$dir_list" "$i
-    done
-    for n in $dir_list
-    do
-        mkdir $n
-        cd $n
-        cp ../../INPUT/INCAR .
-        cp ../../INPUT/POSCAR .
-        cp ../../INPUT/POTCAR .
-        cp ../../INPUT/KPOINTS .
-        cp ../../INPUT/WAVECAR .
-        cp ../../INPUT/qsub.parallel .
-        sed -i "s/@R@/$n/g" POSCAR
-        qsub_replacer qsub.parallel
+        create_copy_replace $dir
+        if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
+        sed -i "s/@R@/$dir/g" POSCAR
         cd ..
     done
 
-elif [[ "$test_type" == "agltest" ]]; then
-    for n in $(awk "BEGIN{for(i=$2;i<=$3;i+=$4)print i}")
+elif [[ $test_type == "agltest" ]]; then
+    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
+    dir_list=$(change_dir_name_with_hyphen $dir_list)
+    for dir in $dir_list
     do
-        n=$(echo "print('{0:f}'.format($n))" | python)
-        if [[ "$n" == -* ]]; then n=${n#-}n; fi
-        dir_list=$dir_list" "$n
-    done
-    for n in $dir_list
-    do
-        mkdir $n
-        cd $n
-        cp ../../INPUT/INCAR .
-        cp ../../INPUT/POSCAR .
-        cp ../../INPUT/POTCAR .
-        cp ../../INPUT/KPOINTS .
-        cp ../../INPUT/qsub.parallel .
-        if [[ "$n" == *n ]]; then n=-${n%n}; fi
-        _ions-position-rotator.py $n
-        qsub_replacer qsub.parallel
+        create_copy_replace $dir
+        if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
+        Ions_rotator.py "$@"
         cd ..
     done
 
-elif [[ $test_type == *c[1-9][1-9]* || $test_type == A* ]]; then
+elif [[ $test_type == *c[1-9][1-9]* ]]; then
     if [ $test_type == c44 ]; then
         dir_list="0.020 0.035 0.050n"
     elif [ $test_type == c11-c12 ]; then
         dir_list="0.020 0.030 0.040n"
     fi
-    for n in $dir_list
+    for dir in $dir_list
     do
-        mkdir $n
-        cd $n
-        cp ../../INPUT/INCAR .
-        cp ../../INPUT/POSCAR .
-        cp ../../INPUT/POTCAR .
-        cp ../../INPUT/KPOINTS .
-        cp ../../INPUT/qsub.parallel .
-        qsub_replacer qsub.parallel
-        if [[ "$n" == *n ]]; then n=-${n%n}; fi
-        _prepare_strain.py $test_type $2 $n
+        create_copy_replace $dir
+        if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
+        _prepare_strain.py $test_type $cryst_sys $dir
         cd ..
     done
 
 else
-    echo "Specify what you are going to test!"
+    echo "Specify what you are going to test!" >&2
+    cd ..
+    rm -r "$directory_name"
+    exit 1
 fi
