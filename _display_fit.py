@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# _Display_fit.py test_type line_from line_to
+# _Display_fit.py test_type line_begin line_to
 import sys
 import numpy as np
 import matplotlib
@@ -44,134 +44,118 @@ def murnaghan_fit(x, y):
 
 
 test_type = sys.argv[1]
+line_begin = int(sys.argv[2])
+data_line_count = int(sys.argv[3])
 with open(test_type + '_output.txt', 'rU') as f:
     test_output = f.readlines()
-line_from = int(sys.argv[2])
-line_to = int(sys.argv[3])
+for i, line in enumerate(test_output):
+    test_output[i] = line.split()
 
 if test_type == 'entest':
-    ENCUT = []
-    dE1 = []
-    dE2 = []
-    dDE = []
-    for i in test_output[line_from:line_to]:
-        ENCUT.append(float(i.split()[0]))
-        dE1.append(float(i.split()[2]))
-        dE2.append(float(i.split()[4]))
-        dDE.append(float(i.split()[6]))
-    plt.plot(ENCUT, dE1, 'x', ENCUT, dE2, '*', ENCUT, dDE, 'o')
-    plt.plot([ENCUT[0], ENCUT[-1]], [0.001, 0.001], 'k:')
+    col_names = ['ENCUT', 'E_LC1(eV)', 'dE_LC1 (eV)', 'E_LC2(eV)', 'dE_LC2 (eV)', 'DE=E_LC2-E_LC1(eV)', 'dDE(eV)']
+    data = np.zeros((data_line_count, 7))
+    for i, row in test_output[line_begin:line_begin + data_line_count]:
+        data[i] = row
+
+    plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
+    plt.plot(data[:, 0], data[:, 4], 's', label=col_names[4])
+    plt.plot(data[:, 0], data[:, 6], '^', label=col_names[6])
+    plt.axhline(0.001, ls=':', c='k')
     plt.grid(True)
     plt.xlabel('ENCUT (eV)')
-    plt.ylabel('dDE (eV)')
+    plt.ylabel('Energy diff (eV)')
 
 elif test_type == 'kptest':
-    nKP = []
-    dE1 = []
-    dE2 = []
-    dDE = []
-    for i in test_output[line_from:line_to]:
-        nKP.append(float(i.split()[0]))
-        dE1.append(float(i.split()[2]))
-        dE2.append(float(i.split()[4]))
-        dDE.append(float(i.split()[6]))
-    plt.plot(nKP, dE1, 'x', nKP, dE2, '*', nKP, dDE, 'o')
-    plt.plot([nKP[0], nKP[-1]], [0.001, 0.001], 'k:')
+    col_names = ['nKP', 'E_LC1 (eV)', 'dE_LC1 (eV)', 'E_LC2 (eV)', 'dE_LC2 (eV)', 'DE=E_LC2-E_LC1 (eV)', 'dDE (eV)']
+    data = np.zeros((data_line_count, 7))
+    for i, row in test_output[line_begin:line_begin + data_line_count]:
+        data[i] = row
+
+    plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
+    plt.plot(data[:, 0], data[:, 4], 's', label=col_names[4])
+    plt.plot(data[:, 0], data[:, 6], '^', label=col_names[6])
+    plt.axhline(0.001, ls=':', c='k')
     plt.grid(True)
     plt.xlabel('nKP')
-    plt.ylabel('dDE (eV)')
+    plt.ylabel('Energy diff (eV)')
 
 elif test_type == 'lctest':
-    scaling_factor = []
-    volume = []
-    energy = []
-    for i in test_output[line_from:line_to]:
-        scaling_factor.append(float(i.split()[0]))
-        volume.append(float(i.split()[1]))
-        energy.append(float(i.split()[2]))
-    scaling_factor = np.array(scaling_factor)
-    volume = np.array(volume)
-    energy = np.array(energy)
-    V_a_conversion_multiplier = scaling_factor[0] ** 3 / volume[0]
+    col_names = ['Scaling factor (Ang)', 'Volume (Ang^3)', 'E (eV)']
+    data = np.zeros((data_line_count, 3))
+    for i, row in test_output[line_begin:line_begin + data_line_count]:
+        data[i] = row
 
-    plt.plot(volume, energy, 'o', label="Original data")
+    V_a_conversion_multiplier = data[0, 0] ** 3 / data[0, 1]
+    plt.plot(data[:, 1], data[:, 2], 'o')
 
     # fitting the Birch-Murnaghan equation of state
-    (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(volume, energy)
+    (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(data[:, 1], data[:, 2])
     scaling_factor_eqlbrm = (coeffs_vol_M[0] * V_a_conversion_multiplier) ** (1 / 3.)
 
     # plotting the Birch-Murnaghan equation of state
-    plt.plot(volume_fit_M, energy_fit_M, '-', label="Birch-Murnaghan eqn of state")
+    plt.plot(volume_fit_M, energy_fit_M, '-', label="B-M eqn of state")
     result_str = "R-squared is %f" % r_squared_M
     plt.text(volume_fit_M[len(volume_fit_M) / 4], energy_fit_M[60], result_str)
 
     # standrad output, directed to files by the bash script calling this python script
     print "%s" % result_str
     print("Equilibrium scaling factor is {0}".format(scaling_factor_eqlbrm))
-    if scaling_factor_eqlbrm <= scaling_factor[0] or scaling_factor_eqlbrm >= scaling_factor[-1]:
+    if scaling_factor_eqlbrm <= data[0, 0] or scaling_factor_eqlbrm >= data[-1, 0]:
         print("!Equilibrium point is out of the considered range!")
     else:
         print("V0 = %f\nB0 = %f\nB0' = %f" % (coeffs_vol_M[0], coeffs_vol_M[1] * 160.2, coeffs_vol_M[2]))
         print("Total energy is {0}".format(coeffs_vol_M[3]))
-
-        np.savetxt('eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)), '%.6f', '\t')
+        np.savetxt('eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)),
+                   '%15.6E', header='Volume (Ang^3) E (eV) ')
 
     plt.xlabel(r'Volume ($\AA^{3}$)')
     plt.ylabel('E (eV)')
     plt.legend(loc=0)
-    np.savetxt('orig_data.dat', np.column_stack((volume, energy)), '%.6f', '\t')
+    np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
 elif test_type == 'rttest':
-    ratio = []
-    volume = []
-    energy = []
-    for i in test_output[line_from:line_to]:
-        ratio.append(float(i.split()[0]))
-        volume.append(float(i.split()[1]))
-        energy.append(float(i.split()[2]))
-    ratio = np.array(ratio)
-    volume = np.array(volume)
-    energy = np.array(energy)
-    plt.plot(ratio, energy, 'o')
-    (p_ratio, r_squared, ratio_fit, energy_fit) = polyfit(ratio, energy, 4)
+    col_names = ['Ratio', 'Volume (Ang^3)', 'E (eV)']
+    data = np.zeros((data_line_count, 3))
+    for i, row in test_output[line_begin:line_begin + data_line_count]:
+        data[i] = row
+
+    plt.plot(data[:, 0], data[:, 2], 'o')
+    (p_ratio, r_squared, ratio_fit, energy_fit) = polyfit(data[:, 0], data[:, 2], 3)
     ratio_eqlbrm = ratio_fit[energy_fit.argmin()]
     plt.plot(ratio_fit, energy_fit, '-')
 
     print("R-squared is {0}\nEquilibrium ratio is {1}\nThe polynomial is\n{2}".format(r_squared, ratio_eqlbrm, p_ratio))
     print("Minimal total energy is %f" % energy_fit.min())
-    np.savetxt('polyfit_data.dat', np.column_stack((ratio_fit, energy_fit)), '%.6f', '\t')
-    plt.xlabel('raito')
+    np.savetxt('polyfit_data.dat', np.column_stack((ratio_fit, energy_fit)),
+               '%15.6E', header='Ratio E (eV) ')
+    plt.xlabel('Raito')
     plt.ylabel('E (eV)')
-    np.savetxt('orig_data.dat', np.column_stack((ratio, energy)), '%.6f', '\t')
+    np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
 elif test_type == 'agltest':
-    angle = []
-    energy = []
-    for i in test_output[line_from:line_to]:
-        angle.append(float(i.split()[0]))
-        energy.append(float(i.split()[1]))
-    angle = np.array(angle)
-    energy = np.array(energy)
-    plt.plot(angle, energy, 'o')
-    plt.xlabel('angle')
-    plt.ylabel('E (eV)')
-    np.savetxt(test_type + '_orig_data.dat', np.column_stack((angle, energy)), '%.6f', '\t')
+    col_names = ['Angle (degree)', 'E (eV)']
+    data = np.zeros((data_line_count, 2))
+    for i, row in test_output[line_begin:line_begin + data_line_count]:
+        data[i] = row
 
-# elastic const display
+    plt.plot(data[:, 0], data[:, 1], 'o')
+    plt.xlabel('Angle (degree)')
+    plt.ylabel('E (eV)')
+    np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
+
 elif re.search('.*c[1-9][1-9].*', test_type) or re.search('A.*', test_type):
-    delta = []
-    energy = []
-    for i in test_output[line_from:line_to]:
-        delta.append(float(i.split()[0]))
-        energy.append(float(i.split()[1]))
+    col_names = ['Delta', 'E (eV)']
+    data = np.zeros((data_line_count, 2))
+    for i, row in test_output[line_begin:line_begin + data_line_count]:
+        data[i] = row
 
     if re.search('.*c[1-9][1-9].*', test_type):
-        (p, r_squared, delta_fit, energy_fit) = polyfit(delta, energy, 2)
-        plt.plot(delta, energy, 'o', delta_fit, energy_fit, '-')
+        (p, r_squared, delta_fit, energy_fit) = polyfit(data[:, 0], data[:, 1], 2)
+        plt.plot(data[:, 0], data[:, 1], 'o', delta_fit, energy_fit, '-')
         result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared is %f" % (p[2], p[1], p[0], r_squared)
     elif re.search('A.*', test_type):
-        (p, r_squared, delta_fit, energy_fit) = polyfit(delta, energy, 3)
-        plt.plot(delta, energy, 'o', delta_fit, energy_fit, '-')
+        (p, r_squared, delta_fit, energy_fit) = polyfit(data[:, 0], data[:, 1], 3)
+        plt.plot(data[:, 0], data[:, 1], 'o', delta_fit, energy_fit, '-')
         result_str = "E = %f x^3 + (%f) x^2 + (%f) x + (%f)\nR-squared is %f" % (p[3], p[2], p[1], p[0], r_squared)
 
     plt.text(delta_fit[len(delta_fit) / 4], energy_fit[6], result_str)
