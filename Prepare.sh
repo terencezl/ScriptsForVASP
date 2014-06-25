@@ -43,13 +43,13 @@ function change_dir_name_with_hyphen {
 
 directory_name="$1"
 [[ -d $directory_name ]] && [[ "$(ls -A $directory_name)" ]] && echo "Directory already exists!" && exit 1
-mkdir "$directory_name"
+mkdir "$directory_name" 2> /dev/null
 cd "$directory_name"
 test_type="${directory_name%%_*}"
 fname="$test_type"_output.txt
 shift 1
 
-while getopts ":s:e:n:i:c:y:" opt; do
+while getopts ":s:e:n:i:c:y:r:" opt; do
   case $opt in
     s)
       start=$OPTARG
