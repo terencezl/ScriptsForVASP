@@ -112,7 +112,7 @@ function argparse {
     done
 }
 
-directory_name="$1"
+if [[ "$1" == */ ]]; then directory_name=${1%/}; else directory_name=$1; fi
 test_type="${directory_name%%_*}"
 
 if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
