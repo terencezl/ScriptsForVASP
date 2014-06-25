@@ -61,7 +61,7 @@ if test_type == 'entest':
         dDE.append(float(i.split()[6]))
     plt.plot(ENCUT, dE1, 'x', ENCUT, dE2, '*', ENCUT, dDE, 'o')
     plt.plot([ENCUT[0], ENCUT[-1]], [0.001, 0.001], 'k:')
-    plt.grid()
+    plt.grid(True)
     plt.xlabel('ENCUT (eV)')
     plt.ylabel('dDE (eV)')
 
@@ -77,7 +77,7 @@ elif test_type == 'kptest':
         dDE.append(float(i.split()[6]))
     plt.plot(nKP, dE1, 'x', nKP, dE2, '*', nKP, dDE, 'o')
     plt.plot([nKP[0], nKP[-1]], [0.001, 0.001], 'k:')
-    plt.grid()
+    plt.grid(True)
     plt.xlabel('nKP')
     plt.ylabel('dDE (eV)')
 
