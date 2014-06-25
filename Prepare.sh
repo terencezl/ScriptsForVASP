@@ -53,20 +53,21 @@ function change_dir_name_with_hyphen {
 
 function submission_trigger {
     if [[ $is_submit ]]; then
+        echo -e '    \c'
         qsub qsub.parallel
     fi
 }
 
 
 directory_name="$1"
-echo "Creating test directory $directory_name..."
+echo "Creating test directory \'$directory_name\'..."
 if [[ -d $directory_name && "$(ls -A $directory_name)" ]]; then
-    echo "    Directory contains files or sub-directories."
+    echo "  Directory contains files or sub-directories."
 fi
 mkdir "$directory_name" 2> /dev/null
 cd "$directory_name"
 test_type="${directory_name%%_*}"
-echo "    Preparing $test_type..."
+echo "  Preparing $test_type..."
 fname="$test_type"_output.txt
 shift 1
 
