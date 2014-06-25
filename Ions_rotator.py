@@ -31,8 +31,12 @@ def main(arguments='-h'):
     parser.add_argument('-a', '--angle', type=float, required=True, help="""the rotation angle in degree,
                             counter-clockwise""")
     parser.add_argument('-i', '--POSCAR', default='POSCAR', help="the input POSCAR file name")
-    parser.add_argument('-o', '--output', default='POSCAR-rotated', help="the output file name")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-o', '--output', default='POSCAR-rotated', help="the output file name")
+    group.add_argument('-p', '--inplace', action='store_true', help="directly change POSCAR in place without creating a new file")
     args = parser.parse_args(arguments)
+    if args.inplace:
+        args.out = 'POSCAR'
 
     # np.set_printoptions(suppress=True)
     ions_line_number = np.array(args.lines) - 1  # machine counts from 0

@@ -3,6 +3,7 @@
 # Prepare.sh kptest -s start -e end -i interval -c scaling_const
 # Prepare.sh lctest -s start -e end -n num_points
 # Prepare.sh rttest -s start -e end -n num_points
+# Prepare.sh agltest -s start -e end -n num_points -r Ion_rotator_args
 # Prepare.sh c11-c12 -y cubic
 
 function qsub_replacer {
@@ -24,7 +25,11 @@ function qsub_replacer {
 function create_copy_replace {
     mkdir $1 2> /dev/null
     if [[ $? != 0 ]]; then
-        echo "$1 already exists. Overriding input files."
+        if [[ is_override ]]; then
+            echo "$1 already exists. Overriding input files."
+        else
+            echo "$1 already exists. Escaping input files."
+        fi
     else
         echo "Creating $1."
     fi
@@ -45,6 +50,12 @@ function change_dir_name_with_hyphen {
     done
 }
 
+function submission_trigger {
+    if [[ is_submit ]]; then
+        qsub qsub.parallel
+    fi
+}
+
 
 directory_name="$1"
 echo "Creating test directory $directory_name..."
@@ -58,7 +69,7 @@ echo "Preparing $test_type..."
 fname="$test_type"_output.txt
 shift 1
 
-while getopts ":s:e:n:i:c:y:r:" opt; do
+while getopts ":s:e:n:i:c:y:r:m:o" opt; do
   case $opt in
     s)
       start=$OPTARG
@@ -80,6 +91,14 @@ while getopts ":s:e:n:i:c:y:r:" opt; do
       ;;
     r)
       ions_rotator_args=$OPTARG
+      ;;
+    m)
+      is_submit=true
+      echo "-m triggered job submission."
+      ;;
+    o)
+      is_override=true
+      echo "-o triggered overriding existing subdirectories."
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -112,6 +131,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
             else
                 sed -i "2c $lc2" POSCAR
             fi
+            submission_trigger
             )
         done
     done
@@ -123,6 +143,7 @@ elif [[ $test_type == "lctest" ]]; then
         (
         create_copy_replace $dir
         sed -i "2c $dir" POSCAR
+        submission_trigger
         )
     done
 
@@ -135,6 +156,7 @@ elif [[ $test_type == "rttest" ]]; then
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
         sed -i "s/@R@/$dir/g" POSCAR
+        submission_trigger
         )
     done
 
@@ -147,6 +169,7 @@ elif [[ $test_type == "agltest" ]]; then
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
         Ions_rotator.py "$ions_rotator_args" -a $dir
+        submission_trigger
         )
     done
 
@@ -162,6 +185,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
         _prepare_strain.py $test_type $cryst_sys $dir
+        submission_trigger
         )
     done
 
