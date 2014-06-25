@@ -22,7 +22,12 @@ function qsub_replacer {
 }
 
 function create_copy_replace {
-    mkdir $1
+    mkdir $1 2> /dev/null
+    if [[ $? != 0 ]]; then
+        echo "$1 already exists. Overriding input files."
+    else
+        echo "Creating $1."
+    fi
     cd $1
     cp ../../INPUT/INCAR .
     cp ../../INPUT/POSCAR .
@@ -42,10 +47,14 @@ function change_dir_name_with_hyphen {
 
 
 directory_name="$1"
-[[ -d $directory_name ]] && [[ "$(ls -A $directory_name)" ]] && echo "Warning: Directory contains files!"
+echo "Creating test directory $directory_name..."
+if [[ -d $directory_name && "$(ls -A $directory_name)" ]]; then
+    echo "Warning: Directory contains files or sub-directories. Existing sub-directories will be overriden."
+fi
 mkdir "$directory_name" 2> /dev/null
 cd "$directory_name"
 test_type="${directory_name%%_*}"
+echo "Preparing $test_type..."
 fname="$test_type"_output.txt
 shift 1
 
@@ -91,6 +100,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     do
         for i in $dir $dir-1
         do
+            (
             create_copy_replace $i
             if [ $test_type == "entest" ]; then
                 sed -i "s/.*ENCUT.*/ENCUT = $dir/g" INCAR
@@ -102,7 +112,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
             else
                 sed -i "2c $lc2" POSCAR
             fi
-            cd ..
+            )
         done
     done
 
@@ -110,9 +120,10 @@ elif [[ $test_type == "lctest" ]]; then
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     for dir in $dir_list
     do
+        (
         create_copy_replace $dir
         sed -i "2c $dir" POSCAR
-        cd ..
+        )
     done
 
 elif [[ $test_type == "rttest" ]]; then
@@ -120,10 +131,11 @@ elif [[ $test_type == "rttest" ]]; then
     dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
     do
+        (
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
         sed -i "s/@R@/$dir/g" POSCAR
-        cd ..
+        )
     done
 
 elif [[ $test_type == "agltest" ]]; then
@@ -131,10 +143,11 @@ elif [[ $test_type == "agltest" ]]; then
     dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
     do
+        (
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
-        Ions_rotator.py "$ions_rotator_args"
-        cd ..
+        Ions_rotator.py "$ions_rotator_args" -a $dir
+        )
     done
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then
@@ -145,10 +158,11 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
     fi
     for dir in $dir_list
     do
+        (
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
         _prepare_strain.py $test_type $cryst_sys $dir
-        cd ..
+        )
     done
 
 else
