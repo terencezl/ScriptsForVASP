@@ -25,10 +25,10 @@ function qsub_replacer {
 function create_copy_replace {
     mkdir $1 2> /dev/null
     if [[ $? != 0 ]]; then
-        if [[ is_override ]]; then
-            echo "  $1 already exists. Overriding input files."
+        if [[ $is_override ]]; then
+            echo "    $1 already exists. Overriding input files."
         else
-            echo "  $1 already exists. Escaping input files."
+            echo "    $1 already exists. Escaping input files."
             exit 1
         fi
     else
@@ -52,7 +52,7 @@ function change_dir_name_with_hyphen {
 }
 
 function submission_trigger {
-    if [[ is_submit ]]; then
+    if [[ $is_submit ]]; then
         qsub qsub.parallel
     fi
 }
@@ -61,16 +61,16 @@ function submission_trigger {
 directory_name="$1"
 echo "Creating test directory $directory_name..."
 if [[ -d $directory_name && "$(ls -A $directory_name)" ]]; then
-    echo "  Directory contains files or sub-directories."
+    echo "    Directory contains files or sub-directories."
 fi
 mkdir "$directory_name" 2> /dev/null
 cd "$directory_name"
 test_type="${directory_name%%_*}"
-echo "Preparing $test_type..."
+echo "    Preparing $test_type..."
 fname="$test_type"_output.txt
 shift 1
 
-while getopts ":s:e:n:i:c:y:r:m:o" opt; do
+while getopts ":s:e:n:i:c:y:r:mo" opt; do
     case $opt in
     s)
         start=$OPTARG
