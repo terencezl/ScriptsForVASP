@@ -38,7 +38,6 @@ def main(arguments='-h'):
     ions_line_number = np.array(args.lines) - 1  # machine counts from 0
 
     # define the rotation matrix A. Here we use the active rotation scheme, i.e. rotating the object
-    # direction = [u_x, u_y, u_z] = [np.sqrt(2), 0, 1]/np.sqrt(3)
     [u_x, u_y, u_z] = args.direction / np.linalg.norm(args.direction)
     angle = args.angle / 180. * np.pi
     A = np.eye(3) * np.cos(angle) + np.array([[0, -u_z, u_y], [u_z, 0, -u_x], [-u_y, u_x, 0]]) \
@@ -69,9 +68,6 @@ def main(arguments='-h'):
 
     # add the translational vector
     ions_position_new = ions_position_new + args.center
-    # display the rotated ion positions
-    # for i in ions_position_new:
-    #     print('{0[0]:11.8f}  {0[1]:11.8f}  {0[2]:11.8f}'.format(i))
 
     ions_position_new_str = [''] * len(ions_position_new)
     for i in range(len(ions_position_new)):
