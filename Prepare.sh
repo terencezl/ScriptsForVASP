@@ -42,7 +42,7 @@ function change_dir_name_with_hyphen {
 
 
 directory_name=$1
-mkdir "$directory_name"
+mkdir "$directory_name" || exit 1
 cd "$directory_name"
 test_type="${directory_name%%_*}"
 fname="$test_type"_output.txt
@@ -85,16 +85,14 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     lc2=$(echo "print($lc1+0.1)" | python)
     for ((dir=$start; dir<=$end; dir=$dir+$interval))
     do
-        # subfolders for two LCs
         for i in $dir $dir-1
         do
-            create_copy_replace $dir
+            create_copy_replace $i
             if [ $test_type == "entest" ]; then
                 sed -i "s/.*ENCUT.*/ENCUT = $dir/g" INCAR
             else
                 sed -i "4c $dir $dir $dir" KPOINTS
             fi
-            # replace the two LCs in their own POSCAR. Arguments about the generalized length is reserved
             if [ $i == $dir ]; then
                 sed -i "2c $lc1" POSCAR
             else
