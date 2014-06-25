@@ -26,12 +26,13 @@ function create_copy_replace {
     mkdir $1 2> /dev/null
     if [[ $? != 0 ]]; then
         if [[ is_override ]]; then
-            echo "$1 already exists. Overriding input files."
+            echo "  $1 already exists. Overriding input files."
         else
-            echo "$1 already exists. Escaping input files."
+            echo "  $1 already exists. Escaping input files."
+            exit 1
         fi
     else
-        echo "Creating $1."
+        echo "  Creating $1."
     fi
     cd $1
     cp ../../INPUT/INCAR .
@@ -60,7 +61,7 @@ function submission_trigger {
 directory_name="$1"
 echo "Creating test directory $directory_name..."
 if [[ -d $directory_name && "$(ls -A $directory_name)" ]]; then
-    echo "Warning: Directory contains files or sub-directories. Existing sub-directories will be overriden."
+    echo "  Directory contains files or sub-directories."
 fi
 mkdir "$directory_name" 2> /dev/null
 cd "$directory_name"
@@ -70,44 +71,44 @@ fname="$test_type"_output.txt
 shift 1
 
 while getopts ":s:e:n:i:c:y:r:m:o" opt; do
-  case $opt in
+    case $opt in
     s)
-      start=$OPTARG
-      ;;
+        start=$OPTARG
+        ;;
     e)
-      end=$OPTARG
-      ;;
+        end=$OPTARG
+        ;;
     n)
-      num_points=$OPTARG
-      ;;
+        num_points=$OPTARG
+        ;;
     i)
-      interval=$OPTARG
-      ;;
+        interval=$OPTARG
+        ;;
     c)
-      scaling_const=$OPTARG
-      ;;
+        scaling_const=$OPTARG
+        ;;
     y)
-      cryst_sys=$OPTARG
-      ;;
+        cryst_sys=$OPTARG
+        ;;
     r)
-      ions_rotator_args=$OPTARG
-      ;;
+        ions_rotator_args=$OPTARG
+        ;;
     m)
-      is_submit=true
-      echo "-m triggered job submission."
-      ;;
+        is_submit=true
+        echo "-m triggered job submission."
+        ;;
     o)
-      is_override=true
-      echo "-o triggered overriding existing subdirectories."
-      ;;
+        is_override=true
+        echo "-o triggered overriding existing subdirectories."
+        ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
+        echo "Invalid option: -$OPTARG" >&2
+        exit 1
+        ;;
     :)
-      echo "Option -$OPTARG requires an argument." >&2
-      exit 1
-      ;;
+        echo "Option -$OPTARG requires an argument." >&2
+        exit 1
+        ;;
   esac
 done
 
