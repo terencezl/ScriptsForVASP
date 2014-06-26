@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# _Display_fit.py test_type line_start data_line_count
+# _display_fit.py test_type line_start data_line_count
 import sys
 import numpy as np
 import matplotlib
@@ -51,6 +51,7 @@ with open(test_type + '_output.txt', 'rU') as f:
 for i, line in enumerate(test_output):
     test_output[i] = line.split()
 
+print('')
 if test_type == 'entest':
     col_names = ['ENCUT', 'E_LC1(eV)', 'dE_LC1(eV)', 'E_LC2(eV)', 'dE_LC2(eV)', 'DE=E_LC2-E_LC1(eV)', 'dDE(eV)']
     data = np.zeros((data_line_count, 7))
@@ -87,24 +88,23 @@ elif test_type == 'lctest':
 
     V_a_conversion_multiplier = data[0, 0] ** 3 / data[0, 1]
     plt.plot(data[:, 1], data[:, 2], 'o')
-
     # fitting the Birch-Murnaghan equation of state
     (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(data[:, 1], data[:, 2])
     scaling_const_eqlbrm = (coeffs_vol_M[0] * V_a_conversion_multiplier) ** (1 / 3.)
 
     # plotting the Birch-Murnaghan equation of state
     plt.plot(volume_fit_M, energy_fit_M, '-', label="B-M eqn of state")
-    result_str = "R-squared is %f" % r_squared_M
+    result_str = "R-squared = %f" % r_squared_M
     plt.text(volume_fit_M[len(volume_fit_M) / 4], energy_fit_M[60], result_str)
 
     # standrad output, directed to files by the bash script calling this python script
-    print "%s" % result_str
-    print("Equilibrium scaling constant is {0}".format(scaling_const_eqlbrm))
+    print(result_str)
+    print("Equilibrium scaling constant = {0}".format(scaling_const_eqlbrm))
     if scaling_const_eqlbrm <= data[0, 0] or scaling_const_eqlbrm >= data[-1, 0]:
         print("!Equilibrium point is out of the considered range!")
     else:
         print("V0 = %f\nB0 = %f\nB0' = %f" % (coeffs_vol_M[0], coeffs_vol_M[1] * 160.2, coeffs_vol_M[2]))
-        print("Total energy is {0}".format(coeffs_vol_M[3]))
+        print("Total energy = {0}".format(coeffs_vol_M[3]))
         np.savetxt('eosfit_data.dat', np.column_stack((volume_fit_M, energy_fit_M)),
                    '%15.6E', header='Volume(Ang^3) E(eV)')
 
@@ -124,8 +124,8 @@ elif test_type == 'rttest':
     ratio_eqlbrm = ratio_fit[energy_fit.argmin()]
     plt.plot(ratio_fit, energy_fit, '-')
 
-    print("R-squared is {0}\nEquilibrium ratio is {1}\nThe polynomial is\n{2}".format(r_squared, ratio_eqlbrm, p_ratio))
-    print("Minimal total energy is %f" % energy_fit.min())
+    print("R-squared = {0}\nEquilibrium ratio = {1}\nThe polynomial is\n{2}".format(r_squared, ratio_eqlbrm, p_ratio))
+    print("Minimal total energy = %f" % energy_fit.min())
     np.savetxt('polyfit_data.dat', np.column_stack((ratio_fit, energy_fit)),
                '%15.6E', header='Ratio E(eV)')
     plt.xlabel('Raito')
@@ -152,11 +152,11 @@ elif re.search('.*c[1-9][1-9].*', test_type) or re.search('A.*', test_type):
     if re.search('.*c[1-9][1-9].*', test_type):
         (p, r_squared, delta_fit, energy_fit) = polyfit(data[:, 0], data[:, 1], 2)
         plt.plot(data[:, 0], data[:, 1], 'o', delta_fit, energy_fit, '-')
-        result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared is %f" % (p[2], p[1], p[0], r_squared)
+        result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared = %f" % (p[2], p[1], p[0], r_squared)
     elif re.search('A.*', test_type):
         (p, r_squared, delta_fit, energy_fit) = polyfit(data[:, 0], data[:, 1], 3)
         plt.plot(data[:, 0], data[:, 1], 'o', delta_fit, energy_fit, '-')
-        result_str = "E = %f x^3 + (%f) x^2 + (%f) x + (%f)\nR-squared is %f" % (p[3], p[2], p[1], p[0], r_squared)
+        result_str = "E = %f x^3 + (%f) x^2 + (%f) x + (%f)\nR-squared = %f" % (p[3], p[2], p[1], p[0], r_squared)
 
     plt.text(delta_fit[len(delta_fit) / 4], energy_fit[6], result_str)
     plt.xlabel('Delta (ratio)')
