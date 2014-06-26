@@ -1,5 +1,4 @@
-#!/bin/bash
-# Rerun.sh
+#!/usr/bin/env bash
 
 cd "$1" || exit 1
 mkdir relax

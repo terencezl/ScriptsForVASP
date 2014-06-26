@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # VASP_start_test.sh entest -s start -e end -i interval -c scaling_const
 # VASP_start_test.sh kptest -s start -e end -i interval -c scaling_const
 # VASP_start_test.sh lctest -s start -e end -n num_points

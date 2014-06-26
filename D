@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 count=$1
 if [ -z $count ]; then count=1; fi
 qdel $(qstat | grep utl0268 | tail -$count | awk '{print $1;}')

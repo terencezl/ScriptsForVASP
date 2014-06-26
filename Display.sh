@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function prepare_dir {
     # creates global variable dir_list without annoying trailing slashes.
@@ -30,16 +30,20 @@ function make_dir_list_sortable {
 function sort_list {
     # takes one sortable dir_list.
     # echo returns the sorted dir_list.
-    # creates global variables smallest, largest, second_small and interval.
     local dir_list_sortable="$1"
+    local dir_list_sorted
     dir_list_sortable="${dir_list_sortable// /\\n}"
     dir_list_sorted=$(echo -e "$dir_list_sortable" | sort -n)
-    exit 0
+    echo $dir_list_sorted
+}
+
+function prepare_header {
+    # creates global variables smallest, largest, second_small and interval.
+    local dir_list_sorted="$1"
     smallest=$(echo $dir_list_sorted | awk '{print $1}')
     largest=$(echo $dir_list_sorted | awk '{print $NF}')
     second_small=$(echo $dir_list_sorted | awk '{print $2}')
     interval=$(echo "print($second_small - $smallest)" | python)
-    echo $dir_list_sorted
 }
 
 function force_entropy_detector {
@@ -85,7 +89,8 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     do
         if [[ "$dir" != *-1 ]]; then dir_list_enkp=$dir_list_enkp" "$dir; fi
     done
-    dir_list=$(sort_list "$dir_list"_enkp)
+    dir_list=$(sort_list "$dir_list_enkp")
+    prepare_header "$dir_list"
     lc1=$(sed -n '2p' $smallest/POSCAR)
     lc2=$(echo "$lc1+0.1" | bc)
     # echo some headers to file.
@@ -129,7 +134,8 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
 
 elif [[ $test_type == "lctest" ]]; then
     prepare_dir
-#    dir_list=$(sort_list "$dir_list")
+    dir_list=$(sort_list "$dir_list")
+    prepare_header "$dir_list"
     # echo some headers to file.
     echo -e "Scaling constant from $smallest to $largest interval $interval" >> $fname
     echo -e "\nScalingConst(Ang) Volume(Ang^3)     E(eV)" >> $fname
@@ -177,6 +183,7 @@ elif [[ $test_type == "lctest" ]]; then
 elif [[ $test_type == "rttest" ]]; then
     prepare_dir
     dir_list=$(sort_list "$dir_list")
+    prepare_header "$dir_list"
     # echo some headers to file.
     echo -e "Ratio from $smallest to $largest interval $interval" >> $fname
     echo -e "\n    Ratio    Volume     E(eV)" >> $fname
@@ -207,6 +214,7 @@ elif [[ $test_type == "agltest" ]]; then
     prepare_dir
     dir_list_minus_sign=$(make_dir_list_sortable $dir_list)
     dir_list_minus_sign=$(sort_list "$dir_list"_minus_sign)
+    prepare_header "$dir_list_minus_sign"
     # echo some headers to file.
     echo -e "Angle from $smallest to $largest interval $interval" >> $fname
     echo -e "\n    Angle     E(eV)" >> $fname
@@ -261,6 +269,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
     prepare_dir
     dir_list_minus_sign=$(make_dir_list_sortable $dir_list)
     dir_list_minus_sign=$(sort_list "$dir_list"_minus_sign)
+    prepare_header "$dir_list_minus_sign"
     # echo some headers to file.
     echo "Delta from $smallest to $largest with interval $interval" >> $fname
     echo -e "\nDelta(ratio)     E(eV)" >> $fname

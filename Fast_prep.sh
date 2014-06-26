@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function qsub_replacer {
     qname_1=${PWD##*/}

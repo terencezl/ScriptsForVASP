@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Use: In the TMN working directory where there is a list of folders by the name of elements
 # Change element.dat first
 

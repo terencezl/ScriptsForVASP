@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # General view and calculation of cell parameters, including rwigs
 # Use it under a folder that has an OUTCAR and that has the equilibrium state of ions
 # Cell_info.sh
