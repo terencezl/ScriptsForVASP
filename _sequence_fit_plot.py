@@ -63,6 +63,7 @@ if test_type == 'entest':
     plt.plot(data[:, 0], data[:, 6], '^', label=col_names[6])
     plt.axhline(0.001, ls=':', c='k')
     plt.grid(True)
+    plt.legend()
     plt.xlabel('ENCUT (eV)')
     plt.ylabel('Energy diff (eV)')
 
@@ -77,6 +78,7 @@ elif test_type == 'kptest':
     plt.plot(data[:, 0], data[:, 6], '^', label=col_names[6])
     plt.axhline(0.001, ls=':', c='k')
     plt.grid(True)
+    plt.legend()
     plt.xlabel('nKP')
     plt.ylabel('Energy diff (eV)')
 
