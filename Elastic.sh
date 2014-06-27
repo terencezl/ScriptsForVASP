@@ -63,9 +63,9 @@ if [[ "$test_type" == test ]]; then
     for dir in $dir_list
     do
         if [[ $is_submit ]]; then
-            Sequence_test.sh $dir $cryst_sys -fm
+            SequenceTest.sh $dir $cryst_sys -fm
         else
-            Sequence_test.sh $dir $cryst_sys -f
+            SequenceTest.sh $dir $cryst_sys -f
         fi
     done
 
@@ -79,7 +79,7 @@ elif [[ "$test_type" == disp-solve ]]; then
     fi
     for dir in $dir_list
     do
-        Sequence_disp.sh $dir
+        SequenceDisp.sh $dir
     done
 
     echo $PWD | tee $fname

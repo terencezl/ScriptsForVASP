@@ -4,6 +4,8 @@ directory_name="$1"
 
 if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
     cd "$directory_name"
+elif [[ -z "$directory_name" ]]; then
+    :
 else
     echo "The directory $directory_name does not exist!"
     exit 1

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Ions_rotator.py -l [23,24,25,26,27,28] -c [0,0.5,0.75] -u [np.sqrt(2),0,1] -a 60 -i POSCAR -o POSCAR-rotated
+# IonsRotator.py -l [23,24,25,26,27,28] -c [0,0.5,0.75] -u [np.sqrt(2),0,1] -a 60 -i POSCAR -o POSCAR-rotated
 
 import sys
 import numpy as np
@@ -15,8 +15,8 @@ def main(arguments='-h'):
 
     Usages
     ------
-    main(), main('-h') : as if ``Ions_rotator.py -h`` is executed from command line.
-    main(string) : as if ``Ions_rotator.py content_of_string`` is executed from command line.
+    main(), main('-h') : as if ``IonsRotator.py -h`` is executed from command line.
+    main(string) : as if ``IonsRotator.py content_of_string`` is executed from command line.
     """
     arguments = arguments.split()
     parser = argparse.ArgumentParser(description="""Rotate the ions in certain lines of POSCAR

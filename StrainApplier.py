@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Used by Sequence_test.sh for altering the real space basis_vectors in POSCAR
+# Used by SequenceTest.sh for altering the real space basis_vectors in POSCAR
 
 import sys
 import numpy as np
@@ -15,8 +15,8 @@ def main(arguments='-h'):
 
     Usages
     ------
-    main(), main('-h') : as if ``Strain_applier.py -h`` is executed from command line.
-    main(string) : as if ``Ions_rotator.py content_of_string`` is executed from command line.
+    main(), main('-h') : as if ``StrainApplier.py -h`` is executed from command line.
+    main(string) : as if ``StrainApplier.py content_of_string`` is executed from command line.
     """
     arguments = arguments.split()
     parser = argparse.ArgumentParser(description="""Apply strain to the cell basis vectors in POSCAR.""")

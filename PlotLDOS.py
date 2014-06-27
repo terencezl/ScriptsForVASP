@@ -58,8 +58,8 @@ def main(arguments='-h'):
             The data of the 2nd atom from DOSCAR.
     Usages
     ------
-    main(), main('-h') : as if ``Plot_ldos.py -h`` is executed from command line.
-    main(string) : as if ``Plot_ldos.py content_of_string`` is executed from command line.
+    main(), main('-h') : as if ``PlotLDOS.py -h`` is executed from command line.
+    main(string) : as if ``PlotLDOS.py content_of_string`` is executed from command line.
     """
     arguments = arguments.split()
     parser = argparse.ArgumentParser(description='''Plot the local projected density of states, with

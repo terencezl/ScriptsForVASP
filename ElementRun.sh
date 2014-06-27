@@ -3,7 +3,7 @@
 # Change element.dat first
 
 element_list=$(echo $(cat $1))
-echo "Tell me what you wish to do: prepare / lctest / display / equi-relax / copy-CONTCAR / elastic / solve / scrun / dosrun / plot-ldos / plot-tdos / bader-prerun / bader"
+echo "Tell me what you wish to do: prepare / lctest / display / equi-relax / copy-CONTCAR / elastic / solve / SCrun / DOSrun / plot-ldos / plot-tdos / bader-prerun / bader"
 read -r test_type
 
 # create INPUT folder in the selected cryst structure of each element
@@ -35,7 +35,7 @@ elif [ $test_type == display ]; then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Sequence_disp.sh lctest
+        SequenceDisp.sh lctest
         echo
         cd ..
     done
@@ -54,7 +54,7 @@ elif [ $test_type == copy-CONTCAR ];then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Sequence_disp.sh equi-relax
+        SequenceDisp.sh equi-relax
         cd ..
     done
 
@@ -81,8 +81,8 @@ elif [ $test_type == solve ]; then
         cd ..
     done
 
-# do the self-consistent run, find k-point dosrun, bandstructure run, and plot them."
-elif [ $test_type == scrun ] || [ $test_type == dosrun ] || [ $test_type == bsrun ] || [ $test_type == plot-ldos ] || [ $test_type == plot-tdos ]; then
+# do the self-consistent run, find k-point DOSrun, bandstructure run, and plot them."
+elif [ $test_type == SCrun ] || [ $test_type == DOSrun ] || [ $test_type == BSrun ] || [ $test_type == plot-ldos ] || [ $test_type == plot-tdos ]; then
     if [ $test_type == plot-ldos ] || [ $test_type == plot-tdos ]; then
         echo "Tell me the size of the frame. e.g. [-20,20,-5,5] for ldos, [-20,20,0,10] for tdos."
         read -r frame_size

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Sequence_test.sh entest -s start -e end -i interval -c scaling_const
-# Sequence_test.sh kptest -s start -e end -i interval -c scaling_const
-# Sequence_test.sh lctest -s start -e end -n num_points
-# Sequence_test.sh rttest -s start -e end -n num_points
-# Sequence_test.sh agltest -s start -e end -n num_points -r Ion_rotator_args
-# Sequence_test.sh c11-c12 cubic
+# SequenceTest.sh entest -s start -e end -i interval -c scaling_const
+# SequenceTest.sh kptest -s start -e end -i interval -c scaling_const
+# SequenceTest.sh lctest -s start -e end -n num_points
+# SequenceTest.sh rttest -s start -e end -n num_points
+# SequenceTest.sh agltest -s start -e end -n num_points -r Ion_rotator_args
+# SequenceTest.sh c11-c12 cubic
 
 function create_copy_replace {
     mkdir "$1" 2> /dev/null
@@ -179,7 +179,7 @@ elif [[ "$test_type" == "agltest" ]]; then
         (
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
-        Ions_rotator.py $ions_rotator_args -a $dir -p
+        IonsRotator.py $ions_rotator_args -a $dir -p
         submission_trigger
         )
     done
@@ -203,7 +203,7 @@ elif [[ "$test_type" == *c[1-9][1-9]* ]]; then
         (
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
-        Strain_applier.py "$test_type" "$cryst_sys" "$dir" -p
+        StrainApplier.py "$test_type" "$cryst_sys" "$dir" -p
         submission_trigger
         )
     done

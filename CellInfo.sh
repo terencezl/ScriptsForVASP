@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # General view and calculation of cell parameters, including rwigs
 # Use it under a folder that has an OUTCAR and that has the equilibrium state of ions
-# Cell_info.sh
-# Cell_info.sh rwigs
+# CellInfo.sh
+# CellInfo.sh rwigs
 
 test_type="$1"
 Vpcell=$(cat OUTCAR |grep 'volume of cell' |tail -1| awk '{print $5;}')

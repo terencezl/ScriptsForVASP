@@ -23,15 +23,15 @@ def plot_helper_figure(args, ISPIN):
         plt.figure()
     else:
         plt.figure(args.figure.pop(0))
-        
-        
+
+
 def plot_helper_settings(args):
     plt.axhline(y=0, c='k')
     plt.axvline(x=0, ls='--', c='k')
     if args.axis_range:
         plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2], args.axis_range[3]])
     plt.xlabel('Energy (eV)')
-    plt.ylabel('-pCOHP (Arbituary Unit / Unit Cell / eV)')
+    plt.ylabel('TDOS (States / Unit Cell / eV)')
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         plt.legend(loc=0,  fontsize='small')
@@ -45,7 +45,7 @@ def plot_helper_close():
     if not matplotlib.is_interactive():
         plt.close()
 
-
+            
 def main(arguments='-h'):
     """
     The main function that does the data grepping and plotting.
@@ -54,43 +54,34 @@ def main(arguments='-h'):
         Command line arguments and options. Typically ' '.join(sys.argv[1:]).
     :return:
         col_names: list
-            The column names of data from COHPCAR.lobster in a list.
-        COHP_data: 2D numpy array
-            The data from COHPCAR.lobster.
+            The column names of data from DOSCAR in a list.
+        DOS_data: 2D numpy array
+            The data from DOSCAR.
     Usages
     ------
-    main(), main('-h') : as if ``Plot_cohp.py -h`` is executed from command line.
-    main(string) : as if ``Plot_cohp.py content_of_string`` is executed from command line.
+    main(), main('-h') : as if ``PlotTDOS.py -h`` is executed from command line.
+    main(string) : as if ``PlotTDOS.py content_of_string`` is executed from command line.
     """
     arguments = arguments.split()
-    parser = argparse.ArgumentParser(description='''Plot the -COHP, with consideration of spin-polarization.''')
-    parser.add_argument('bond_to_plot', type=int, help='No. of bond to plot')
+    parser = argparse.ArgumentParser(description='''Plot the total density of states, with
+                consideration of spin-polarization.''')
     parser.add_argument('-a', '--axis-range', type=eval, help='''the x and y range of axis in the form of
                 '[Xmin,Xmax,Ymin,Ymax]'. If ISPIN=2, this option specifies the combined spin.''')
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
-    parser.add_argument('-i', '--input', metavar='COHPCAR.lobster', default='COHPCAR.lobster', help="the input COHPCAR.lobster file name")
-    parser.add_argument('-o', '--output-prefix', default='COHP', help="the output files' prefix")
+    parser.add_argument('-i', '--input', metavar='DOSCAR', default='DOSCAR', help="the input DOSCAR file name")
+    parser.add_argument('-o', '--output-prefix', default='TDOS', help="the output files' prefix")
     parser.add_argument('-f', '--figure', type=eval, help='''the figure number one wishes to plot on,
                                     in the form of '[1,2,...]'. Useful in interactive mode.''')
     args = parser.parse_args(arguments)
-    n_bond_to_plot = args.bond_to_plot
     ISPIN = args.ISPIN
 
     with open(args.input, 'r') as f:
-        COHPCAR = f.readlines()
+        DOSCAR = f.readlines()
+    for i in range(len(DOSCAR)):
+        DOSCAR[i] = DOSCAR[i].split()
 
-    for N_headerlines, line in enumerate(COHPCAR):
-        if re.match(r'No\.\d*:.*\(.*\)', line):
-            break
-    for N_bonds, line in enumerate(COHPCAR[N_headerlines:]):
-        if not re.match(r'No\.\d*:.*\(.*\)', line):
-            break
-    data_start_line = N_headerlines + N_bonds
-
-    for i in range(len(COHPCAR)):
-        COHPCAR[i] = COHPCAR[i].split()
-
-    N_steps = int(COHPCAR[1][2])
+    N_steps = int(DOSCAR[5][2])
+    Ef = float(DOSCAR[5][3])
 
     if args.ISPIN:
         print "Using user specified ISPIN."
@@ -110,64 +101,52 @@ def main(arguments='-h'):
             except IOError:
                 raise IOError("Can't determine ISPIN! Either manually specify it, or provide OUTCAR or INCAR")
 
-    if 'ISPIN' not in globals():
-        try:
-            with open('OUTCAR', 'r') as f:
-                for line in f:
-                    if 'ISPIN' in line:
-                        ISPIN = int(line.split()[2])
-        except IOError:
-            try:
-                with open('INCAR', 'r') as f:
-                    for line in f:
-                        if 'ISPIN' in line:
-                            ISPIN = int(line.split()[-1])
-            except IOError:
-                raise IOError('No ISPIN value determined!')
-
     if ISPIN == 2:
-        col_names = ['E', 'avg_up', 'avg_integrated_up']
-        for n_bond in range(1, N_bonds + 1):
-            col_names.extend(['No.{0}_up'.format(n_bond), 'No.{0}_integrated_up'.format(n_bond)])
-        col_names.extend(['avg_down', 'avg_integrated_down'])
-        for n_bond in range(1, N_bonds + 1):
-            col_names.extend(['No.{0}_down'.format(n_bond), 'No.{0}_integrated_down'.format(n_bond)])
-        COHP_data = np.array(COHPCAR[data_start_line:data_start_line + N_steps], dtype=float)
+        col_names = ['E', 'total_up', 'total_down', 'integrated_up', 'integrated_down']
+        DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
+        DOS_data[:, 0] -= Ef
 
-        col_up_to_plot = n_bond_to_plot * 2 + 1
-        col_down_to_plot = (n_bond_to_plot + N_bonds + 1) * 2 + 1
-        # Plot the separated COHP
+        # Plot the separated TDOS
         plot_helper_figure(args, ISPIN)
-        plt.plot(COHP_data[:, 0], -COHP_data[:, col_up_to_plot], label=col_names[col_up_to_plot])
-        plt.plot(COHP_data[:, 0], -COHP_data[:, col_down_to_plot], label=col_names[col_down_to_plot])
+        plt.plot(DOS_data[:, 0], DOS_data[:, 1], label='spin up')
+        plt.plot(DOS_data[:, 0], DOS_data[:, 2], label='spin down')
         plot_helper_settings(args)
         if args.axis_range:
-            plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2]/2., args.axis_range[3]/2.])
+            plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2], args.axis_range[3] / 2.])
         plt.savefig(args.output_prefix + '-spin-separated.png')
         plot_helper_close()
 
-        # Plot the combined COHP
+        # Plot the combined TDOS
         plot_helper_figure(args, ISPIN)
-        plt.plot(COHP_data[:, 0], -COHP_data[:, col_up_to_plot] - COHP_data[:, col_down_to_plot])
+        plt.plot(DOS_data[:, 0], DOS_data[:, 1] + DOS_data[:, 2], label='spin up + down')
         plot_helper_settings(args)
         plt.savefig(args.output_prefix + '-spin-combined.png')
         plot_helper_close()
 
+        np.savetxt(args.output_prefix + '.txt', DOS_data, '%15.6E', header=' '.join(col_names))
+        energy_slice = DOS_data[abs(DOS_data[0] - 0.2).argmin(), 3] - \
+                DOS_data[abs(DOS_data[0] + 0.2).argmin(), 3] + \
+                DOS_data[abs(DOS_data[0] - 0.2).argmin(), 4] - \
+                DOS_data[abs(DOS_data[0] + 0.2).argmin(), 4]
+        np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6E')
+
     elif ISPIN == 1:
-        col_names = ['E', 'avg', 'avg_integrated']
-        for n_bond in range(1, N_bonds + 1):
-            col_names.extend(['No.{0}'.format(n_bond), 'No.{0}_integrated'.format(n_bond)])
+        col_names = ['E', 'total', 'integrated']
+        DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
+        DOS_data[:, 0] -= Ef
 
-        COHP_data = np.array(COHPCAR[data_start_line:data_start_line + N_steps], dtype=float)
-
-        col_to_plot = n_bond_to_plot * 2 + 1
         plot_helper_figure(args, ISPIN)
-        plt.plot(COHP_data[:, 0], -COHP_data[:, col_to_plot], label=col_names[col_to_plot])
+        plt.plot(DOS_data[:, 0], DOS_data[:, 1])
         plot_helper_settings(args)
         plt.savefig(args.output_prefix + '.png')
         plot_helper_close()
 
-    return (col_names, COHP_data)
+        np.savetxt(args.output_prefix + '.txt', DOS_data, '%15.6E', header=' '.join(col_names))
+        energy_slice = DOS_data[abs(DOS_data[0] - 0.2).argmin(), 2] - \
+                       DOS_data[abs(DOS_data[0] + 0.2).argmin(), 2]
+        np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6E')
+
+    return col_names, DOS_data
 
 
 if __name__ == '__main__':

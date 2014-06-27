@@ -115,8 +115,8 @@ def main(arguments='-h'):
          
     Usages
     ------
-    main(), main('-h') : as if ``Plot_bs.py -h`` is executed from command line.
-    main(string) : as if ``Plot_bs.py content_of_string`` is executed from command line.
+    main(), main('-h') : as if ``PlotBS.py -h`` is executed from command line.
+    main(string) : as if ``PlotBS.py content_of_string`` is executed from command line.
     """
     arguments = arguments.split()
     parser = argparse.ArgumentParser(description='''Plot the band structure, with consideration of spin-polarization.''')

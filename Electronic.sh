@@ -58,7 +58,7 @@ else
     exit 1
 fi
 
-if [[ "$test_type" == scrun ]]; then
+if [[ "$test_type" == SCrun ]]; then
     subdirectory_check
     argparse "$@"
     cp -r ../INPUT .
@@ -71,16 +71,16 @@ if [[ "$test_type" == scrun ]]; then
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
     Prepare.sh "$subdir_name" -f
-    cd scrun
+    cd SCrun
     [[ $is_submit ]] && qsub qsub.parallel
 
-elif [[ "$test_type" == dosrun ]]; then
+elif [[ "$test_type" == DOSrun ]]; then
     subdirectory_check
     argparse "$@"
     Prepare.sh "$subdir_name" -f
-    cd dosrun
-    cp ../scrun/CONTCAR POSCAR
-    cp -l ../scrun/CHGCAR .
+    cd DOSrun
+    cp ../SCrun/CONTCAR POSCAR
+    cp -l ../SCrun/CHGCAR .
     sed -i '4c 21 21 21' KPOINTS
 
     sed -i "/NSW/c NSW = 0" INCAR
@@ -88,7 +88,7 @@ elif [[ "$test_type" == dosrun ]]; then
     sed -i "/NEDOS/c NEDOS = 1501" INCAR
     sed -i "/ICHARG/c ICHARG = 11" INCAR
     if [[ $2 == rwigs ]]; then
-        rwigs=$(cd ../scrun; Cell_info.sh rwigs |awk '{print $4}')
+        rwigs=$(cd ../SCrun; CellInfo.sh rwigs |awk '{print $4}')
         sed -i "/RWIGS/c RWIGS = ${rwigs//,/ }" INCAR
         sed -i "/NPAR/c NPAR = 1" INCAR
         sed -i "/LORBIT/c LORBIT = 0"  INCAR
@@ -101,13 +101,13 @@ elif [[ "$test_type" == dosrun ]]; then
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
     [[ $is_submit ]] && qsub qsub.parallel
 
-elif [[ "$test_type" == bsrun ]]; then
+elif [[ "$test_type" == BSrun ]]; then
     subdirectory_check
     argparse "$@"
     Prepare.sh "$subdir_name" -f
-    cd bsrun
-    cp ../scrun/CONTCAR POSCAR
-    cp -l ../scrun/CHGCAR .
+    cd BSrun
+    cp ../SCrun/CONTCAR POSCAR
+    cp -l ../SCrun/CHGCAR .
 
     if [[ -f KPOINTS-bs ]]; then
         mv KPOINTS-bs KPOINTS
@@ -132,7 +132,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
     argparse "$@"
     Prepare.sh "$subdir_name"-kp -fa qlobster.kp.serial
     cd "$subdir_name"-kp
-    cp ../scrun/CONTCAR POSCAR
+    cp ../SCrun/CONTCAR POSCAR
     sed -i '4c 17 17 17' KPOINTS
 
     sed -i "/NSW/c NSW = 0" INCAR
@@ -154,9 +154,9 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
         cp lobster-kp/IBZKPT KPOINTS
     fi
 
-    if [[ -f ../scrun/CHGCAR ]]; then
-        cp ../scrun/CONTCAR POSCAR
-        cp -l ../scrun/CHGCAR .
+    if [[ -f ../SCrun/CHGCAR ]]; then
+        cp ../SCrun/CONTCAR POSCAR
+        cp -l ../SCrun/CHGCAR .
         sed -i "/ICHARG/c ICHARG = 11" INCAR
     fi
 
