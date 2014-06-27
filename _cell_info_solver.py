@@ -17,6 +17,9 @@ if task == 'rwigs':
     ratio = (Vpcell / V_raw) ** (1 / 3.)
     r = r_input * ratio
     print "You should use ",
-    for i in range(len(r)):
-        sys.stdout.write("%.5f," % r[i])
+    if len(r) == 1:
+        sys.stdout.write("%.5f" % r[0])
+    else:
+        for i in range(len(r)):
+            sys.stdout.write("%.5f," % r[i])
     print " as your RWIGS in INCAR to get 100% filling."

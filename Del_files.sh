@@ -1,10 +1,40 @@
 #!/usr/bin/env bash
 
-cd "$1" || exit 1
-#mkdir Temp
-#mv INCAR KPOINTS POTCAR POSCAR WAVECAR CHGCAR CONTCAR qsub.parallel Temp/
-#rm * 2>/dev/null
-#mv Temp/* .
-#rm -r Temp
+directory_name="$1"
 
-rm XDATCAR PCDAT CONTCAR CHG WAVECAR EIGENVAL PROCAR vasprun.xml OUTCAR OSZICAR DOSCAR *.o*
+while getopts ":twc" opt; do
+    case $opt in
+    t)
+        contcar=true
+        echo "-t also removes CONTCAR."
+        ;;
+    w)
+        wavecar=true
+        echo "-w also removes WAVECAR."
+        ;;
+    c)
+        chgcar=true
+        echo "-c also removes CHGCAR."
+        ;;
+    \?)
+        echo "Invalid option: -$OPTARG" >&2
+        exit 1
+        ;;
+    :)
+        echo "Option -$OPTARG requires an argument." >&2
+        exit 1
+        ;;
+  esac
+done
+
+if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
+    cd "$directory_name"
+else
+    echo "The directory $directory_name does not exist!"
+    exit 1
+fi
+
+rm XDATCAR PCDAT CHG EIGENVAL PROCAR vasprun.xml OUTCAR OSZICAR DOSCAR *.o*
+[[ $contcar ]] && rm CONTCAR
+[[ $wavecat ]] && rm WAVECAR
+[[ $chgcar ]] && rm CHGCAR

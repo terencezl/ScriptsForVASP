@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Use: In the top working directory
-# Elastic.sh  start_test / disp-solve / solve  -y cubic / tetragonal /...
+# Elastic.sh  test / disp-solve / solve   cubic / tetragonal /...
 
 test_type="$1"
 directory_name=elastic
@@ -21,11 +21,15 @@ elif [[ $cryst_sys == triclinic ]]; then echo
 else echo "Expecting 2nd argument to be crystallographic system!"
 fi
 
-while getopts ":d:f" opt; do
+while getopts ":d:m:f" opt; do
     case $opt in
     d)
         directory_name=$OPTARG
         echo "-d specifies alternative directory name."
+        ;;
+    m)
+        is_submit=true
+        echo "-m triggered job submission."
         ;;
     f)
         is_override=true
@@ -42,7 +46,7 @@ while getopts ":d:f" opt; do
   esac
 done
 
-if [[ "$test_type" == start_test ]]; then
+if [[ "$test_type" == test ]]; then
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
         echo -n "Directory contains files or sub-directories. "
         if [[ $is_override ]]; then
@@ -58,13 +62,17 @@ if [[ "$test_type" == start_test ]]; then
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
     for dir in $dir_list
     do
-        Sequence_test.sh $dir $cryst_sys -f
+        if [[ $is_submit ]]; then
+            Sequence_test.sh $dir $cryst_sys -fm
+        else
+            Sequence_test.sh $dir $cryst_sys -f
+        fi
     done
 
 
 elif [[ "$test_type" == disp-solve ]]; then
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
-        cd $directory_name
+        cd "$directory_name"
     else
         echo "The directory $directory_name does not exist!"
         exit 1
@@ -81,7 +89,7 @@ elif [[ "$test_type" == disp-solve ]]; then
 
 elif [[ "$test_type" == solve ]]; then
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
-        cd $directory_name
+        cd "$directory_name"
     else
         echo "The directory $directory_name does not exist!"
         exit 1

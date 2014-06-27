@@ -4,26 +4,10 @@
 # Sequence_test.sh lctest -s start -e end -n num_points
 # Sequence_test.sh rttest -s start -e end -n num_points
 # Sequence_test.sh agltest -s start -e end -n num_points -r Ion_rotator_args
-# Sequence_test.sh c11-c12 -y cubic
-
-function qsub_replacer {
-    qname_1=${PWD##*/}
-    PWD_2=${PWD%/*}
-    qname_2=${PWD_2##*/}
-    PWD_3=${PWD_2%/*}
-    qname_3=${PWD_3##*/}
-    PWD_4=${PWD_3%/*}
-    qname_4=${PWD_4##*/}
-    qname="T$qname_4$qname_3$qname_2$qname_1"
-    if [[ $(echo $qname | wc -c) > 17 ]]; then
-        qname="T$qname_3$qname_2$qname_1"
-    fi
-    sed -i "/#PBS -N/c #PBS -N $qname" $1
-    sed -i "/^cd/c cd $PWD" $1
-}
+# Sequence_test.sh c11-c12 cubic
 
 function create_copy_replace {
-    mkdir $1 2> /dev/null
+    mkdir "$1" 2> /dev/null
     if [[ $? != 0 ]]; then
         if [[ $is_override ]]; then
             echo "    $1 already exists. Overriding input files."
@@ -34,13 +18,13 @@ function create_copy_replace {
     else
         echo "  Creating $1."
     fi
-    cd $1
+    cd "$1"
     cp ../../INPUT/INCAR .
     cp ../../INPUT/POSCAR .
     cp ../../INPUT/POTCAR .
     cp ../../INPUT/KPOINTS .
     cp ../../INPUT/qsub.parallel .
-    qsub_replacer qsub.parallel
+    _qsub_replacer.sh qsub.parallel
 }
 
 function change_dir_name_with_hyphen {
@@ -65,8 +49,8 @@ function header_echo {
     fi
     mkdir "$directory_name" 2> /dev/null
     cd "$directory_name"
-    echo "  Preparing $test_type..."
-    fname="$test_type"_output.txt
+    echo "  Preparing "$test_type"..."
+    fname=""$test_type""_output.txt
 }
 
 function argparse {
@@ -115,7 +99,7 @@ test_type="${directory_name%%_*}"
 shift 1
 
 
-if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
+if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
     argparse "$@"
     if [[ -z $start || -z $end || -z $interval || -z $scaling_const ]]; then
         echo "-s -e -i -c should be all set with valid values!" >&2
@@ -126,11 +110,11 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     lc2=$(echo "print($lc1+0.1)" | python)
     for ((dir=$start; dir<=$end; dir=$dir+$interval))
     do
-        for i in $dir $dir-1
+        for i in "$dir" "$dir"-1
         do
             (
             create_copy_replace $i
-            if [ $test_type == "entest" ]; then
+            if [ "$test_type" == "entest" ]; then
                 sed -i "s/.*ENCUT.*/ENCUT = $dir/g" INCAR
             else
                 sed -i "4c $dir $dir $dir" KPOINTS
@@ -145,7 +129,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
         done
     done
 
-elif [[ $test_type == "lctest" ]]; then
+elif [[ "$test_type" == "lctest" ]]; then
     argparse "$@"
     if [[ -z $start || -z $end || -z $num_points ]]; then
         echo "-s -e -n should be all set with valid values!" >&2
@@ -162,7 +146,7 @@ elif [[ $test_type == "lctest" ]]; then
         )
     done
 
-elif [[ $test_type == "rttest" ]]; then
+elif [[ "$test_type" == "rttest" ]]; then
     argparse "$@"
     if [[ -z $start || -z $end || -z $num_points ]]; then
         echo "-s -e -n should be all set with valid values!" >&2
@@ -181,7 +165,7 @@ elif [[ $test_type == "rttest" ]]; then
         )
     done
 
-elif [[ $test_type == "agltest" ]]; then
+elif [[ "$test_type" == "agltest" ]]; then
     argparse "$@"
     if [[ -z $start || -z $end || -z $num_points || -z $ions_rotator_args ]]; then
         echo "-s -e -n -r should be all set with valid values!" >&2
@@ -200,18 +184,18 @@ elif [[ $test_type == "agltest" ]]; then
         )
     done
 
-elif [[ $test_type == *c[1-9][1-9]* ]]; then
+elif [[ "$test_type" == *c[1-9][1-9]* ]]; then
     cryst_sys="$1"
     shift 1
     argparse "$@"
-    if [[ -z $cryst_sys ]]; then
+    if [[ -z "$cryst_sys" ]]; then
         echo "crystallographic system should be set!" >&2
         exit 1
     fi
     header_echo
-    if [ $test_type == c44 ]; then
+    if [ "$test_type" == c44 ]; then
         dir_list="0.020 0.035 0.050n"
-    elif [ $test_type == c11-c12 ]; then
+    elif [ "$test_type" == c11-c12 ]; then
         dir_list="0.020 0.030 0.040n"
     fi
     for dir in $dir_list
@@ -219,7 +203,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
         (
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
-        Strain_applier.py $test_type $cryst_sys $dir
+        Strain_applier.py "$test_type" "$cryst_sys" "$dir"
         submission_trigger
         )
     done

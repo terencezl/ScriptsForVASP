@@ -1,11 +1,66 @@
 #!/usr/bin/env bash
 
-BASE_DIR=$PWD
-cd electronic 2>/dev/null
-if [[ $1 == scrun ]]; then
-    cd $BASE_DIR
-    mkdir electronic
-    cd electronic
+function argparse {
+    while getopts ":d:m:f" opt; do
+        case $opt in
+        d)
+            subdir_name=$OPTARG
+            echo "-d specifies alternative subdirectory name."
+            ;;
+        m)
+            is_submit=true
+            echo "-m triggered job submission."
+            ;;
+        f)
+            is_override=true
+            echo "-f triggered overriding the existing subdirectory."
+            ;;
+        n)
+            nband=$OPTARG
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            exit 1
+            ;;
+      esac
+    done
+}
+
+function subdirectory_check {
+    if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
+        echo -n "Subdirectory contains files."
+        if [[ $is_override ]]; then
+            echo "Overriding..."
+        else
+            echo "Escaping..."
+            exit 1
+        fi
+    fi
+}
+
+
+directory_name=electronic
+if [[ "$1" == */ ]]; then subdir_name=${1%/}; else subdir_name=$1; fi
+test_type="${subdir_name%%_*}"
+test_type2=$2
+shift 1
+
+if [[ -d "$directory_name" ]]; then
+    cd "$directory_name"
+elif [[ "${PWD##*/}" == "$directory_name" ]]; then
+    echo "Already in $directory_name."
+else
+    echo "The directory $directory_name does not exist!"
+    exit 1
+fi
+
+if [[ "$test_type" == scrun ]]; then
+    subdirectory_check
+    argparse "$@"
     cp -r ../INPUT .
 #    sed -i "/PREC/c PREC = Accurate" INPUT/INCAR
 #    sed -i "/NSW/c NSW = 0" INPUT/INCAR
@@ -15,12 +70,14 @@ if [[ $1 == scrun ]]; then
     sed -i "/NPAR/c NPAR = 8"  INPUT/INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
-    Prepare.sh scrun -f
+    Prepare.sh "$subdir_name" -f
     cd scrun
-    qsub qsub.parallel
+    [[ $is_submit ]] && qsub qsub.parallel
 
-elif [[ $1 == dosrun ]]; then
-    Prepare.sh dosrun -f
+elif [[ "$test_type" == dosrun ]]; then
+    subdirectory_check
+    argparse "$@"
+    Prepare.sh "$subdir_name" -f
     cd dosrun
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
@@ -42,10 +99,12 @@ elif [[ $1 == dosrun ]]; then
 
     sed -i "/#PBS -l walltime/c #PBS -l walltime=04:00:00" qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
-    qsub qsub.parallel
+    [[ $is_submit ]] && qsub qsub.parallel
 
-elif [[ $1 == bsrun ]]; then
-    Prepare.sh bsrun -f
+elif [[ "$test_type" == bsrun ]]; then
+    subdirectory_check
+    argparse "$@"
+    Prepare.sh "$subdir_name" -f
     cd bsrun
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
@@ -65,11 +124,14 @@ elif [[ $1 == bsrun ]]; then
     sed -i "/NPAR/c NPAR = 8"  INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=04:00:00" qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
-    qsub qsub.parallel
+    [[ $is_submit ]] && qsub qsub.parallel
 
-elif [[ $1 == lobster-kp ]]; then
-    Prepare.sh lobster-kp -fa qlobster.kp.serial
-    cd lobster-kp
+elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
+    subdirectory_check
+    shift 1
+    argparse "$@"
+    Prepare.sh "$subdir_name"-kp -fa qlobster.kp.serial
+    cd "$subdir_name"-kp
     cp ../scrun/CONTCAR POSCAR
     sed -i '4c 17 17 17' KPOINTS
 
@@ -77,11 +139,14 @@ elif [[ $1 == lobster-kp ]]; then
     sed -i "/ISYM/c ISYM = 0" INCAR
     sed -i "/LSORBIT/c LSORBIT = .TRUE." INCAR
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
-    qsub qlobster.kp.serial
+    [[ $is_submit ]] && qsub qlobster.kp.serial
 
-elif [[ $1 == lobster-prerun ]]; then
-    Prepare.sh lobster -fa qlobster.parallel
-    cd lobster
+elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
+    subdirectory_check
+    shift 1
+    argparse "$@"
+    Prepare.sh "$subdir_name" -fa qlobster.parallel
+    cd "$subdir_name"
     if [[ -d ../lobster-kp ]]; then
         mv ../lobster-kp .
         cp lobster-kp/IBZKPT KPOINTS
@@ -95,9 +160,7 @@ elif [[ $1 == lobster-prerun ]]; then
         sed -i "/ICHARG/c ICHARG = 11" INCAR
     fi
 
-    if [[ -n $2 ]]; then
-        sed -i "/NBANDS/c NBANDS = $2" INCAR
-    fi
+    [[ -n "$nband" ]] && sed -i "/NBANDS/c NBANDS = $nband" INCAR
 
     sed -i "/NSW/c NSW = 0" INCAR
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
@@ -108,25 +171,15 @@ elif [[ $1 == lobster-prerun ]]; then
     sed -i "/NPAR/c NPAR = 8"  INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=05:00:00" qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
-    qsub qsub.parallel
+    [[ $is_submit ]] && qsub qsub.parallel
 
-elif [[ $1 == lobster ]]; then
-    cd lobster
-    qsub qlobster.parallel
+elif [[ "$test_type" == lobster && "$test_type2" == analysis ]]; then
+    shift 1
+    argparse "$@"
+    cd "$subdir_name"
+    [[ $is_submit ]] && qsub qlobster.parallel
 
-elif [[ $1 == plot-ldos ]]; then
-    cd dosrun
-    Plot_ldos.py $2 $3
-
-elif [[ $1 == plot-tdos ]]; then
-    cd dosrun
-    Plot_tdos.py
-
-elif [[ $1 == plot-bs ]]; then
-    cd bsrun
-    Plot_bs.py
-
-elif [[ $1 == plot-bs ]]; then
-    cd bsrun
-    Plot_cohp.py $2
+else
+    echo "Specify what you are going to test!" >&2
+    exit 1
 fi
