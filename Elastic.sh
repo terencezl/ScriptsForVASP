@@ -58,7 +58,7 @@ if [[ "$test_type" == start_test ]]; then
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
     for dir in $dir_list
     do
-        VASP_start_test.sh $dir $cryst_sys -f
+        Sequence_test.sh $dir $cryst_sys -f
     done
 
 
@@ -71,7 +71,7 @@ elif [[ "$test_type" == disp-solve ]]; then
     fi
     for dir in $dir_list
     do
-        Display.sh $dir
+        Sequence_disp.sh $dir
     done
 
     echo $PWD | tee $fname

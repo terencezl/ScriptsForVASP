@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Used by VASP_start_test.sh for altering the real space vectors in POSCAR
+# Used by Sequence_test.sh for altering the real space vectors in POSCAR
 
 import sys
 import numpy as np

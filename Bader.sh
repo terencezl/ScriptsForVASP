@@ -17,7 +17,7 @@ function qsub_replacer {
 }
 
 if [ $1 == prerun ]; then
-    Fast_prep.sh bader
+    Prepare.sh bader
     cd bader || exit 1
     sed -i '/LAECHG/c LAECHG = .TRUE.' >> INCAR
 #    echo -e 'NGXF = 250\nNGYF = 250\nNGZF = 250' >> INCAR

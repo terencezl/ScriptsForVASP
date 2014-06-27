@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# _display_fit.py test_type line_start data_line_count
+# _sequence_fit_plot.py test_type line_start data_line_count
 import sys
 import numpy as np
 import matplotlib

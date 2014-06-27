@@ -135,7 +135,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
         data_line_count=$(($data_line_count + 1))
     done
     # write the results to file.
-    _display_fit.py $test_type 5 $data_line_count >> $fname
+    _sequence_fit_plot.py $test_type 5 $data_line_count >> $fname
 
 
 elif [[ $test_type == "lctest" ]]; then
@@ -157,7 +157,7 @@ elif [[ $test_type == "lctest" ]]; then
     # echo runs with not converged force or entropy to file and screen.
     output_force_entropy "$force_not_converged_list" "$entropy_not_converged_list" "$fname"
     # fit the data and write the results to file.
-    _display_fit.py $test_type 4 $data_line_count>> $fname
+    _sequence_fit_plot.py $test_type 4 $data_line_count>> $fname
     # grep some info to screen.
     grep "!Equilibrium point is out of the considered range!" $fname
     grep "R-squared =" $fname
@@ -205,7 +205,7 @@ elif [[ $test_type == "rttest" ]]; then
     # echo runs with not converged force or entropy to file and screen.
     output_force_entropy "$force_not_converged_list" "$entropy_not_converged_list" "$fname"
     # fit the data and write the results to file.
-    _display_fit.py $test_type 4 $data_line_count>> $fname
+    _sequence_fit_plot.py $test_type 4 $data_line_count>> $fname
     # grep some info to screen.
     grep "!Equilibrium point = out of the considered range!" $fname
     grep "R-squared =" $fname
@@ -236,7 +236,7 @@ elif [[ $test_type == "agltest" ]]; then
     # echo runs with not converged force or entropy to file and screen.
     output_force_entropy "$force_not_converged_list" "$entropy_not_converged_list" "$fname"
     # write the results to file.
-    _display_fit.py $test_type 4 $data_line_count>> $fname
+    _sequence_fit_plot.py $test_type 4 $data_line_count>> $fname
 
 
 elif [[ $test_type == "equi-relax" ]]; then
@@ -291,7 +291,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
     # echo runs with not converged force or entropy to file and screen.
     output_force_entropy "$force_not_converged_list" "$entropy_not_converged_list" "$fname"
     # fit the data and write the results to file.
-    _display_fit.py $test_type 4 $data_line_count >> $fname
+    _sequence_fit_plot.py $test_type 4 $data_line_count >> $fname
     # grep some info to screen.
     grep "R-squared =" $fname
 

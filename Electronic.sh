@@ -15,12 +15,12 @@ if [[ $1 == scrun ]]; then
     sed -i "/NPAR/c NPAR = 8"  INPUT/INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
-    Fast_prep.sh scrun -f
+    Prepare.sh scrun -f
     cd scrun
     qsub qsub.parallel
 
 elif [[ $1 == dosrun ]]; then
-    Fast_prep.sh dosrun -f
+    Prepare.sh dosrun -f
     cd dosrun
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
@@ -45,7 +45,7 @@ elif [[ $1 == dosrun ]]; then
     qsub qsub.parallel
 
 elif [[ $1 == bsrun ]]; then
-    Fast_prep.sh bsrun -f
+    Prepare.sh bsrun -f
     cd bsrun
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
@@ -68,7 +68,7 @@ elif [[ $1 == bsrun ]]; then
     qsub qsub.parallel
 
 elif [[ $1 == lobster-kp ]]; then
-    Fast_prep.sh lobster-kp -fa qlobster.kp.serial
+    Prepare.sh lobster-kp -fa qlobster.kp.serial
     cd lobster-kp
     cp ../scrun/CONTCAR POSCAR
     sed -i '4c 17 17 17' KPOINTS
@@ -80,7 +80,7 @@ elif [[ $1 == lobster-kp ]]; then
     qsub qlobster.kp.serial
 
 elif [[ $1 == lobster-prerun ]]; then
-    Fast_prep.sh lobster -fa qlobster.parallel
+    Prepare.sh lobster -fa qlobster.parallel
     cd lobster
     if [[ -d ../lobster-kp ]]; then
         mv ../lobster-kp .

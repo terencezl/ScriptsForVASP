@@ -35,7 +35,7 @@ elif [ $test_type == display ]; then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Display.sh lctest
+        Sequence_disp.sh lctest
         echo
         cd ..
     done
@@ -45,7 +45,7 @@ elif [ $test_type == equi-relax ]; then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Fast_prep.sh equi-relax
+        Prepare.sh equi-relax
         F equi-relax
         cd ..
     done
@@ -54,7 +54,7 @@ elif [ $test_type == copy-CONTCAR ];then
     for n in $element_list
     do
         cd "$n" || exit 1
-        Display.sh equi-relax
+        Sequence_disp.sh equi-relax
         cd ..
     done
 

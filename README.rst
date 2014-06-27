@@ -19,9 +19,9 @@ Scripts structure
 Basic level
 -----------
 
-* ``Fast_prep.sh XXX`` - a fast way to create a directory XXX with necessary input files
-* ``VASP_start_test.sh TEST_TYPE [OPTIONS]`` - to create a series of runs, performing encut test | kpoints test | lattice constant test | elastic constant test | ...
-* ``Display.sh TEST_TYPE [OPTIONS]`` - to do the post-analysis of a series of runs described above and determine physical quantities
+* ``Prepare.sh XXX`` - a fast way to create a directory XXX with necessary input files
+* ``Sequence_test.sh TEST_TYPE [OPTIONS]`` - to create a series of runs, performing encut test | kpoints test | lattice constant test | elastic constant test | ...
+* ``Sequence_disp.sh TEST_TYPE [OPTIONS]`` - to do the post-analysis of a series of runs described above and determine physical quantities
 
 Higher level
 ------------
@@ -60,7 +60,7 @@ These can also be used alone, and **can be readily imported and played with**.
 
 These are used by Bash scripts and better left unvisited.
 
-* ``_display_fit.py`` - to perform different fitting techniques, including Birch-Murnaghan equation of state and polynomial
+* ``_sequence_fit_plot.py`` - to perform different fitting techniques, including Birch-Murnaghan equation of state and polynomial
 * ``_elastic_solver.py`` - to solve the independent elastic constants from the same number of combination runs with linear algebra
 * ``_cell_info_solver.py`` - to obtain the RWIGS values for different species to 100 % fill the cell
 

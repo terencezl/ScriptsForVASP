@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# VASP_start_test.sh entest -s start -e end -i interval -c scaling_const
-# VASP_start_test.sh kptest -s start -e end -i interval -c scaling_const
-# VASP_start_test.sh lctest -s start -e end -n num_points
-# VASP_start_test.sh rttest -s start -e end -n num_points
-# VASP_start_test.sh agltest -s start -e end -n num_points -r Ion_rotator_args
-# VASP_start_test.sh c11-c12 -y cubic
+# Sequence_test.sh entest -s start -e end -i interval -c scaling_const
+# Sequence_test.sh kptest -s start -e end -i interval -c scaling_const
+# Sequence_test.sh lctest -s start -e end -n num_points
+# Sequence_test.sh rttest -s start -e end -n num_points
+# Sequence_test.sh agltest -s start -e end -n num_points -r Ion_rotator_args
+# Sequence_test.sh c11-c12 -y cubic
 
 function qsub_replacer {
     qname_1=${PWD##*/}
