@@ -4,14 +4,14 @@ Scripts structure
 Python scripts
 --------------
 
-These can also be used alone, and **can be readily imported and played with**.
+These can also be used alone, and **can be readily imported and played with in a python interpreter**.
 
 * ``Plot_tdos.py`` - to plot total density of states, spin states are supported (above or below x axis)
 * ``Plot_ldos.py`` - to plot local projected density of states of two ions (above or below x axis), spin states are supported (in different files)
 * ``Plot_bs.py`` - to plot the band structure along certain chosen points in the 1st BZ
 * ``Plot_cohp.py`` - to plot the pCOHP from LOBSTER runs
 * ``Strain_applier.py`` - to add strain to the cell lattice vectors in POSCAR for a series of runs, determining the value of a combination of elastic constants
-* ``Ions-rotator.py`` - to rotate ions in selected lines in POSCAR at a certain point, around a certain axis, to a certain angle
+* ``Ions_rotator.py`` - to rotate ions in selected lines in POSCAR at a certain point, around a certain axis, to a certain angle
 
 Bash convenient scripts
 -----------------------
