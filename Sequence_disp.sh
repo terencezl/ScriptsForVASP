@@ -103,11 +103,11 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     if [ $test_type == "entest" ]; then
         echo -e "ENCUT from $smallest to $largest interval $interval" >> $fname
         echo -e "LC1 = $lc1, LC2 = $lc2 (directories with '-1')" >> $fname
-        echo -e "\nENCUT(eV) E_LC1(eV) dE_LC1(eV) E_LC2(eV) dE_LC2(eV) DE=E_LC2-E_LC1(eV)   dDE(eV)" >> $fname
+        echo -e "\n   ENCUT(eV)    E_LC1(eV)   dE_LC1(eV)    E_LC2(eV)   dE_LC2(eV) DE=E_LC2-E_LC1(eV)      dDE(eV)" >> $fname
     else
         echo -e "nKP from $smallest to $largest interval $interval" >> $fname
         echo -e "LC1 = $lc1, LC2 = $lc2 (directories with '-1')" >> $fname
-        echo -e "\n      nKP E_LC1(eV) dE_LC1(eV) E_LC2(eV) dE_LC2(eV) DE=E_LC2-E_LC1(eV)   dDE(eV)" >> $fname
+        echo -e "\n         nKP    E_LC1(eV)   dE_LC1(eV)    E_LC2(eV)   dE_LC2(eV) DE=E_LC2-E_LC1(eV)      dDE(eV)" >> $fname
     fi
     # echo the data in a sorted way to file.
     for dir in $dir_list
@@ -126,7 +126,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
         dDE=${dDE#-}
         dE_LC1=${dE_LC1#-}
         dE_LC2=${dE_LC2#-}
-        python -c "print '{0:9.6f} {1:9.6f} {2:10.6f} {3:9.6f} {4:10.6f} {5:18.6f} {6:9.6f}'.format(\
+        python -c "print '{0:12.6f} {1:12.6f} {2:12.6f} {3:12.6f} {4:12.6f} {5:18.6f} {6:12.6f}'.format(\
                                     $dir, $E_LC1, $dE_LC1, $E_LC2, $dE_LC2, $DE, $dDE)" >> $fname
         # set DE for this cycle as DE_pre for the next cycle to get the next dDE
         DE_pre=$DE
