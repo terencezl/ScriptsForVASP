@@ -60,7 +60,7 @@ function submission_trigger {
 
 function header_echo {
     echo -e "Creating test directory '$directory_name'..."
-    if [[ -d $directory_name && "$(ls -A $directory_name)" ]]; then
+    if [[ -d "$directory_name" && "$(ls -A $directory_name)" ]]; then
         echo "  Directory contains files or sub-directories."
     fi
     mkdir "$directory_name" 2> /dev/null
@@ -70,8 +70,7 @@ function header_echo {
 }
 
 function argparse {
-    shift 1
-    while getopts ":s:e:n:i:c:y:r:mf" opt; do
+    while getopts ":s:e:n:i:c:r:mf" opt; do
         case $opt in
         s)
             start=$OPTARG
@@ -87,9 +86,6 @@ function argparse {
             ;;
         c)
             scaling_const=$OPTARG
-            ;;
-        y)
-            cryst_sys=$OPTARG
             ;;
         r)
             ions_rotator_args=$OPTARG
@@ -116,6 +112,8 @@ function argparse {
 
 if [[ "$1" == */ ]]; then directory_name=${1%/}; else directory_name=$1; fi
 test_type="${directory_name%%_*}"
+shift 1
+
 
 if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     argparse "$@"
@@ -203,9 +201,11 @@ elif [[ $test_type == "agltest" ]]; then
     done
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then
+    cryst_sys="$1"
+    shift 1
     argparse "$@"
     if [[ -z $cryst_sys ]]; then
-        echo "-y should be set with a valid value!" >&2
+        echo "crystallographic system should be set!" >&2
         exit 1
     fi
     header_echo

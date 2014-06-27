@@ -1,14 +1,11 @@
 #!/usr/bin/env python
-# Used by Elastic-solve.sh to solve linear equations to get elastic consts
 
 import sys
 import numpy as np
-import os
 
-dirname = os.path.dirname(os.path.realpath(__file__))
 cryst_sys = sys.argv[1]
 Vpcell = float(sys.argv[2])
-econst_input = np.array(eval(sys.argv[3])) * 160.2 / Vpcell
+econst_input = np.array(eval(sys.argv[3]))
 
 if cryst_sys == 'cubic':
     coeff_matrix = np.array([[1 / 3., 2 / 3., 0],

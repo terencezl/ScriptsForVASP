@@ -91,12 +91,10 @@ elif test_type == 'lctest':
     # fitting the Birch-Murnaghan equation of state
     (coeffs_vol_M, r_squared_M, volume_fit_M, energy_fit_M) = murnaghan_fit(data[:, 1], data[:, 2])
     scaling_const_eqlbrm = (coeffs_vol_M[0] * V_a_conversion_multiplier) ** (1 / 3.)
-
     # plotting the Birch-Murnaghan equation of state
     plt.plot(volume_fit_M, energy_fit_M, '-', label="B-M eqn of state")
-    result_str = "R-squared = %f" % r_squared_M
+    result_str = "R-squared = {0:f}".format(r_squared_M)
     plt.text(volume_fit_M[len(volume_fit_M) / 4], energy_fit_M[60], result_str)
-
     # standrad output, directed to files by the bash script calling this python script
     print(result_str)
     print("Equilibrium scaling constant = {0}".format(scaling_const_eqlbrm))
@@ -143,24 +141,19 @@ elif test_type == 'agltest':
     plt.ylabel('E (eV)')
     np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
-elif re.search('.*c[1-9][1-9].*', test_type) or re.search('A.*', test_type):
+elif re.search('.*c[1-9][1-9].*', test_type):
     col_names = ['Delta', 'E(eV)']
     data = np.zeros((data_line_count, 2))
     for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
-    if re.search('.*c[1-9][1-9].*', test_type):
         (p, r_squared, delta_fit, energy_fit) = polyfit(data[:, 0], data[:, 1], 2)
         plt.plot(data[:, 0], data[:, 1], 'o', delta_fit, energy_fit, '-')
         result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared = %f" % (p[2], p[1], p[0], r_squared)
-    elif re.search('A.*', test_type):
-        (p, r_squared, delta_fit, energy_fit) = polyfit(data[:, 0], data[:, 1], 3)
-        plt.plot(data[:, 0], data[:, 1], 'o', delta_fit, energy_fit, '-')
-        result_str = "E = %f x^3 + (%f) x^2 + (%f) x + (%f)\nR-squared = %f" % (p[3], p[2], p[1], p[0], r_squared)
 
     plt.text(delta_fit[len(delta_fit) / 4], energy_fit[6], result_str)
     plt.xlabel('Delta (ratio)')
     plt.ylabel('E (eV)')
-    print "Fitting result:", result_str
+    print("Fitting result: {0}".format(result_str))
 
 plt.savefig('fit_curve.png')

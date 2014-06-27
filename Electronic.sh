@@ -2,7 +2,7 @@
 
 BASE_DIR=$PWD
 cd electronic 2>/dev/null
-if [ $1 == scrun ]; then
+if [[ $1 == scrun ]]; then
     cd $BASE_DIR
     mkdir electronic
     cd electronic
@@ -15,12 +15,12 @@ if [ $1 == scrun ]; then
     sed -i "/NPAR/c NPAR = 8"  INPUT/INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
-    Fast_prep.sh scrun
+    Fast_prep.sh scrun -f
     cd scrun
     qsub qsub.parallel
 
-elif [ $1 == dosrun ]; then
-    Fast_prep.sh dosrun
+elif [[ $1 == dosrun ]]; then
+    Fast_prep.sh dosrun -f
     cd dosrun
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
@@ -44,13 +44,13 @@ elif [ $1 == dosrun ]; then
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
     qsub qsub.parallel
 
-elif [ $1 == bsrun ]; then
-    Fast_prep.sh bsrun
+elif [[ $1 == bsrun ]]; then
+    Fast_prep.sh bsrun -f
     cd bsrun
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
 
-    if [ -f KPOINTS-bs ]; then
+    if [[ -f KPOINTS-bs ]]; then
         mv KPOINTS-bs KPOINTS
     else
         echo "You must manually change the KPOINTS file before submitting job!"
@@ -67,8 +67,8 @@ elif [ $1 == bsrun ]; then
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
     qsub qsub.parallel
 
-elif [ $1 == lobster-kp ]; then
-    Fast_prep.sh lobster-kp qlobster.kp.serial
+elif [[ $1 == lobster-kp ]]; then
+    Fast_prep.sh lobster-kp -fa qlobster.kp.serial
     cd lobster-kp
     cp ../scrun/CONTCAR POSCAR
     sed -i '4c 17 17 17' KPOINTS
@@ -79,8 +79,8 @@ elif [ $1 == lobster-kp ]; then
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
     qsub qlobster.kp.serial
 
-elif [ $1 == lobster-prerun ]; then
-    Fast_prep.sh lobster qlobster.parallel
+elif [[ $1 == lobster-prerun ]]; then
+    Fast_prep.sh lobster -fa qlobster.parallel
     cd lobster
     if [[ -d ../lobster-kp ]]; then
         mv ../lobster-kp .
@@ -110,23 +110,23 @@ elif [ $1 == lobster-prerun ]; then
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
     qsub qsub.parallel
 
-elif [ $1 == lobster ]; then
+elif [[ $1 == lobster ]]; then
     cd lobster
     qsub qlobster.parallel
 
-elif [ $1 == plot-ldos ]; then
+elif [[ $1 == plot-ldos ]]; then
     cd dosrun
     Plot_ldos.py $2 $3
 
-elif [ $1 == plot-tdos ]; then
+elif [[ $1 == plot-tdos ]]; then
     cd dosrun
     Plot_tdos.py
 
-elif [ $1 == plot-bs ]; then
+elif [[ $1 == plot-bs ]]; then
     cd bsrun
     Plot_bs.py
 
-elif [ $1 == plot-bs ]; then
+elif [[ $1 == plot-bs ]]; then
     cd bsrun
     Plot_cohp.py $2
 fi
