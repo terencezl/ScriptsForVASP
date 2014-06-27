@@ -68,7 +68,7 @@ def main(arguments='-h'):
     parser.add_argument('-a', '--axis-range', type=eval, help='''the x and y range of axis in the form of
                 '[Xmin,Xmax,Ymin,Ymax]'. If ISPIN=2, this option specifies the combined spin.''')
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
-    parser.add_argument('-i', '--COHPCAR', default='COHPCAR.lobster', help="the input COHPCAR.lobster file name")
+    parser.add_argument('-i', '--input', metavar='COHPCAR.lobster', default='COHPCAR.lobster', help="the input COHPCAR.lobster file name")
     parser.add_argument('-o', '--output-prefix', default='COHP', help="the output files' prefix")
     parser.add_argument('-f', '--figure', type=eval, help='''the figure number one wishes to plot on,
                                     in the form of '[1,2,...]'. Useful in interactive mode.''')
@@ -76,7 +76,7 @@ def main(arguments='-h'):
     n_bond_to_plot = args.bond_to_plot
     ISPIN = args.ISPIN
 
-    with open(args.COHPCAR, 'r') as f:
+    with open(args.input, 'r') as f:
         COHPCAR = f.readlines()
 
     for N_headerlines, line in enumerate(COHPCAR):

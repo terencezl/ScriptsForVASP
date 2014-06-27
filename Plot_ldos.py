@@ -70,7 +70,7 @@ def main(arguments='-h'):
                 '[Xmin,Xmax,Ymin,Ymax]'. If ISPIN=2, this option specifies the combined spin''')
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
     parser.add_argument('--LORBIT', type=int, help="manually override LORBIT detection")
-    parser.add_argument('-i', '--DOSCAR', default='DOSCAR', help="the input DOSCAR file name")
+    parser.add_argument('-i', '--input', metavar='DOSCAR', default='DOSCAR', help="the input DOSCAR file name")
     parser.add_argument('-o', '--output-prefix', default='LDOS', help="the output files' prefix")
     parser.add_argument('-f', '--figure', type=eval, help='''the figure number one wishes to plot on,
                                     in the form of '[1,2,...]'. Useful in interactive mode.''')
@@ -80,7 +80,7 @@ def main(arguments='-h'):
     ISPIN = args.ISPIN
     LORBIT = args.LORBIT
 
-    with open(args.DOSCAR, 'r') as f:
+    with open(args.input, 'r') as f:
         DOSCAR = f.readlines()
     for i in range(len(DOSCAR)):
         DOSCAR[i] = DOSCAR[i].split()

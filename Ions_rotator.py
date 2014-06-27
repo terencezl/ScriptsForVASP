@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # Ions_rotator.py -l [23,24,25,26,27,28] -c [0,0.5,0.75] -u [np.sqrt(2),0,1] -a 60 -i POSCAR -o POSCAR-rotated
 
-import numpy as np
 import sys
+import numpy as np
 import argparse
 
 
@@ -30,13 +30,16 @@ def main(arguments='-h'):
                             Values can be numpy functions like np.sqrt(2).""")
     parser.add_argument('-a', '--angle', type=float, required=True, help="""the rotation angle in degree,
                             counter-clockwise""")
-    parser.add_argument('-i', '--POSCAR', default='POSCAR', help="the input POSCAR file name")
+    parser.add_argument('-i', '--input', metavar='POSCAR', default='POSCAR', help="the input POSCAR file name")
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-o', '--output', default='POSCAR-rotated', help="the output file name")
-    group.add_argument('-p', '--inplace', action='store_true', help="directly change POSCAR in place without creating a new file")
+    group.add_argument('-o', '--output', metavar='POSCAR-rotated', default='default', help="the output file name")
+    group.add_argument('-p', '--inplace', action='store_true',
+                                    help="directly change POSCAR in place without creating a new file")
     args = parser.parse_args(arguments)
+    if args.output == 'default':
+        args.output = args.input + '-rotated'
     if args.inplace:
-        args.out = 'POSCAR'
+        args.output = args.input
 
     # np.set_printoptions(suppress=True)
     ions_line_number = np.array(args.lines) - 1  # machine counts from 0
@@ -50,13 +53,15 @@ def main(arguments='-h'):
                                                                 [u_x * u_z, u_y * u_z, u_z ** 2]]) * (1 - np.cos(angle))
 
     # open the POSCAR that has ions' position part
-    with open(args.POSCAR, 'r') as f:
+    with open(args.input, 'r') as f:
         POSCAR = f.readlines()
+
     # obtain the basis vectors from POSCAR
     basis_vectors = np.zeros((3, 3))
-    for i in range(3):
-        basis_vectors[i] = POSCAR[i + 2].split()
+    for i, line in enumerate(POSCAR[2:5]):
+        basis_vectors[i] = line.split()
     # convert the string form of ions' position into a numpy numeral array and subtract the translational vector
+
     ions_position = np.zeros((len(ions_line_number), 3))
     for i, line in enumerate(ions_line_number):
         ions_position[i] = POSCAR[line].split()[:3]

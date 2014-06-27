@@ -9,9 +9,10 @@ Introduction
 There are multiple ways to carry out VASP calculations. Contrary to the Pythonic scheme the famous `ASE <https://wiki.fysik.dtu.dk/ase/>`_ uses
 , this project does things in an old-fashioned way, providing a collection of scripts, written in Bash, and accompanying them with
 scripts written in Python, in the same directory, with careful use of file names and input arguments, and letting users
-add this single directory into their PATH environmental variable to have direct access. The scripts will be used as executables.
-This approach is less systematic than the one ASE uses, but it is more file and directory aware,
-due to their somewhat natural affinity to Bash - a shell scripting language.
+add this single directory into their PATH environmental variable to have direct access. The Bash scripts will be used as **executables**. This approach
+is less comprehensive than the one ASE uses, but it is more file and directory aware, due to their somewhat natural affinity to Bash - a shell
+scripting language. Standalone Python scripts (with capitalized first letter) can be imported. The plotting Python scripts (Plot_***.py) can be
+imported and used to adjust the Matplotlib figures.
 
 Scripts structure
 =================
@@ -19,7 +20,7 @@ Scripts structure
 Python scripts
 --------------
 
-These can also be used alone, and **can be readily imported and played with in a python interpreter**.
+These can also be used alone, and **can be readily imported and played with in a Python interpreter**.
 
 * ``Plot_tdos.py`` - to plot total density of states, spin states are supported (above or below x axis)
 * ``Plot_ldos.py`` - to plot local projected density of states of two ions (above or below x axis), spin states are supported (in different files)
@@ -35,7 +36,7 @@ Bash convenient scripts
 * ``Del_files.sh [XXX]`` - to delete the output files for failed runs (XXX is optional if one stays in the job directory)
 * ``Swap_file_names.sh AAA BBB`` - to exchange the names of two files AAA and BBB
 
-Bash Job submission scripts
+Bash job submission scripts
 ---------------------------
 
 * ``Prepare.sh XXX`` - a fast way to create a directory XXX with necessary input files

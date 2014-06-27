@@ -124,7 +124,7 @@ def main(arguments='-h'):
                         help="the x and y range of axis in the form of '[Ymin,Ymax]'.")
     parser.add_argument('-e', '--Ef', type=float, help="manually override Fermi energy detection")
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
-    parser.add_argument('-i', '--EIGENVAL', default='EIGENVAL', help="the input EIGENVAL file name")
+    parser.add_argument('-i', '--input', metavar='EIGENVAL', default='EIGENVAL', help="the input EIGENVAL file name")
     parser.add_argument('-o', '--output-prefix', default='BS', help="the output files' prefix")
     parser.add_argument('-f', '--figure', type=eval, help='''the figure number one wishes to plot on,
                                     in the form of '[1,2,...]'. Useful in interactive mode.''')
@@ -162,7 +162,7 @@ def main(arguments='-h'):
             except IOError:
                 raise IOError("Can't determine ISPIN! Either manually specify it, or provide OUTCAR or INCAR")
 
-    with open(args.EIGENVAL, 'r') as f:
+    with open(args.input, 'r') as f:
         EIGENVAL = f.readlines()
     for i in range(len(EIGENVAL)):
         EIGENVAL[i] = EIGENVAL[i].split()

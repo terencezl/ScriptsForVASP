@@ -68,14 +68,14 @@ def main(arguments='-h'):
     parser.add_argument('-a', '--axis-range', type=eval, help='''the x and y range of axis in the form of
                 '[Xmin,Xmax,Ymin,Ymax]'. If ISPIN=2, this option specifies the combined spin.''')
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
-    parser.add_argument('-i', '--DOSCAR', default='DOSCAR', help="the input DOSCAR file name")
+    parser.add_argument('-i', '--input', metavar='DOSCAR', default='DOSCAR', help="the input DOSCAR file name")
     parser.add_argument('-o', '--output-prefix', default='TDOS', help="the output files' prefix")
     parser.add_argument('-f', '--figure', type=eval, help='''the figure number one wishes to plot on,
                                     in the form of '[1,2,...]'. Useful in interactive mode.''')
     args = parser.parse_args(arguments)
     ISPIN = args.ISPIN
 
-    with open(args.DOSCAR, 'r') as f:
+    with open(args.input, 'r') as f:
         DOSCAR = f.readlines()
     for i in range(len(DOSCAR)):
         DOSCAR[i] = DOSCAR[i].split()

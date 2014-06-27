@@ -4,7 +4,7 @@ Scripts structure
 Python scripts
 --------------
 
-These can also be used alone, and **can be readily imported and played with in a python interpreter**.
+These can also be used alone, and **can be readily imported and played with in a Python interpreter**.
 
 * ``Plot_tdos.py`` - to plot total density of states, spin states are supported (above or below x axis)
 * ``Plot_ldos.py`` - to plot local projected density of states of two ions (above or below x axis), spin states are supported (in different files)
