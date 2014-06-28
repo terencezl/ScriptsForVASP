@@ -2,7 +2,7 @@
 # Use: In the TMN working directory where there is a list of folders by the name of elements
 
 POT_TYPE=PAW-GGA
-POTENTIALS_DIR=$POTENTIALS_DIR
+POTENTIALS_DIR=$HOME/terencelz/local/potential-database
 
 element_list_file=INPUT_ELEMENT/element.dat
 
@@ -25,21 +25,38 @@ while getopts ":e:c:" opt; do
   esac
 done
 
-element_list=$(cat $element_list_file)
+if [[ -z "$pot_combo" ]]; then
+    echo "-c potential combination must be specified, comma separated, iterating element as X!"
+    exit 1
+fi
+
+if [[ $pot_combo == *X* && ! -s $element_list_file ]]; then
+    echo "You specified an iterating element X but no element.dat is found!"
+    exit 1
+elif [[ $pot_combo != *X* ]]; then
+    pot_combo_list=$pot_combo
+else
+    for element in $(cat $element_list_file); do
+        pot_combo_item=${pot_combo//X/"element"}
+        pot_combo_list=$pot_combo_list" "$pot_combo_item
+    done
+fi
+
+pot_combo_list=$(echo $pot_combo_list)
+compound_list=${pot_combo_list//,/}
+
 
 if [[ "$test_type" == prepare ]]; then
-    if [[ -z "$pot_combo" ]]; then
-        echo "-c potential combination must be specified, comma separated, alternating element as X!"
-    for element in $element_list
+    for pot_combo_item in $pot_combo_list
     do
-        mkdir -p "$element"/INPUT
-        cp -r INPUT_ELEMENT/* "$element"/INPUT
-        rm "$element"/INPUT/*.dat
-        pot_combo=${pot_combo//X/"element"}
-        cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_{$pot_combo} > "$element"/INPUT/POTCAR
-        cd "$element"/INPUT
-        sed -i "/SYSTEM/c SYSTEM = $pot_combo" INCAR
-        sed -i "1c $pot_combo" POSCAR
+        compound=${pot_combo_item//,/}
+        mkdir -p "$compound"/INPUT
+        cp -r INPUT_ELEMENT/* "$compound"/INPUT
+        rm "$compound"/INPUT/*.dat
+        cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_{$pot_combo_item} > "$compound"/INPUT/POTCAR
+        cd "$compound"/INPUT
+        sed -i "/SYSTEM/c SYSTEM = $pot_combo_item" INCAR
+        sed -i "1c $pot_combo_item" POSCAR
         cd ../..
     done
 
@@ -50,11 +67,11 @@ else
         echo "Command $test_script does not exist!"
         exit 1
     fi
-    for element in $element_list
+    for compound in $compound_list
     do
         (
-        if ! cd "$element"; then
-            echo "Element $element directory does not exist!"
+        if ! cd "$compound"; then
+            echo "$compound directory does not exist!"
             exit 1
         fi
         $test_script "$@"
