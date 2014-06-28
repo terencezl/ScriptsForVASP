@@ -19,6 +19,8 @@ Bash convenient scripts
 * ``CellInfo.sh [rwigs]`` - to show the important info from OUTCAR (rwigs is optional, and displays the RWIGS values for different species to 100 % fill the cell)
 * ``DelFiles.sh [XXX]`` - to delete the output files for failed runs (XXX is optional if one stays in the job directory)
 * ``SwapFileNames.sh AAA BBB`` - to exchange the names of two files AAA and BBB
+* ``R`` - to submit the job in a specified directory or the current directory
+* ``D`` - to cancel the submitted N job 
 
 Bash job submission scripts
 ---------------------------
@@ -31,10 +33,7 @@ Bash job submission scripts
   - to carry out self-consistent run, density of states run, band structure run, LOBSTER pCOHP run
 * ``Bader.sh test | analysis`` - to perform Bader charge transfer analysis
 
-Bash multiple element species
------------------------------
-
-* ``ElementRun.sh`` - an interactive script to execute the above routines for multiple species
+* ``ElementRun.sh`` - a wrapper script to execute the above routines for multiple species
 
 Supportive scripts
 ------------------
@@ -45,5 +44,3 @@ Supportive scripts
 * ``_sequence_fit_plot.py`` - to perform different fitting techniques, including Birch-Murnaghan equation of state and polynomial
 * ``_elastic_solver.py`` - to solve the independent elastic constants from the same number of combination runs with linear algebra
 * ``_cell_info_solver.py`` - to obtain the RWIGS values for different species to 100 % fill the cell
-
-**others** contains some interesting physics or computational experiments.

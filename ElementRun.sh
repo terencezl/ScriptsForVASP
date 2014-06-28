@@ -1,113 +1,63 @@
 #!/usr/bin/env bash
 # Use: In the TMN working directory where there is a list of folders by the name of elements
-# Change element.dat first
 
-element_list=$(echo $(cat $1))
-echo "Tell me what you wish to do: prepare / lctest / display / equi-relax / copy-CONTCAR / elastic / solve / SCrun / DOSrun / plot-ldos / plot-tdos / bader-prerun / bader"
-read -r test_type
+POT_TYPE=PAW-GGA
+POTENTIALS_DIR=$POTENTIALS_DIR
 
-# create INPUT folder in the selected cryst structure of each element
-if [ $test_type == prepare ]; then
-    for n in $element_list
+element_list_file=INPUT_ELEMENT/element.dat
+
+while getopts ":e:c:" opt; do
+    case $opt in
+    e)
+        element_list_file=$OPTARG
+        ;;
+    c)
+        pot_combo=$OPTARG
+        ;;
+    \?)
+        echo "Invalid option: -$OPTARG" >&2
+        exit 1
+        ;;
+    :)
+        echo "Option -$OPTARG requires an argument." >&2
+        exit 1
+        ;;
+  esac
+done
+
+element_list=$(cat $element_list_file)
+
+if [[ "$test_type" == prepare ]]; then
+    if [[ -z "$pot_combo" ]]; then
+        echo "-c potential combination must be specified, comma separated, alternating element as X!"
+    for element in $element_list
     do
-        mkdir -p "$n"/INPUT
-        cp -r INPUT_ELEMENT/{INCAR,KPOINTS,POSCAR,qsub.parallel,qbader.serial} "$n"/INPUT
-        cat ~/terencelz/local/potential-database/PAW-GGA/POTCAR_{"$n",N} > "$n"/INPUT/POTCAR
-        cd "$n"/INPUT
-        sed -i "/SYSTEM/c SYSTEM = $n" INCAR
-        sed -i "1c $n" POSCAR
+        mkdir -p "$element"/INPUT
+        cp -r INPUT_ELEMENT/* "$element"/INPUT
+        rm "$element"/INPUT/*.dat
+        pot_combo=${pot_combo//X/"element"}
+        cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_{$pot_combo} > "$element"/INPUT/POTCAR
+        cd "$element"/INPUT
+        sed -i "/SYSTEM/c SYSTEM = $pot_combo" INCAR
+        sed -i "1c $pot_combo" POSCAR
         cd ../..
     done
 
-# basic lctest in the "top working directory"
-elif [ $test_type == lctest ]; then
-    echo "Enter the starting scaling factor, ending scaling factor and the step, separated by a space."
-    read -r start end step
-    for n in $element_list
-    do
-        cd "$n" || exit 1
-        Prep-fire.sh lctest $start $end $step
-        cd ..
-    done
-
-# fit the lctest curve to Murnaghan eqn of state
-elif [ $test_type == display ]; then
-    for n in $element_list
-    do
-        cd "$n" || exit 1
-        SequenceDisp.sh lctest
-        echo
-        cd ..
-    done
-
-# create an equilibrium run
-elif [ $test_type == equi-relax ]; then
-    for n in $element_list
-    do
-        cd "$n" || exit 1
-        Prepare.sh equi-relax
-        F equi-relax
-        cd ..
-    done
-
-elif [ $test_type == copy-CONTCAR ];then
-    for n in $element_list
-    do
-        cd "$n" || exit 1
-        SequenceDisp.sh equi-relax
-        cd ..
-    done
-
-# prep and fire the elastic constant runs
-elif [ $test_type == elastic ]; then
-    echo "Tell me the crystallographic system the compound is in: cubic / tetragonal / orthorhombic/..."
-    read -r cryst_sys
-    for n in $element_list
-    do
-        cd "$n" || exit 1
-        Elastic.sh prep-fire $cryst_sys
-        cd ..
-    done
-
-# display the fitting results and solve the elastic constants
-elif [ $test_type == solve ]; then
-    echo "Tell me the crystallographic system the compound is in: cubic / tetragonal / orthorhombic/..."
-    read -r cryst_sys
-    for n in $element_list
-    do
-        cd "$n" || exit 1
-        Elastic.sh disp-solve $cryst_sys
-        echo
-        cd ..
-    done
-
-# do the self-consistent run, find k-point DOSrun, bandstructure run, and plot them."
-elif [ $test_type == SCrun ] || [ $test_type == DOSrun ] || [ $test_type == BSrun ] || [ $test_type == plot-ldos ] || [ $test_type == plot-tdos ]; then
-    if [ $test_type == plot-ldos ] || [ $test_type == plot-tdos ]; then
-        echo "Tell me the size of the frame. e.g. [-20,20,-5,5] for ldos, [-20,20,0,10] for tdos."
-        read -r frame_size
+else
+    test_script=$1
+    shift 1
+    if ! type $test_script >/dev/null 2>&1; then
+        echo "Command $test_script does not exist!"
+        exit 1
     fi
-    for n in $element_list
+    for element in $element_list
     do
-        cd "$n" || exit 1
-        Electronic.sh $test_type "$frame_size"
-        cd ..
+        (
+        if ! cd "$element"; then
+            echo "Element $element directory does not exist!"
+            exit 1
+        fi
+        $test_script "$@"
+        )
     done
-
-elif [ $test_type == bader-prerun ]; then
-    for n in $element_list
-    do
-        cd "$n"
-        Bader.sh prerun
-        cd ..
-    done
-    
-elif [ $test_type == bader ]; then
-    for n in $element_list
-    do
-        cd "$n"
-        Bader.sh bader
-        cd ..
-    done
-
 fi
