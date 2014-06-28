@@ -32,8 +32,7 @@ Bash job submission scripts
 * ``Electronic.sh SCrun | DOSrun | BSrun | lobster kp | lobster test | lobster analysis``
   - to carry out self-consistent run, density of states run, band structure run, LOBSTER pCOHP run
 * ``Bader.sh test | analysis`` - to perform Bader charge transfer analysis
-
-* ``ElementRun.sh`` - a wrapper script to execute the above routines for multiple species
+* ``BatchElements.sh`` - a wrapper script to execute the above routines for multiple species
 
 Supportive scripts
 ------------------
