@@ -6,7 +6,7 @@ test_type="$1"
 directory_name=elastic
 fname="$directory_name"elastic_output.txt
 cryst_sys="$2"
-shfit 2
+shift 2
 
 if [[ $cryst_sys == cubic ]]; then
     dir_list="c11-c12 c44"
@@ -25,15 +25,15 @@ while getopts ":d:m:f" opt; do
     case $opt in
     d)
         directory_name=$OPTARG
-        echo "-d specifies alternative directory name."
+        # echo "-d specifies alternative directory name."
         ;;
     m)
         is_submit=true
-        echo "-m triggered job submission."
+        # echo "-m triggered job submission."
         ;;
     f)
         is_override=true
-        echo "-f triggered overriding existing subdirectories."
+        # echo "-f triggered overriding existing subdirectories."
         ;;
     \?)
         echo "Invalid option: -$OPTARG" >&2
@@ -57,16 +57,22 @@ if [[ "$test_type" == test ]]; then
         fi
     fi
 
-    mkdir "$directory_name" && cd "$directory_name"
+    mkdir "$directory_name" 2> /dev/null
+    cd "$directory_name"
     cp -r ../INPUT .
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
     for dir in $dir_list
     do
-        if [[ $is_submit ]]; then
-            SequenceTest.sh $dir $cryst_sys -fm
+        if [[ $is_submit && $is_override ]]; then
+            test_tag='-mf'
+        elif [[ $is_submit && ! $is_override ]]; then
+            test_tag='-m'
+        elif [[ ! $is_submit && $is_override ]]; then
+            test_tag='-f'
         else
-            SequenceTest.sh $dir $cryst_sys -f
+            test_tag=''
         fi
+        SequenceTest.sh $dir $cryst_sys $test_tag
     done
 
 
