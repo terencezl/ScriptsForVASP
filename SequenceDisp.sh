@@ -281,7 +281,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
 
     # get the dir_list and sorted dir_list_minus_sign!
     prepare_dir_helper
-    dir_list_minus_sign=$(make_dir_list_sortable $dir_list)
+    dir_list_minus_sign=$(make_dir_list_sortable "$dir_list")
     dir_list_minus_sign=$(sort_list "$dir_list_minus_sign")
     prepare_header_helper "$dir_list_minus_sign"
     # echo some headers to file.
