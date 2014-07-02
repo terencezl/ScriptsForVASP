@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-function prepare_dir_helper {
-    # creates global variable dir_list without annoying trailing slashes.
-    # be careful about variable name clashes.
+function enter_dir {
     cd "$directory_name"
     if [[ $? != 0 ]]; then
         echo "Cannot find the directory!"
         exit 1
     fi
+}
+
+function prepare_dir_helper {
+    # creates global variable dir_list without annoying trailing slashes.
+    # be careful about variable name clashes.
     echo "$PWD" | tee $fname
     for dir in $(ls -F)
     do
@@ -89,6 +92,7 @@ data_line_count=0
 
 
 if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
+    enter_dir
     prepare_dir_helper
     # get rid of the *-1 dirs.
     for dir in $dir_list
@@ -139,6 +143,7 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
 
 
 elif [[ $test_type == "lctest" ]]; then
+    enter_dir
     prepare_dir_helper
     dir_list=$(sort_list "$dir_list")
     prepare_header_helper "$dir_list"
@@ -187,6 +192,7 @@ elif [[ $test_type == "lctest" ]]; then
 
 
 elif [[ $test_type == "rttest" ]]; then
+    enter_dir
     prepare_dir_helper
     dir_list=$(sort_list "$dir_list")
     prepare_header_helper "$dir_list"
@@ -216,8 +222,9 @@ elif [[ $test_type == "rttest" ]]; then
 
 
 elif [[ $test_type == "agltest" ]]; then
-    # get the dir_list and sorted dir_list_minus_sign!
+    enter_dir
     prepare_dir_helper
+    # get the dir_list and sorted dir_list_minus_sign!
     dir_list_minus_sign=$(make_dir_list_sortable $dir_list)
     dir_list_minus_sign=$(sort_list "$dir_list_minus_sign")
     prepare_header_helper "$dir_list_minus_sign"
@@ -251,6 +258,7 @@ elif [[ $test_type == "equi-relax" ]]; then
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then
     # some pre-process of the dirs to save computation time.
+    enter_dir
     function duplicate {
         dir_from=$1
         if [[ "$dir_from" == *n ]]; then dir_to=${dir_from%n}; else dir_to="$dir_from"n; fi
