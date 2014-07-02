@@ -32,7 +32,7 @@ function argparse {
 
 function subdirectory_check {
     if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
-        echo -n "Subdirectory contains files."
+        echo -n "Subdirectory contains files. "
         if [[ $is_override ]]; then
             echo "Overriding..."
         else

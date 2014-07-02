@@ -28,7 +28,7 @@ while getopts ":a:mf" opt; do
 done
 
 if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
-    echo -n "Directory contains files or sub-directories."
+    echo -n "Directory contains files or sub-directories. "
     if [[ $is_override ]]; then
         echo "Overriding..."
     else
@@ -42,3 +42,5 @@ cp INPUT/* "$directory_name"/
 cd "$directory_name"
 _qsub_replacer.sh qsub.parallel
 if [[ -n "$additional_qsub_file" ]]; then _qsub_replacer.sh "$additional_qsub_file"; fi
+
+if [[ $is_submit ]]; then qsub qsub.parallel; fi
