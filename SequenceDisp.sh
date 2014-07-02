@@ -259,13 +259,13 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
     }
 
     if [[ $test_type == c44 ]]; then
-        duplicate 0.020n
-        duplicate 0.035n
-        duplicate 0.050
+        duplicate 0.020
+        duplicate 0.035
+        duplicate 0.050n
     elif [[ $test_type == c11-c12 ]]; then
-        duplicate 0.020n
-        duplicate 0.030n
-        duplicate 0.040
+        duplicate 0.020
+        duplicate 0.030
+        duplicate 0.040n
     fi
 
     if [ -d 0.000 ]; then rm -r 0.000; fi
