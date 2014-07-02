@@ -9,15 +9,15 @@ while getopts ":d:m:f" opt; do
     case $opt in
     d)
         directory_name=$OPTARG
-        echo "-d specifies alternative directory name."
+#        echo "-d specifies alternative directory name."
         ;;
     m)
         is_submit=true
-        echo "-m triggered job submission."
+#        echo "-m triggered job submission."
         ;;
     f)
         is_override=true
-        echo "-f triggered overriding existing subdirectories."
+#        echo "-f triggered overriding existing subdirectories."
         ;;
     \?)
         echo "Invalid option: -$OPTARG" >&2

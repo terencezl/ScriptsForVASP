@@ -76,11 +76,11 @@ function argparse {
             ;;
         m)
             is_submit=true
-            echo "-m triggered job submission."
+#            echo "-m triggered job submission."
             ;;
         f)
             is_override=true
-            echo "-f triggered overriding existing subdirectories."
+#            echo "-f triggered overriding existing subdirectories."
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2

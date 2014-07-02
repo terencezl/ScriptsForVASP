@@ -5,15 +5,15 @@ function argparse {
         case $opt in
         d)
             subdir_name=$OPTARG
-            echo "-d specifies alternative subdirectory name."
+#            echo "-d specifies alternative subdirectory name."
             ;;
         m)
             is_submit=true
-            echo "-m triggered job submission."
+#            echo "-m triggered job submission."
             ;;
         f)
             is_override=true
-            echo "-f triggered overriding the existing subdirectory."
+#            echo "-f triggered overriding the existing subdirectory."
             ;;
         n)
             nband=$OPTARG
