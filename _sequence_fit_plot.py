@@ -149,9 +149,9 @@ elif re.search('.*c[1-9][1-9].*', test_type):
     for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
-        (p, r_squared, delta_fit, energy_fit) = polyfit(data[:, 0], data[:, 1], 2)
-        plt.plot(data[:, 0], data[:, 1], 'o', delta_fit, energy_fit, '-')
-        result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared = %f" % (p[2], p[1], p[0], r_squared)
+    (p, r_squared, delta_fit, energy_fit) = polyfit(data[:, 0], data[:, 1], 2)
+    plt.plot(data[:, 0], data[:, 1], 'o', delta_fit, energy_fit, '-')
+    result_str = "E = %f x^2 + (%f) x + (%f)\nR-squared = %f" % (p[2], p[1], p[0], r_squared)
 
     plt.text(delta_fit[len(delta_fit) / 4], energy_fit[6], result_str)
     plt.xlabel('Delta (ratio)')
