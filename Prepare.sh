@@ -3,14 +3,18 @@
 directory_name="$1"
 shift 1
 
-while getopts ":a:f" opt; do
+while getopts ":a:mf" opt; do
     case $opt in
     a)
         additional_qsub_file=$OPTARG
         ;;
+    m)
+        is_submit=true
+#        echo "-m triggered job submission."
+        ;;
     f)
         is_override=true
-        echo "-f triggered overriding existing directory."
+#        echo "-f triggered overriding existing directory."
         ;;
     \?)
         echo "Invalid option: -$OPTARG" >&2
