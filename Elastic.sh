@@ -21,7 +21,7 @@ elif [[ $cryst_sys == triclinic ]]; then echo
 else echo "Expecting 2nd argument to be crystallographic system!"
 fi
 
-while getopts ":d:m:f" opt; do
+while getopts ":d:mf" opt; do
     case $opt in
     d)
         directory_name=$OPTARG

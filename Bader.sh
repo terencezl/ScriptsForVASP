@@ -5,7 +5,7 @@ directory_name=bader
 fname="$directory_name"elastic_output.txt
 shift 1
 
-while getopts ":d:m:f" opt; do
+while getopts ":d:mf" opt; do
     case $opt in
     d)
         directory_name=$OPTARG
