@@ -268,7 +268,7 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
     for dir in $dir_list; do
         if [[ ! $dir == 0.000 && $dir == *n && ! -d ${dir%n} ]]; then
             cp -rl $dir ${dir%n}
-        elif [[ ! $dir == 0.000 && ! $dir == *n && -d ${dir}n ]]; then
+        elif [[ ! $dir == 0.000 && ! $dir == *n && ! -d ${dir}n ]]; then
             cp -rl $dir ${dir}n
         fi
     done
