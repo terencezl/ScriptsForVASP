@@ -75,24 +75,31 @@ if [[ "$test_type" == test ]]; then
         fi
     fi
 
+    if [[ $is_submit && $is_override ]]; then
+        test_tag='-mf'
+    elif [[ $is_submit && ! $is_override ]]; then
+        test_tag='-m'
+    elif [[ ! $is_submit && $is_override ]]; then
+        test_tag='-f'
+    else
+        test_tag=''
+    fi
+
     mkdir "$directory_name" 2> /dev/null
     cd "$directory_name"
     cp -r ../INPUT .
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
     for dir in $dir_list
     do
-        if [[ $is_submit && $is_override ]]; then
-            test_tag='-mf'
-        elif [[ $is_submit && ! $is_override ]]; then
-            test_tag='-m'
-        elif [[ ! $is_submit && $is_override ]]; then
-            test_tag='-f'
-        else
-            test_tag=''
-        fi
         SequenceTest.sh $dir $cryst_sys $test_tag
     done
 
+    if [[ -d ../$equi_relax ]]; then
+        echo "Will not create $directory_name/equi-relax, but use the $equi_relax from outside the $directory_name/."
+    else
+        echo "Did not find $directory_name/$equi_relax. Will create equi-relax under $directory_name."
+        Prepare.sh "equi-relax" $test_tag
+    fi
 
 elif [[ "$test_type" == disp-solve ]]; then
     does_directory_exist
@@ -100,15 +107,16 @@ elif [[ "$test_type" == disp-solve ]]; then
         if [[ -d ../$equi_relax ]]; then
             cp -r ../$equi_relax "equi-relax"
         else
-            echo "$equi_relax does not exist!"
+            echo "$directory_name/$equi_relax does not exist, neither does $equi_relax!"
             exit 1
         fi
     fi
+
     if [[ ! -f "lctest_output.txt" ]]; then
         if [[ -f ../$lctest/lctest_output.txt ]]; then
             cp ../$lctest/lctest_output.txt ./
         else
-            echo "lctest_output.txt does not exist and cannot be found in $lctest/ either!"
+            echo "$directory_name/lctest_output.txt does not exist and cannot be found in $lctest/ either!"
             exit 1
         fi
     fi
