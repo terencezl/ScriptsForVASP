@@ -45,7 +45,7 @@ Bash job submission scripts
 * ``SequenceTest.sh TEST_TYPE [OPTIONS]`` - to create a series of runs, performing encut test | kpoints test | lattice constant test | elastic constant test | ...
 * ``SequenceDisp.sh TEST_TYPE [OPTIONS]`` - to do the post-analysis of a series of runs described above and determine physical quantities
 * ``Elastic.sh test | disp-solve | solve`` - to do a full set of independent elastic constant determination runs
-* ``Electronic.sh SCrun | DOSrun | BSrun | lobster kp | lobster test | lobster analysis``
+* ``Electronic.sh scrun | dosrun | bsrun | lobster kp | lobster test | lobster analysis``
   - to carry out self-consistent run, density of states run, band structure run, LOBSTER pCOHP run
 * ``Bader.sh test | analysis`` - to perform Bader charge transfer analysis
 * ``BatchElements.sh`` - a wrapper script to execute the above routines for multiple species
