@@ -17,6 +17,8 @@ test_type="$1"
 directory_name=elastic
 fname="$directory_name"_output.txt
 cryst_sys="$2"
+equi_relax="equi-relax"
+lctest="lctest"
 shift 2
 
 if [[ $cryst_sys == cubic ]]; then
@@ -34,10 +36,16 @@ else
     exit 1
 fi
 
-while getopts ":d:mf" opt; do
+while getopts ":d:q:l:mf" opt; do
     case $opt in
     d)
         directory_name=$OPTARG
+        ;;
+    q)
+        equi_relax=$OPTARG
+        ;;
+    l)
+        lctest=$OPTARG
         ;;
     m)
         is_submit=true
@@ -88,6 +96,23 @@ if [[ "$test_type" == test ]]; then
 
 elif [[ "$test_type" == disp-solve ]]; then
     does_directory_exist
+    if [[ ! -d "equi-relax" ]]; then
+        if [[ -d ../$equi_relax ]]; then
+            cp -r ../$equi_relax "equi-relax"
+        else
+            echo "$equi_relax does not exist!"
+            exit 1
+        fi
+    fi
+    if [[ ! -f "lctest_output.txt" ]]; then
+        if [[ -f ../$lctest/lctest_output.txt ]]; then
+            cp ../$lctest/lctest_output.txt ./
+        else
+            echo "lctest_output.txt does not exist and cannot be found in $lctest/ either!"
+            exit 1
+        fi
+    fi
+
     for dir in $dir_list
     do
         SequenceDisp.sh $dir
@@ -101,8 +126,8 @@ elif [[ "$test_type" == disp-solve ]]; then
 elif [[ "$test_type" == solve ]]; then
     does_directory_exist
     # get the info from elastic constant combination runs and/or lctest. 
-    Vpcell=$(grep 'volume of cell' ../equi-relax/OUTCAR | tail -1 | awk '{print $5;}')
-    B0=$(grep 'B0 =' ../lctest/lctest_output.txt | tail -1 | awk '{print $3}')
+    Vpcell=$(grep 'volume of cell' equi-relax/OUTCAR | tail -1 | awk '{print $5;}')
+    B0=$(grep 'B0 =' lctest_output.txt | tail -1 | awk '{print $3}')
     econst_list=$B0
 
     for dir in $dir_list

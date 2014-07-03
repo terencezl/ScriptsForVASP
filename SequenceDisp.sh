@@ -87,12 +87,29 @@ function output_force_entropy {
     fi
 }
 
+function argparse {
+    while getopts ":q:" opt; do
+        case $opt in
+        q)
+            equi_relax=$OPTARG
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            exit 1
+            ;;
+      esac
+    done
+}
 
 if [[ "$1" == */ ]]; then directory_name=${1%/}; else directory_name=$1; fi
 test_type="${directory_name%%_*}"
 fname="$test_type"_output.txt
 data_line_count=0
-
+shift 1
 
 if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     enter_dir
@@ -265,6 +282,8 @@ elif [[ $test_type == "equi-relax" ]]; then
 
 
 elif [[ $test_type == *c[1-9][1-9]* ]]; then
+    equi_relax="equi-relax"
+    argparse "$@"
     # some pre-process of the dirs to save computation time.
     enter_dir
     prepare_dir_helper
@@ -276,10 +295,10 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
         fi
     done
     if [[ ! -d 0.000 ]]; then
-        if [[ -d ../../equi-relax ]]; then
-            cp -r ../../equi-relax 0.000
+        if [[ -d ../$equi_relax ]]; then
+            cp -r ../$equi_relax 0.000
         else
-            echo "equi-relax does not exist. It is important because it's used to be 0.000 for the elastic runs."
+            echo "$equi_relax does not exist. It is important because it's used to be 0.000 for the elastic runs."
         fi
     fi
 
