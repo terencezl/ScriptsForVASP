@@ -54,7 +54,7 @@ function header_echo {
 }
 
 function argparse {
-    while getopts ":s:e:n:i:c:r:mf" opt; do
+    while getopts ":b:e:n:i:c:r:mf" opt; do
         case $opt in
         b)
             begin=$OPTARG
