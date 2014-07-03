@@ -78,10 +78,12 @@ function output_force_entropy {
     local entropy_not_converged_list="$2"
     local fname="$3"
     if [ "$force_not_converged_list" ]; then
-        echo -e "\n!Force doesn't converge during""$force_not_converged_list" | tee -a $fname
+        echo >> $fname
+        echo -e "!Force doesn't converge during""$force_not_converged_list" | tee -a $fname
     fi
     if [ "$entropy_not_converged_list" ]; then
-        echo -e "\n!Entropy doesn't converge during""$entropy_not_converged_list" | tee -a $fname
+        echo >> $fname
+        echo -e "!Entropy doesn't converge during""$entropy_not_converged_list" | tee -a $fname
     fi
 }
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# SequenceTest.sh entest -s start -e end -i interval -c scaling_const
-# SequenceTest.sh kptest -s start -e end -i interval -c scaling_const
-# SequenceTest.sh lctest -s start -e end -n num_points
-# SequenceTest.sh rttest -s start -e end -n num_points
-# SequenceTest.sh agltest -s start -e end -n num_points -r Ion_rotator_args
+# SequenceTest.sh entest -b begin -e end -i interval -c scaling_const
+# SequenceTest.sh kptest -b begin -e end -i interval -c scaling_const
+# SequenceTest.sh lctest -b begin -e end -n num_points
+# SequenceTest.sh rttest -b begin -e end -n num_points
+# SequenceTest.sh agltest -b begin -e end -n num_points -r Ion_rotator_args
 # SequenceTest.sh c11-c12 cubic
 
 function create_copy_replace {
@@ -56,8 +56,8 @@ function header_echo {
 function argparse {
     while getopts ":s:e:n:i:c:r:mf" opt; do
         case $opt in
-        s)
-            start=$OPTARG
+        b)
+            begin=$OPTARG
             ;;
         e)
             end=$OPTARG
@@ -99,14 +99,14 @@ shift 1
 
 if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
     argparse "$@"
-    if [[ -z $start || -z $end || -z $interval || -z $scaling_const ]]; then
-        echo "-s -e -i -c should be all set with valid values!" >&2
+    if [[ -z $begin || -z $end || -z $interval || -z $scaling_const ]]; then
+        echo "-b -e -i -c should be all set with valid values!" >&2
         exit 1
     fi
     header_echo
     lc1=$scaling_const
     lc2=$(echo "print($lc1+0.1)" | python)
-    for ((dir=$start; dir<=$end; dir=$dir+$interval))
+    for ((dir=$begin; dir<=$end; dir=$dir+$interval))
     do
         for i in "$dir" "$dir"-1
         do
@@ -129,12 +129,12 @@ if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
 
 elif [[ "$test_type" == "lctest" ]]; then
     argparse "$@"
-    if [[ -z $start || -z $end || -z $num_points ]]; then
-        echo "-s -e -n should be all set with valid values!" >&2
+    if [[ -z $begin || -z $end || -z $num_points ]]; then
+        echo "-b -e -n should be all set with valid values!" >&2
         exit 1
     fi
     header_echo
-    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
+    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($begin,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     for dir in $dir_list
     do
         (
@@ -146,12 +146,12 @@ elif [[ "$test_type" == "lctest" ]]; then
 
 elif [[ "$test_type" == "rttest" ]]; then
     argparse "$@"
-    if [[ -z $start || -z $end || -z $num_points ]]; then
-        echo "-s -e -n should be all set with valid values!" >&2
+    if [[ -z $begin || -z $end || -z $num_points ]]; then
+        echo "-b -e -n should be all set with valid values!" >&2
         exit 1
     fi
     header_echo
-    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
+    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($begin,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
     do
@@ -165,12 +165,12 @@ elif [[ "$test_type" == "rttest" ]]; then
 
 elif [[ "$test_type" == "agltest" ]]; then
     argparse "$@"
-    if [[ -z $start || -z $end || -z $num_points || -z $ions_rotator_args ]]; then
-        echo "-s -e -n -r should be all set with valid values!" >&2
+    if [[ -z $begin || -z $end || -z $num_points || -z $ions_rotator_args ]]; then
+        echo "-b -e -n -r should be all set with valid values!" >&2
         exit 1
     fi
     header_echo
-    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($start,$end,$num_points): print('{0:.3f}'.format(i))" | python)
+    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($begin,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
     do
