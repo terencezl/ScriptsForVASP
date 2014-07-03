@@ -4,6 +4,8 @@
 POT_TYPE=PAW-GGA
 POTENTIALS_DIR=$HOME/terencelz/local/potential-database
 
+test_type="$1"
+shift 1
 element_list_file=INPUT_ELEMENT/element.dat
 
 while getopts ":e:c:" opt; do
@@ -22,15 +24,13 @@ while getopts ":e:c:" opt; do
         echo "Option -$OPTARG requires an argument." >&2
         exit 1
         ;;
-  esac
+    esac
 done
 
 if [[ -z "$pot_combo" ]]; then
     echo "-c potential combination must be specified, comma separated, iterating element as X!"
     exit 1
-fi
-
-if [[ $pot_combo == *X* && ! -s $element_list_file ]]; then
+elif [[ $pot_combo == *X* && ! -s $element_list_file ]]; then
     echo "You specified an iterating element X but no element.dat is found!"
     exit 1
 elif [[ $pot_combo != *X* ]]; then
