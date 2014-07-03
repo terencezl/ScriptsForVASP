@@ -53,7 +53,7 @@ if [[ "$test_type" == prepare ]]; then
         mkdir -p "$compound"/INPUT
         cp -r INPUT_ELEMENT/* "$compound"/INPUT
         rm "$compound"/INPUT/*.dat
-        cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_{$pot_combo_item} > "$compound"/INPUT/POTCAR
+        eval "cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_{$pot_combo_item} > $compound/INPUT/POTCAR"
         cd "$compound"/INPUT
         sed -i "/SYSTEM/c SYSTEM = $pot_combo_item" INCAR
         sed -i "1c $pot_combo_item" POSCAR
