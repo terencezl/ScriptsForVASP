@@ -50,7 +50,7 @@ shift 1
 if [[ -d "$directory_name" ]]; then
     cd "$directory_name"
 elif [[ "${PWD##*/}" == "$directory_name" ]]; then
-    echo "Already in $directory_name."
+    echo "Already in $directory_name/."
 else
     echo "The directory $directory_name does not exist!"
     exit 1

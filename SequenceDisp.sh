@@ -259,25 +259,15 @@ elif [[ $test_type == "equi-relax" ]]; then
 elif [[ $test_type == *c[1-9][1-9]* ]]; then
     # some pre-process of the dirs to save computation time.
     enter_dir
-    function duplicate {
-        dir_from=$1
-        if [[ "$dir_from" == *n ]]; then dir_to=${dir_from%n}; else dir_to="$dir_from"n; fi
-        if [ -d $dir_to ]; then rm -r $dir_to; fi
-        cp -rl $dir_from $dir_to
-    }
-
-    if [[ $test_type == c44 ]]; then
-        duplicate 0.020
-        duplicate 0.035
-        duplicate 0.050n
-    elif [[ $test_type == c11-c12 ]]; then
-        duplicate 0.020
-        duplicate 0.030
-        duplicate 0.040n
-    fi
-
-    if [ -d 0.000 ]; then rm -r 0.000; fi
-    cp -r ../../equi-relax 0.000
+    prepare_dir_helper
+    for dir in $dir_list; do
+        if [[ ! $dir == 0.000 && $dir == *n && ! -d ${dir%n} ]]; then
+            cp -rl $dir ${dir%n}
+        elif [[ ! $dir == 0.000 && ! $dir == *n && -d ${dir}n ]]; then
+            cp -rl $dir ${dir}n
+        fi
+    done
+    [[ ! -d 0.000 ]] && cp -r ../../equi-relax 0.000
 
     # get the dir_list and sorted dir_list_minus_sign!
     prepare_dir_helper
