@@ -37,7 +37,7 @@ function change_dir_name_with_hyphen {
 
 function submission_trigger {
     if [[ $is_submit ]]; then
-        echo -e '    \c'
+        echo -n '    '
         qsub qsub.parallel
     fi
 }

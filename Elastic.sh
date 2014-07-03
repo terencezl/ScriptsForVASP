@@ -98,6 +98,7 @@ if [[ "$test_type" == test ]]; then
         echo "Will not create $directory_name/equi-relax, but use the $equi_relax from outside the $directory_name/."
     else
         echo "Did not find $directory_name/$equi_relax. Will create equi-relax under $directory_name."
+        echo -n '  '
         Prepare.sh "equi-relax" $test_tag
     fi
 
