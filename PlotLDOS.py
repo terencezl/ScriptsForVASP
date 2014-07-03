@@ -168,7 +168,7 @@ def main(arguments='-h'):
         ax = plt.gca()
         ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
         for i in range(1, 18, 2):
-            plt.plot(DOS_data2[:, 0], -DOS_data2[:, i] - DOS_data1[:, i + 1])
+            plt.plot(DOS_data2[:, 0], -DOS_data2[:, i] - DOS_data2[:, i + 1])
         plot_helper_settings(args)
         plt.savefig(args.output_prefix + '-spin-combined.png')
         plot_helper_close()
@@ -215,7 +215,7 @@ def main(arguments='-h'):
         ax = plt.gca()
         ax.set_color_cycle(plt.rcParams['axes.color_cycle'])
         for i in range(1, 6, 2):
-            plt.plot(DOS_data2[:, 0], -DOS_data2[:, i] - DOS_data1[:, i + 1])
+            plt.plot(DOS_data2[:, 0], -DOS_data2[:, i] - DOS_data2[:, i + 1])
         plot_helper_settings(args)
         plt.savefig(args.output_prefix + '-spin-combined.png')
         plot_helper_close()
