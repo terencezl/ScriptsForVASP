@@ -121,14 +121,15 @@ elif [[ "$test_type" == disp-solve ]]; then
         fi
     fi
 
+    echo $PWD | tee $fname
+
     for dir in $dir_list
     do
         SequenceDisp.sh $dir
     done
 
-    echo $PWD | tee $fname
     cd ..
-    Elastic.sh solve $cryst_sys
+    Elastic.sh solve $cryst_sys -d "$directory_name"
 
 
 elif [[ "$test_type" == solve ]]; then
