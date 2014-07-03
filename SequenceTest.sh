@@ -99,7 +99,7 @@ shift 1
 
 if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
     argparse "$@"
-    if [[ -z $begin || -z $end || -z $interval || -z $scaling_const ]]; then
+    if [[ -z $begin || -z $end || -z $interval ]]; then
         echo "-b -e -i should be all set with valid values!" >&2
         exit 1
     fi
