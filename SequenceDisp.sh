@@ -192,6 +192,7 @@ elif [[ $test_type == "lctest" ]]; then
             cd $directory_name
         else
             echo "Empty CONTCAR. Aborted. Check your runs!"
+        fi
     fi
 
 
