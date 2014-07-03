@@ -10,9 +10,9 @@ function create_copy_replace {
     mkdir "$1" 2> /dev/null
     if [[ $? != 0 ]]; then
         if [[ $is_override ]]; then
-            echo "    $1 already exists. Overriding input files."
+            echo "  $1 already exists. Overriding input files."
         else
-            echo "    $1 already exists. Escaping input files."
+            echo "  $1 already exists. Escaping input files."
             exit 1
         fi
     else
@@ -37,7 +37,7 @@ function change_dir_name_with_hyphen {
 
 function submission_trigger {
     if [[ $is_submit ]]; then
-        echo -e '      \c'
+        echo -e '    \c'
         qsub qsub.parallel
     fi
 }
@@ -203,7 +203,7 @@ elif [[ "$test_type" == *c[1-9][1-9]* ]]; then
         (
         create_copy_replace $dir
         if [[ "$dir" == *n ]]; then dir=-${dir%n}; fi
-        StrainApplier.py "$test_type" "$cryst_sys" "$dir" -p
+        StrainApplier.py "$test_type" "$cryst_sys" $dir -p
         submission_trigger
         )
     done

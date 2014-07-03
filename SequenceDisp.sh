@@ -101,41 +101,41 @@ if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     done
     dir_list=$(sort_list "$dir_list_enkp")
     prepare_header_helper "$dir_list"
-    lc1=$(sed -n '2p' $smallest/POSCAR)
-    lc2=$(echo "$lc1+0.1" | bc)
+    sc1=$(sed -n '2p' $smallest/POSCAR)
+    sc2=$(echo "$sc1+0.1" | bc)
     # echo some headers to file.
     if [ $test_type == "entest" ]; then
         echo -e "ENCUT from $smallest to $largest interval $interval" >> $fname
-        echo -e "LC1 = $lc1, LC2 = $lc2 (directories with '-1')" >> $fname
-        echo -e "\n   ENCUT(eV)    E_LC1(eV)   dE_LC1(eV)    E_LC2(eV)   dE_LC2(eV) DE=E_LC2-E_LC1(eV)      dDE(eV)" >> $fname
+        echo -e "SC1 = $sc1, SC2 = $sc2 (directories with '-1')" >> $fname
+        echo -e "\n   ENCUT(eV)    E_SC1(eV)   dE_SC1(eV)    E_SC2(eV)   dE_SC2(eV) DE=E_SC2-E_SC1(eV)      dDE(eV)" >> $fname
     else
         echo -e "nKP from $smallest to $largest interval $interval" >> $fname
-        echo -e "LC1 = $lc1, LC2 = $lc2 (directories with '-1')" >> $fname
-        echo -e "\n         nKP    E_LC1(eV)   dE_LC1(eV)    E_LC2(eV)   dE_LC2(eV) DE=E_LC2-E_LC1(eV)      dDE(eV)" >> $fname
+        echo -e "SC1 = $sc1, SC2 = $sc2 (directories with '-1')" >> $fname
+        echo -e "\n         nKP    E_SC1(eV)   dE_SC1(eV)    E_SC2(eV)   dE_SC2(eV) DE=E_SC2-E_SC1(eV)      dDE(eV)" >> $fname
     fi
     # echo the data in a sorted way to file.
     for dir in $dir_list
     do
-        E_LC1=$(grep sigma $dir/OUTCAR | tail -1 | awk '{print $7;}')
-        E_LC2=$(grep sigma $dir-1/OUTCAR | tail -1 | awk '{print $7;}')
-        DE=$(echo "($E_LC2)-($E_LC1)" | bc)
+        E_SC1=$(grep sigma $dir/OUTCAR | tail -1 | awk '{print $7;}')
+        E_SC2=$(grep sigma $dir-1/OUTCAR | tail -1 | awk '{print $7;}')
+        DE=$(echo "($E_SC2)-($E_SC1)" | bc)
         if [ $dir == $smallest ]; then
             DE_pre=$DE
-            E_LC1_pre=$E_LC1
-            E_LC2_pre=$E_LC2
+            E_SC1_pre=$E_SC1
+            E_SC2_pre=$E_SC2
         fi
         dDE=$(echo "($DE)-($DE_pre)" | bc)
-        dE_LC1=$(echo "($E_LC1)-($E_LC1_pre)" | bc)
-        dE_LC2=$(echo "($E_LC2)-($E_LC2_pre)" | bc)
+        dE_SC1=$(echo "($E_SC1)-($E_SC1_pre)" | bc)
+        dE_SC2=$(echo "($E_SC2)-($E_SC2_pre)" | bc)
         dDE=${dDE#-}
-        dE_LC1=${dE_LC1#-}
-        dE_LC2=${dE_LC2#-}
+        dE_SC1=${dE_SC1#-}
+        dE_SC2=${dE_SC2#-}
         python -c "print '{0:12.6f} {1:12.6f} {2:12.6f} {3:12.6f} {4:12.6f} {5:18.6f} {6:12.6f}'.format(\
-                                    $dir, $E_LC1, $dE_LC1, $E_LC2, $dE_LC2, $DE, $dDE)" >> $fname
+                                    $dir, $E_SC1, $dE_SC1, $E_SC2, $dE_SC2, $DE, $dDE)" >> $fname
         # set DE for this cycle as DE_pre for the next cycle to get the next dDE
         DE_pre=$DE
-        E_LC1_pre=$E_LC1
-        E_LC2_pre=$E_LC2
+        E_SC1_pre=$E_SC1
+        E_SC2_pre=$E_SC2
         data_line_count=$(($data_line_count + 1))
     done
     # write the results to file.
@@ -173,19 +173,20 @@ elif [[ $test_type == "lctest" ]]; then
 
     # copy the CONTCAR from the run closest to equlibrium to INPUT/POSCAR.
     # plug equlibirum scaling constant to INPUT/POSCAR
+    cd ..
     if [[ -d INPUT ]]; then
-        cd ..
+        echo "Replacing INPUT/POSCAR with the closest CONTCAR from lctest and updating the scaling constant."
         scaling_const=$(grep "Equilibrium scaling constant =" \
                     $directory_name/lctest_output.txt | head -1 | awk '{print $5}')
-        closest_lc=$(echo $dir_list | awk '{print $1}')
+        closest_sc=$(echo $dir_list | awk '{print $1}')
         for dir in $dir_list; do
             diff_dir=$(echo "$dir - $scaling_const" | bc)
             diff_dir=${diff_dir#-}
-            diff_lc=$(echo "$closest_lc - $scaling_const" | bc)
-            diff_lc=${diff_lc#-}
-            if [[ $(echo "$diff_dir < $diff_lc" | bc) == 1 ]]; then closest_lc=$dir; fi
+            diff_sc=$(echo "$closest_sc - $scaling_const" | bc)
+            diff_sc=${diff_sc#-}
+            if [[ $(echo "$diff_dir < $diff_sc" | bc) == 1 ]]; then closest_sc=$dir; fi
         done
-        cp $directory_name/$closest_lc/CONTCAR INPUT/POSCAR
+        cp $directory_name/$closest_sc/CONTCAR INPUT/POSCAR
         sed -i "2c $scaling_const" INPUT/POSCAR
         cd $directory_name
     fi
