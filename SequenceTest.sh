@@ -100,31 +100,22 @@ shift 1
 if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
     argparse "$@"
     if [[ -z $begin || -z $end || -z $interval || -z $scaling_const ]]; then
-        echo "-b -e -i -c should be all set with valid values!" >&2
+        echo "-b -e -i should be all set with valid values!" >&2
         exit 1
     fi
     header_echo
-    lc1=$scaling_const
-    lc2=$(echo "print($lc1+0.1)" | python)
     for ((dir=$begin; dir<=$end; dir=$dir+$interval))
     do
-        for i in "$dir" "$dir"-1
-        do
             (
-            create_copy_replace $i
+            create_copy_replace $dir
             if [ "$test_type" == "entest" ]; then
                 sed -i "s/.*ENCUT.*/ENCUT = $dir/g" INCAR
             else
                 sed -i "4c $dir $dir $dir" KPOINTS
             fi
-            if [ $i == $dir ]; then
-                sed -i "2c $lc1" POSCAR
-            else
-                sed -i "2c $lc2" POSCAR
-            fi
+            [[ -n $scaling_const ]] && sed -i "2c $scaling_const" POSCAR
             submission_trigger
             )
-        done
     done
 
 elif [[ "$test_type" == "lctest" ]]; then

@@ -114,52 +114,37 @@ shift 1
 if [[ $test_type == "entest" || $test_type == "kptest" ]]; then
     enter_dir
     prepare_dir_helper
-    # get rid of the *-1 dirs.
+    # get rid of the possible *-1 dirs.
     for dir in $dir_list
     do
         if [[ "$dir" != *-1 ]]; then dir_list_enkp=$dir_list_enkp" "$dir; fi
     done
     dir_list=$(sort_list "$dir_list_enkp")
+
     prepare_header_helper "$dir_list"
-    sc1=$(sed -n '2p' $smallest/POSCAR)
-    sc2=$(echo "$sc1+0.1" | bc)
     # echo some headers to file.
     if [ $test_type == "entest" ]; then
         echo -e "ENCUT from $smallest to $largest interval $interval" >> $fname
-        echo -e "SC1 = $sc1, SC2 = $sc2 (directories with '-1')" >> $fname
-        echo -e "\n   ENCUT(eV)    E_SC1(eV)   dE_SC1(eV)    E_SC2(eV)   dE_SC2(eV) DE=E_SC2-E_SC1(eV)      dDE(eV)" >> $fname
+        echo -e "\n   ENCUT(eV)        E(eV)       dE(eV)" >> $fname
     else
         echo -e "nKP from $smallest to $largest interval $interval" >> $fname
-        echo -e "SC1 = $sc1, SC2 = $sc2 (directories with '-1')" >> $fname
-        echo -e "\n         nKP    E_SC1(eV)   dE_SC1(eV)    E_SC2(eV)   dE_SC2(eV) DE=E_SC2-E_SC1(eV)      dDE(eV)" >> $fname
+        echo -e "\n         nKP        E(eV)       dE(eV)" >> $fname
     fi
     # echo the data in a sorted way to file.
     for dir in $dir_list
     do
-        E_SC1=$(grep sigma $dir/OUTCAR | tail -1 | awk '{print $7;}')
-        E_SC2=$(grep sigma $dir-1/OUTCAR | tail -1 | awk '{print $7;}')
-        DE=$(echo "($E_SC2)-($E_SC1)" | bc)
+        E=$(grep sigma $dir/OUTCAR | tail -1 | awk '{print $7;}')
         if [ $dir == $smallest ]; then
-            DE_pre=$DE
-            E_SC1_pre=$E_SC1
-            E_SC2_pre=$E_SC2
+            E_pre=$E
         fi
-        dDE=$(echo "($DE)-($DE_pre)" | bc)
-        dE_SC1=$(echo "($E_SC1)-($E_SC1_pre)" | bc)
-        dE_SC2=$(echo "($E_SC2)-($E_SC2_pre)" | bc)
-        dDE=${dDE#-}
-        dE_SC1=${dE_SC1#-}
-        dE_SC2=${dE_SC2#-}
-        python -c "print '{0:12.6f} {1:12.6f} {2:12.6f} {3:12.6f} {4:12.6f} {5:18.6f} {6:12.6f}'.format(\
-                                    $dir, $E_SC1, $dE_SC1, $E_SC2, $dE_SC2, $DE, $dDE)" >> $fname
-        # set DE for this cycle as DE_pre for the next cycle to get the next dDE
-        DE_pre=$DE
-        E_SC1_pre=$E_SC1
-        E_SC2_pre=$E_SC2
+        dE=$(echo "($E)-($E_pre)" | bc)
+        dE=${dE#-}
+        python -c "print '{0:12.6f} {1:12.6f} {2:12.6f}'.format($dir, $E, $dE)" >> $fname
+        E_pre=$E
         data_line_count=$(($data_line_count + 1))
     done
     # write the results to file.
-    _sequence_fit_plot.py $test_type 5 $data_line_count >> $fname
+    _sequence_fit_plot.py $test_type 4 $data_line_count >> $fname
 
 
 elif [[ $test_type == "lctest" ]]; then

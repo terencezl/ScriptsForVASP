@@ -52,34 +52,19 @@ for i, line in enumerate(test_output):
     test_output[i] = line.split()
 
 print('')
-if test_type == 'entest':
-    col_names = ['ENCUT', 'E_LC1(eV)', 'dE_LC1(eV)', 'E_LC2(eV)', 'dE_LC2(eV)', 'DE=E_LC2-E_LC1(eV)', 'dDE(eV)']
-    data = np.zeros((data_line_count, 7))
+
+if test_type == 'entest' or test_type == 'kptest':
+    index_name = 'ENCUT' if test_type == 'entest' else 'nKP'
+    col_names = [index_name, 'E(eV)', 'dE(eV)']
+    data = np.zeros((data_line_count, 3))
     for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
         data[i] = row
 
     plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
-    plt.plot(data[:, 0], data[:, 4], 's', label=col_names[4])
-    plt.plot(data[:, 0], data[:, 6], '^', label=col_names[6])
     plt.axhline(0.001, ls=':', c='k')
     plt.grid(True)
     plt.legend()
-    plt.xlabel('ENCUT (eV)')
-    plt.ylabel('Energy diff (eV)')
-
-elif test_type == 'kptest':
-    col_names = ['nKP', 'E_LC1(eV)', 'dE_LC1(eV)', 'E_LC2(eV)', 'dE_LC2(eV)', 'DE=E_LC2-E_LC1(eV)', 'dDE(eV)']
-    data = np.zeros((data_line_count, 7))
-    for i, row in enumerate(test_output[line_start:line_start + data_line_count]):
-        data[i] = row
-
-    plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
-    plt.plot(data[:, 0], data[:, 4], 's', label=col_names[4])
-    plt.plot(data[:, 0], data[:, 6], '^', label=col_names[6])
-    plt.axhline(0.001, ls=':', c='k')
-    plt.grid(True)
-    plt.legend()
-    plt.xlabel('nKP')
+    plt.xlabel(index_name)
     plt.ylabel('Energy diff (eV)')
 
 elif test_type == 'lctest':
