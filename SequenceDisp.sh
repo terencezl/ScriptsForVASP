@@ -60,7 +60,7 @@ function force_entropy_not_converged_detecting_helper {
     local force_max=$(grep "FORCES:" $dir/OUTCAR | tail -1 | awk '{print $5}')
     force_max=${force_max#-}
     if [ $(echo "$force_max > 0.04" | bc) == 1 ]; then
-        force_not_converged_list="$force_not_converged_list$1 $force_max\n"
+        force_not_converged_list="$force_not_converged_list\n$1 $force_max"
     fi
 
     local entropy=$(grep "entropy T\*S" $dir/OUTCAR | tail -1 | awk '{print $5}')
@@ -68,7 +68,7 @@ function force_entropy_not_converged_detecting_helper {
     local atom_sum_expr=$(echo $(sed -n '6p' $dir/POSCAR))
     local atom_sum=$((${atom_sum_expr// /+}))
     if [ $(echo "$entropy > 0.001 * $atom_sum" | bc) == 1 ]; then
-        entropy_not_converged_list="$entropy_not_converged_list$1 $entropy\n"
+        entropy_not_converged_list="$entropy_not_converged_list\n$1 $entropy"
     fi
 }
 
@@ -78,10 +78,10 @@ function output_force_entropy {
     local entropy_not_converged_list="$2"
     local fname="$3"
     if [ "$force_not_converged_list" ]; then
-        echo -e "!Force doesn't converge during\n$force_not_converged_list" | tee -a $fname
+        echo -e "\n!Force doesn't converge during""$force_not_converged_list" | tee -a $fname
     fi
     if [ "$entropy_not_converged_list" ]; then
-        echo -e "!Entropy doesn't converge during\n$entropy_not_converged_list" | tee -a $fname
+        echo -e "\n!Entropy doesn't converge during""$entropy_not_converged_list" | tee -a $fname
     fi
 }
 
