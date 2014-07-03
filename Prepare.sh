@@ -10,11 +10,9 @@ while getopts ":a:mf" opt; do
         ;;
     m)
         is_submit=true
-#        echo "-m triggered job submission."
         ;;
     f)
         is_override=true
-#        echo "-f triggered overriding existing directory."
         ;;
     \?)
         echo "Invalid option: -$OPTARG" >&2
@@ -41,6 +39,5 @@ mkdir -p "$directory_name" 2> /dev/null
 cp INPUT/* "$directory_name"/
 cd "$directory_name"
 _qsub_replacer.sh qsub.parallel
-if [[ -n "$additional_qsub_file" ]]; then _qsub_replacer.sh "$additional_qsub_file"; fi
-
-if [[ $is_submit ]]; then qsub qsub.parallel; fi
+[[ -n "$additional_qsub_file" ]] && _qsub_replacer.sh "$additional_qsub_file"
+[[ $is_submit ]] && qsub qsub.parallel

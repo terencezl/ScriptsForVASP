@@ -5,15 +5,13 @@ function argparse {
         case $opt in
         d)
             subdir_name=$OPTARG
-#            echo "-d specifies alternative subdirectory name."
             ;;
         m)
             is_submit=true
-#            echo "-m triggered job submission."
             ;;
         f)
             is_override=true
-#            echo "-f triggered overriding the existing subdirectory."
+            test_tag='-f'
             ;;
         n)
             nband=$OPTARG
@@ -70,14 +68,14 @@ if [[ "$test_type" == SCrun ]]; then
     sed -i "/NPAR/c NPAR = 8"  INPUT/INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
-    Prepare.sh "$subdir_name" -f
+    Prepare.sh "$subdir_name" $test_tag
     cd SCrun
     [[ $is_submit ]] && qsub qsub.parallel
 
 elif [[ "$test_type" == DOSrun ]]; then
     subdirectory_check
     argparse "$@"
-    Prepare.sh "$subdir_name" -f
+    Prepare.sh "$subdir_name" $test_tag
     cd DOSrun
     cp ../SCrun/CONTCAR POSCAR
     cp -l ../SCrun/CHGCAR .
@@ -104,7 +102,7 @@ elif [[ "$test_type" == DOSrun ]]; then
 elif [[ "$test_type" == BSrun ]]; then
     subdirectory_check
     argparse "$@"
-    Prepare.sh "$subdir_name" -f
+    Prepare.sh "$subdir_name" $test_tag
     cd BSrun
     cp ../SCrun/CONTCAR POSCAR
     cp -l ../SCrun/CHGCAR .
@@ -130,7 +128,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
     subdirectory_check
     shift 1
     argparse "$@"
-    Prepare.sh "$subdir_name"-kp -fa qlobster.kp.serial
+    Prepare.sh "$subdir_name"-kp $test_tag -a qlobster.kp.serial
     cd "$subdir_name"-kp
     cp ../SCrun/CONTCAR POSCAR
     sed -i '4c 17 17 17' KPOINTS
@@ -145,23 +143,32 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
     subdirectory_check
     shift 1
     argparse "$@"
-    Prepare.sh "$subdir_name" -fa qlobster.parallel
+    if [[ -z "$nband" ]]; then
+        echo "You must provide NBAND value for the lobster test by -n!"
+        exit 1
+    fi
+
+    Prepare.sh "$subdir_name" $test_tag -a qlobster.parallel
     cd "$subdir_name"
     if [[ -d ../lobster-kp ]]; then
+        echo "Found lobster-kp under electronic/. Moving to this directory for clarity..."
         mv ../lobster-kp .
         cp lobster-kp/IBZKPT KPOINTS
     elif [[ -d lobster-kp ]]; then
+        echo "Found lobster-kp under this directory. Good."
         cp lobster-kp/IBZKPT KPOINTS
+    else
+        echo "Didn't find lobster-kp or full IBZKPT. Did you have your own copied here?"
     fi
 
     if [[ -f ../SCrun/CHGCAR ]]; then
+        echo "Use the CHGCAR from the SCrun."
         cp ../SCrun/CONTCAR POSCAR
         cp -l ../SCrun/CHGCAR .
         sed -i "/ICHARG/c ICHARG = 11" INCAR
     fi
 
-    [[ -n "$nband" ]] && sed -i "/NBANDS/c NBANDS = $nband" INCAR
-
+    sed -i "/NBANDS/c NBANDS = $nband" INCAR
     sed -i "/NSW/c NSW = 0" INCAR
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
     sed -i "/NEDOS/c NEDOS = 1501" INCAR
@@ -176,7 +183,12 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
 elif [[ "$test_type" == lobster && "$test_type2" == analysis ]]; then
     shift 1
     argparse "$@"
-    cd "$subdir_name"
+    if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
+        cd "$subdir_name"
+    else
+        echo "The directory $subdir_name does not exist!"
+        exit 1
+    fi
     [[ $is_submit ]] && qsub qlobster.parallel
 
 else

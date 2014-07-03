@@ -2,9 +2,20 @@
 # Use: In the top working directory
 # Elastic.sh  test / disp-solve / solve   cubic / tetragonal /...
 
+function does_directory_exist {
+    if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
+        cd "$directory_name"
+    elif [[ "${PWD##*/}" == "$directory_name" ]]; then
+        echo "Already in $directory_name."
+    else
+        echo "The directory $directory_name does not exist!"
+        exit 1
+    fi
+}
+
 test_type="$1"
 directory_name=elastic
-fname="$directory_name"elastic_output.txt
+fname="$directory_name"_output.txt
 cryst_sys="$2"
 shift 2
 
@@ -18,22 +29,21 @@ elif [[ $cryst_sys == hexagonal ]]; then echo
 elif [[ $cryst_sys == trigonal ]]; then echo
 elif [[ $cryst_sys == monoclinic ]]; then echo
 elif [[ $cryst_sys == triclinic ]]; then echo
-else echo "Expecting 2nd argument to be crystallographic system!"
+else
+    echo "Expecting 2nd argument to be crystallographic system!"
+    exit 1
 fi
 
 while getopts ":d:mf" opt; do
     case $opt in
     d)
         directory_name=$OPTARG
-        # echo "-d specifies alternative directory name."
         ;;
     m)
         is_submit=true
-        # echo "-m triggered job submission."
         ;;
     f)
         is_override=true
-        # echo "-f triggered overriding existing subdirectories."
         ;;
     \?)
         echo "Invalid option: -$OPTARG" >&2
@@ -77,12 +87,7 @@ if [[ "$test_type" == test ]]; then
 
 
 elif [[ "$test_type" == disp-solve ]]; then
-    if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
-        cd "$directory_name"
-    else
-        echo "The directory $directory_name does not exist!"
-        exit 1
-    fi
+    does_directory_exist
     for dir in $dir_list
     do
         SequenceDisp.sh $dir
@@ -94,12 +99,7 @@ elif [[ "$test_type" == disp-solve ]]; then
 
 
 elif [[ "$test_type" == solve ]]; then
-    if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
-        cd "$directory_name"
-    else
-        echo "The directory $directory_name does not exist!"
-        exit 1
-    fi
+    does_directory_exist
     # get the info from elastic constant combination runs and/or lctest. 
     Vpcell=$(grep 'volume of cell' ../equi-relax/OUTCAR | tail -1 | awk '{print $5;}')
     B0=$(grep 'B0 =' ../lctest/lctest_output.txt | tail -1 | awk '{print $3}')
