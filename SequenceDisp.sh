@@ -6,12 +6,12 @@ function enter_dir {
         echo "Cannot find the directory!"
         exit 1
     fi
+    echo "$PWD" | tee $fname
 }
 
 function prepare_dir_helper {
     # creates global variable dir_list without annoying trailing slashes.
     # be careful about variable name clashes.
-    echo "$PWD" | tee $fname
     for dir in $(ls -F)
     do
         if [[ "$dir" == */ ]]; then dir_list=$dir_list" "${dir%/}; fi
