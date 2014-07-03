@@ -12,6 +12,7 @@ function enter_dir {
 function prepare_dir_helper {
     # creates global variable dir_list without annoying trailing slashes.
     # be careful about variable name clashes.
+    unset dir_list
     for dir in $(ls -F)
     do
         if [[ "$dir" == */ ]]; then dir_list=$dir_list" "${dir%/}; fi
