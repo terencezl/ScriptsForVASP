@@ -47,7 +47,6 @@ if [[ "$test_type" == test ]]; then
     sed -i '/LCHARG/c LCHARG = .TRUE.' INCAR
     sed -i '/NSW/c NSW = 0' INCAR
     [[ $is_submit ]] && qsub qsub.parallel
-    cd ..
 
 elif [[ "$test_type" == analysis ]]; then
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
@@ -58,9 +57,10 @@ elif [[ "$test_type" == analysis ]]; then
     fi
     cp ../INPUT/qbader.serial .
     [[ $is_submit ]] && qsub qbader.serial
-    cd ..
 
 else
     echo "Specify what you are going to test!" >&2
     exit 1
 fi
+
+exit 0

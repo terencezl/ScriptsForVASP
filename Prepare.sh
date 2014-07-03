@@ -41,3 +41,5 @@ cd "$directory_name"
 _qsub_replacer.sh qsub.parallel
 [[ -n "$additional_qsub_file" ]] && _qsub_replacer.sh "$additional_qsub_file"
 [[ $is_submit ]] && qsub qsub.parallel
+
+exit 0

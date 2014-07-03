@@ -195,3 +195,5 @@ else
     echo "Specify what you are going to test!" >&2
     exit 1
 fi
+
+exit 0
