@@ -310,6 +310,8 @@ fi
 
 echo -e "\ntime cost per run:" >> $fname
 for dir in $dir_list; do
-    echo -n $dir' ' >> $fname
-    grep real $dir/*$dir* | awk '{print $2;}' >> $fname
+    time_cost=$(grep real $dir/*$dir* 2> /dev/null | awk '{print $2;}')
+    if [[ $time_cost ]]; then
+        echo $dir' '$time_cost >> $fname
+    fi
 done
