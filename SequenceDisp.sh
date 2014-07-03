@@ -272,7 +272,13 @@ elif [[ $test_type == *c[1-9][1-9]* ]]; then
             cp -rl $dir ${dir}n
         fi
     done
-    [[ ! -d 0.000 ]] && cp -r ../../equi-relax 0.000
+    if [[ ! -d 0.000 ]]; then
+        if [[ -d ../../equi-relax ]]; then
+            cp -r ../../equi-relax 0.000
+        else
+            echo "equi-relax does not exist. It is important because it's used to be 0.000 for the elastic runs."
+        fi
+    fi
 
     # get the dir_list and sorted dir_list_minus_sign!
     prepare_dir_helper

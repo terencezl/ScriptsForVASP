@@ -49,7 +49,7 @@ function header_echo {
     fi
     mkdir "$directory_name" 2> /dev/null
     cd "$directory_name"
-#    echo "  Preparing "$test_type"..."
+    echo "  Preparing "$test_type"..."
     fname=""$test_type""_output.txt
 }
 
@@ -76,11 +76,9 @@ function argparse {
             ;;
         m)
             is_submit=true
-#            echo "-m triggered job submission."
             ;;
         f)
             is_override=true
-#            echo "-f triggered overriding existing subdirectories."
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
