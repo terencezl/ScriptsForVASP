@@ -175,7 +175,7 @@ elif [[ $test_type == "lctest" ]]; then
     # plug equlibirum scaling constant to INPUT/POSCAR
     cd ..
     if [[ -d INPUT ]]; then
-        echo "Replacing INPUT/POSCAR with the closest CONTCAR from lctest and updating the scaling constant."
+        echo "Replacing INPUT/POSCAR with the closest CONTCAR from lctest and updating the scaling constant..."
         scaling_const=$(grep "Equilibrium scaling constant =" \
                     $directory_name/lctest_output.txt | head -1 | awk '{print $5}')
         closest_sc=$(echo $dir_list | awk '{print $1}')
@@ -186,9 +186,12 @@ elif [[ $test_type == "lctest" ]]; then
             diff_sc=${diff_sc#-}
             if [[ $(echo "$diff_dir < $diff_sc" | bc) == 1 ]]; then closest_sc=$dir; fi
         done
-        cp $directory_name/$closest_sc/CONTCAR INPUT/POSCAR
-        sed -i "2c $scaling_const" INPUT/POSCAR
-        cd $directory_name
+        if [[ -s $directory_name/$closest_sc/CONTCAR ]]; then
+            cp $directory_name/$closest_sc/CONTCAR INPUT/POSCAR
+            sed -i "2c $scaling_const" INPUT/POSCAR
+            cd $directory_name
+        else
+            echo "Empty CONTCAR. Aborted. Check your runs!"
     fi
 
 
