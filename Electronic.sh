@@ -30,10 +30,8 @@ function argparse {
 
 function subdirectory_check {
     if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
-        echo -n "$subdir_name/ contains files. "
-        if [[ $is_override ]]; then
-            echo "Overriding..."
-        else
+        if [[ -z $is_override ]]; then
+            echo -n "$subdir_name/ contains files. "
             echo "Escaping..."
             exit 1
         fi
