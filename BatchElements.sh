@@ -4,8 +4,6 @@
 POT_TYPE=PAW-GGA
 POTENTIALS_DIR=$HOME/terencelz/local/potential-database
 
-test_type="$1"
-shift 1
 element_list_file=INPUT_ELEMENT/element.dat
 
 while getopts ":e:c:" opt; do
@@ -26,6 +24,8 @@ while getopts ":e:c:" opt; do
         ;;
     esac
 done
+
+test_type="$1"
 
 if [[ -z "$pot_combo" ]]; then
     echo "-c potential combination must be specified, comma separated, iterating element as X!"
@@ -67,7 +67,7 @@ if [[ "$test_type" == prepare ]]; then
     done
 
 else
-    test_script=$1
+    test_script=$test_type
     shift 1
     if ! type $test_script >/dev/null 2>&1; then
         echo "Command $test_script does not exist!"
