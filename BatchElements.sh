@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Use: In the TMN working directory where there is a list of folders by the name of elements
 
 POT_TYPE=PAW-GGA
 POTENTIALS_DIR=$HOME/terencelz/local/potential-database
@@ -68,21 +67,14 @@ if [[ "$test_type" == prepare ]]; then
     done
 
 else
-#    test_script=$test_type
-#    shift 1
-#    if ! type $test_script >/dev/null 2>&1; then
-#        echo "Command $test_script does not exist!"
-#        exit 1
-#    fi
+    n=1
     for compound in $compound_list
     do
         (
-#        if ! cd "$compound"; then
-#            echo "$compound directory does not exist!"
-#            exit 1
-#        fi
         cd "$compound"
-        $@
+        i=$compound
+        eval "$@"
         )
+        n=$(($n+1))
     done
 fi
