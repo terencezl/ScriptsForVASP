@@ -4,7 +4,7 @@ function argparse {
     while getopts ":d:mfn:" opt; do
         case $opt in
         d)
-            subdir_name=$OPTARG
+            directory_name=$OPTARG
             ;;
         m)
             is_submit=true
@@ -28,6 +28,17 @@ function argparse {
     done
 }
 
+function does_directory_exist {
+    if [[ -d "$directory_name" ]]; then
+        cd "$directory_name"
+    elif [[ "${PWD##*/}" == "$directory_name"* ]]; then
+        echo "Already in ${PWD##*/}/."
+    else
+        echo "$directory_name/ does not exist!"
+        exit 1
+    fi
+}
+
 function subdirectory_check {
     if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
         if [[ -z $is_override ]]; then
@@ -38,24 +49,15 @@ function subdirectory_check {
     fi
 }
 
-
 directory_name=electronic
 if [[ "$1" == */ ]]; then subdir_name=${1%/}; else subdir_name=$1; fi
 test_type="${subdir_name%%_*}"
 test_type2=$2
 shift 1
 
-if [[ -d "$directory_name" ]]; then
-    cd "$directory_name"
-elif [[ "${PWD##*/}" == "$directory_name"* ]]; then
-    echo "Already in ${PWD##*/}/."
-else
-    echo "$directory_name/ does not exist!"
-    exit 1
-fi
-
 if [[ "$test_type" == scrun ]]; then
     argparse "$@"
+    does_directory_exist
     subdirectory_check
     cp -r ../INPUT .
 #    sed -i "/PREC/c PREC = Accurate" INPUT/INCAR
@@ -72,6 +74,7 @@ if [[ "$test_type" == scrun ]]; then
 
 elif [[ "$test_type" == dosrun ]]; then
     argparse "$@"
+    does_directory_exist
     subdirectory_check
     Prepare.sh "$subdir_name" $test_tag
     cd dosrun
@@ -99,6 +102,7 @@ elif [[ "$test_type" == dosrun ]]; then
 
 elif [[ "$test_type" == bsrun ]]; then
     argparse "$@"
+    does_directory_exist
     subdirectory_check
     Prepare.sh "$subdir_name" $test_tag
     cd bsrun
@@ -125,6 +129,7 @@ elif [[ "$test_type" == bsrun ]]; then
 elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
     shift 1
     argparse "$@"
+    does_directory_exist
     subdirectory_check
     Prepare.sh "$subdir_name"-kp $test_tag -a qlobster.kp.serial
     cd "$subdir_name"-kp
@@ -140,6 +145,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
 elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
     shift 1
     argparse "$@"
+    does_directory_exist
     subdirectory_check
     if [[ -z "$nband" ]]; then
         echo "You must provide NBAND value for the lobster test by -n!"
@@ -186,6 +192,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
 elif [[ "$test_type" == lobster && "$test_type2" == analysis ]]; then
     shift 1
     argparse "$@"
+    does_directory_exist
     if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
         cd "$subdir_name"
     else
