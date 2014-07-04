@@ -55,10 +55,10 @@ test_type="${subdir_name%%_*}"
 test_type2=$2
 shift 1
 
-if [[ "$test_type" == scrun ]]; then
+if [[ "$test_type" == prepare ]]; then
     argparse "$@"
-    does_directory_exist
-    subdirectory_check
+    mkdir $directory_name
+    cd $directory_name
     cp -r ../INPUT .
 #    sed -i "/PREC/c PREC = Accurate" INPUT/INCAR
 #    sed -i "/NSW/c NSW = 0" INPUT/INCAR
@@ -68,6 +68,11 @@ if [[ "$test_type" == scrun ]]; then
     sed -i "/NPAR/c NPAR = 8"  INPUT/INCAR
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
+
+if [[ "$test_type" == scrun ]]; then
+    argparse "$@"
+    does_directory_exist
+    subdirectory_check
     Prepare.sh "$subdir_name" $test_tag
     cd scrun
     [[ $is_submit ]] && qsub qsub.parallel
