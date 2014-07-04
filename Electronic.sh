@@ -83,6 +83,10 @@ elif [[ "$test_type" == dosrun ]]; then
     subdirectory_check
     Prepare.sh "$subdir_name" $test_tag
     cd dosrun
+    if [[ ! -f ../scrun/CHGCAR ]]; then
+        echo "Didn't find $directory_name/scrun/CHGCAR. Aborted."
+        exit 1
+    fi
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
     sed -i '4c 21 21 21' KPOINTS
@@ -111,16 +115,18 @@ elif [[ "$test_type" == bsrun ]]; then
     subdirectory_check
     Prepare.sh "$subdir_name" $test_tag
     cd bsrun
+    if [[ ! -f ../scrun/CHGCAR ]]; then
+        echo "Didn't find $directory_name/scrun/CHGCAR. Aborted."
+        exit 1
+    fi
     cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
 
-    if [[ -f KPOINTS-bs ]]; then
-        mv KPOINTS-bs KPOINTS
-    else
+    if [[ ! -f KPOINTS-bs ]]; then
         echo "You must manually change the KPOINTS file before submitting job!"
         exit 1
     fi
-
+    mv KPOINTS-bs KPOINTS
     sed -i "/NSW/c NSW = 0" INCAR
     sed -i "/NEDOS/c NEDOS = 1501" INCAR
     sed -i "/ICHARG/c ICHARG = 11" INCAR
@@ -138,7 +144,6 @@ elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
     subdirectory_check
     Prepare.sh "$subdir_name"-kp $test_tag -a qlobster.kp.serial
     cd "$subdir_name"-kp
-    cp ../scrun/CONTCAR POSCAR
     sed -i '4c 17 17 17' KPOINTS
 
     sed -i "/NSW/c NSW = 0" INCAR
@@ -173,12 +178,12 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
     fi
 
     if [[ -f ../scrun/CHGCAR ]]; then
-        echo "Use the CHGCAR from the scrun."
+        echo "Found CHGCAR and CONTCAR under $directory_name/scrun/. Will use them."
         cp ../scrun/CONTCAR POSCAR
         cp -l ../scrun/CHGCAR .
         sed -i "/ICHARG/c ICHARG = 11" INCAR
     elif [[ -f CHGCAR ]]; then
-        echo "Found CHGCAR under . Will use it."
+        echo "Found CHGCAR under $directory_name/$subdir_name/. Will use it."
         sed -i "/ICHARG/c ICHARG = 11" INCAR
     fi
 
