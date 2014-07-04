@@ -81,7 +81,7 @@ else
 #            echo "$compound directory does not exist!"
 #            exit 1
 #        fi
-        cd "compound"
+        cd "$compound"
         $@
         )
     done
