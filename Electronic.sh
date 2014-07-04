@@ -138,7 +138,10 @@ elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
     shift 1
     argparse "$@"
     does_directory_exist
-    subdirectory_check
+    if [[ -d "$subdir_name"-kp && $(ls -A "$subdir_name"-kp) && -z $is_override ]]; then
+        echo "$subdir_name-kp/ contains files. Escaping..."
+        exit 1
+    fi
     Prepare.sh "$subdir_name"-kp $test_tag -a qlobster.kp.serial
     cd "$subdir_name"-kp
     sed -i '4c 17 17 17' KPOINTS
