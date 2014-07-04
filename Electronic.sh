@@ -69,7 +69,7 @@ if [[ "$test_type" == prepare ]]; then
     sed -i "/#PBS -l walltime/c #PBS -l walltime=03:00:00" INPUT/qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=1:ppn=8" INPUT/qsub.parallel
 
-if [[ "$test_type" == scrun ]]; then
+elif [[ "$test_type" == scrun ]]; then
     argparse "$@"
     does_directory_exist
     subdirectory_check
