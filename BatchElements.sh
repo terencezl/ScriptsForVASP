@@ -68,7 +68,7 @@ if [[ "$test_type" == prepare ]]; then
 
 else
     test_script=$test_type
-    shift 1
+    shift $$OPTIND
     if ! type $test_script >/dev/null 2>&1; then
         echo "Command $test_script does not exist!"
         exit 1
