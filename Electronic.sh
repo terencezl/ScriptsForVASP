@@ -40,12 +40,9 @@ function does_directory_exist {
 }
 
 function subdirectory_check {
-    if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
-        if [[ -z $is_override ]]; then
-            echo -n "$subdir_name/ contains files. "
-            echo "Escaping..."
-            exit 1
-        fi
+    if [[ -d "$subdir_name" && $(ls -A "$subdir_name") && -z $is_override ]]; then
+        echo "$subdir_name/ contains files. Escaping..."
+        exit 1
     fi
 }
 

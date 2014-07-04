@@ -95,9 +95,9 @@ if [[ "$test_type" == test ]]; then
     done
 
     if [[ -d ../$equi_relax ]]; then
-        echo "Will not create $directory_name/equi-relax, but use the $equi_relax from outside the $directory_name/."
+        echo "Will not create $directory_name/equi-relax/, but use the $equi_relax/ from outside $directory_name/."
     else
-        echo "Did not find $directory_name/$equi_relax. Will create equi-relax under $directory_name."
+        echo "Did not find $equi_relax/ outside $directory_name. Will create $directory_name/equi-relax/."
         echo -n '  '
         Prepare.sh "equi-relax" $test_tag
     fi
@@ -108,7 +108,7 @@ elif [[ "$test_type" == disp-solve ]]; then
         if [[ -d ../$equi_relax ]]; then
             cp -r ../$equi_relax "equi-relax"
         else
-            echo "$directory_name/$equi_relax does not exist, neither does $equi_relax!"
+            echo "$directory_name/$equi_relax/ does not exist, neither does $equi_relax/ outside $directory_name/!"
             exit 1
         fi
     fi
