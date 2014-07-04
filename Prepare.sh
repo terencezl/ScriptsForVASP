@@ -26,7 +26,7 @@ while getopts ":a:mf" opt; do
 done
 
 if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
-    echo -n "Directory contains files or sub-directories. "
+    echo -n "$directory_name/ contains files or sub-directories. "
     if [[ $is_override ]]; then
         echo "Overriding..."
     else

@@ -30,7 +30,7 @@ function argparse {
 
 function subdirectory_check {
     if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
-        echo -n "Subdirectory contains files. "
+        echo -n "$subdir_name/ contains files. "
         if [[ $is_override ]]; then
             echo "Overriding..."
         else
@@ -50,9 +50,9 @@ shift 1
 if [[ -d "$directory_name" ]]; then
     cd "$directory_name"
 elif [[ "${PWD##*/}" == "$directory_name"* ]]; then
-    echo "Already in $directory_name/."
+    echo "Already in ${PWD##*/}/."
 else
-    echo "The directory $directory_name does not exist!"
+    echo "$directory_name/ does not exist!"
     exit 1
 fi
 
@@ -186,7 +186,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == analysis ]]; then
     if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
         cd "$subdir_name"
     else
-        echo "The directory $subdir_name does not exist!"
+        echo "$subdir_name/ does not exist!"
         exit 1
     fi
     [[ $is_submit ]] && qsub qlobster.parallel

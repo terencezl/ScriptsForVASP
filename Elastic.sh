@@ -6,9 +6,9 @@ function does_directory_exist {
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
         cd "$directory_name"
     elif [[ "${PWD##*/}" == "$directory_name"* ]]; then
-        echo "Already in $directory_name/."
+        echo "Already in ${PWD##*/}/."
     else
-        echo "The directory $directory_name does not exist!"
+        echo "$directory_name/ does not exist!"
         exit 1
     fi
 }
@@ -66,7 +66,7 @@ done
 
 if [[ "$test_type" == test ]]; then
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
-        echo -n "Directory contains files or sub-directories. "
+        echo -n "$directory_name/ contains files or sub-directories. "
         if [[ $is_override ]]; then
             echo "Overriding..."
         else

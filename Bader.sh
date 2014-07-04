@@ -29,7 +29,7 @@ done
 
 if [[ "$test_type" == test ]]; then
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
-        echo -n "Directory contains files or sub-directories. "
+        echo -n "$directory_name/ contains files or sub-directories. "
         if [[ $is_override ]]; then
             echo "Overriding..."
         else
@@ -52,7 +52,7 @@ elif [[ "$test_type" == analysis ]]; then
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
         cd "$directory_name"
     else
-        echo "The directory $directory_name does not exist!"
+        echo "$directory_name/ does not exist!"
         exit 1
     fi
     cp ../INPUT/qbader.serial .

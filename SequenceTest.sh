@@ -10,13 +10,13 @@ function create_copy_replace {
     mkdir "$1" 2> /dev/null
     if [[ $? != 0 ]]; then
         if [[ $is_override ]]; then
-            echo "  $1 already exists. Overriding input files."
+            echo "  $1/ already exists. Overriding input files."
         else
-            echo "  $1 already exists. Escaping input files."
+            echo "  $1/ already exists. Escaping input files."
             exit 1
         fi
     else
-        echo "  Creating $1."
+        echo "  Creating $1/."
     fi
     cd "$1"
     cp ../../INPUT/INCAR .
@@ -43,14 +43,14 @@ function submission_trigger {
 }
 
 function header_echo {
-    echo -e "Creating test directory '$directory_name'..."
+    echo -e "Creating test directory $directory_name/..."
     if [[ -d "$directory_name" && "$(ls -A $directory_name)" ]]; then
-        echo "  Directory contains files or sub-directories."
+        echo "  $directory_name/ contains files or sub-directories."
     fi
     mkdir "$directory_name" 2> /dev/null
     cd "$directory_name"
     echo "  Preparing "$test_type"..."
-    fname=""$test_type""_output.txt
+    fname="$test_type"_output.txt
 }
 
 function argparse {
