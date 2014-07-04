@@ -49,7 +49,7 @@ shift 1
 
 if [[ -d "$directory_name" ]]; then
     cd "$directory_name"
-elif [[ "${PWD##*/}" == "$directory_name" ]]; then
+elif [[ "${PWD##*/}" == "$directory_name"* ]]; then
     echo "Already in $directory_name/."
 else
     echo "The directory $directory_name does not exist!"
@@ -57,8 +57,8 @@ else
 fi
 
 if [[ "$test_type" == scrun ]]; then
-    subdirectory_check
     argparse "$@"
+    subdirectory_check
     cp -r ../INPUT .
 #    sed -i "/PREC/c PREC = Accurate" INPUT/INCAR
 #    sed -i "/NSW/c NSW = 0" INPUT/INCAR
@@ -73,8 +73,8 @@ if [[ "$test_type" == scrun ]]; then
     [[ $is_submit ]] && qsub qsub.parallel
 
 elif [[ "$test_type" == dosrun ]]; then
-    subdirectory_check
     argparse "$@"
+    subdirectory_check
     Prepare.sh "$subdir_name" $test_tag
     cd dosrun
     cp ../scrun/CONTCAR POSCAR
@@ -100,8 +100,8 @@ elif [[ "$test_type" == dosrun ]]; then
     [[ $is_submit ]] && qsub qsub.parallel
 
 elif [[ "$test_type" == bsrun ]]; then
-    subdirectory_check
     argparse "$@"
+    subdirectory_check
     Prepare.sh "$subdir_name" $test_tag
     cd bsrun
     cp ../scrun/CONTCAR POSCAR
@@ -125,9 +125,9 @@ elif [[ "$test_type" == bsrun ]]; then
     [[ $is_submit ]] && qsub qsub.parallel
 
 elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
-    subdirectory_check
     shift 1
     argparse "$@"
+    subdirectory_check
     Prepare.sh "$subdir_name"-kp $test_tag -a qlobster.kp.serial
     cd "$subdir_name"-kp
     cp ../scrun/CONTCAR POSCAR
@@ -140,9 +140,9 @@ elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
     [[ $is_submit ]] && qsub qlobster.kp.serial
 
 elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
-    subdirectory_check
     shift 1
     argparse "$@"
+    subdirectory_check
     if [[ -z "$nband" ]]; then
         echo "You must provide NBAND value for the lobster test by -n!"
         exit 1
