@@ -167,7 +167,13 @@ elif [[ $test_type == "lctest" ]]; then
     # echo runs with not converged force or entropy to file and screen.
     output_force_entropy "$force_not_converged_list" "$entropy_not_converged_list" "$fname"
     # fit the data and write the results to file.
-    _sequence_fit_plot.py $test_type 4 $data_line_count>> $fname || { echo "Something is wrong. Terminated."; exit 1 }
+    _sequence_fit_plot.py $test_type 4 $data_line_count>> $fname
+
+    if [[ $? != 0 ]]; then
+        echo "Something is wrong. Terminated."
+        exit 1
+    fi
+
     # grep some info to screen.
     grep "!Equilibrium point is out of the considered range!" $fname
     grep "R-squared =" $fname
