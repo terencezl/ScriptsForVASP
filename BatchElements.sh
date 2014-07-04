@@ -27,6 +27,8 @@ while getopts ":e:c:" opt; do
     esac
 done
 
+[[ $pot_combo =~ . ]] && pot_combo=$pot_combo","
+
 if [[ -z "$pot_combo" ]]; then
     echo "-c potential combination must be specified, comma separated, iterating element as X!"
     exit 1
@@ -37,7 +39,7 @@ elif [[ $pot_combo != *X* ]]; then
     pot_combo_list=$pot_combo
 else
     for element in $(cat $element_list_file); do
-        pot_combo_item=${pot_combo//X/"element"}
+        pot_combo_item=${pot_combo//X/"$element"}
         pot_combo_list=$pot_combo_list" "$pot_combo_item
     done
 fi
