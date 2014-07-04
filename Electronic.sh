@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function argparse {
-    while getopts ":d:mf" opt; do
+    while getopts ":d:mfn:" opt; do
         case $opt in
         d)
             subdir_name=$OPTARG
