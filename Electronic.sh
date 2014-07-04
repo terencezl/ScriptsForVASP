@@ -149,20 +149,25 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
     Prepare.sh "$subdir_name" $test_tag -a qlobster.parallel
     cd "$subdir_name"
     if [[ -d ../lobster-kp ]]; then
-        echo "Found lobster-kp under electronic/. Moving to this directory for clarity..."
+        echo "Found lobster-kp/ under $directory_name/. Moving to $directory_name/$subdir_name/ for clarity..."
         mv ../lobster-kp .
         cp lobster-kp/IBZKPT KPOINTS
     elif [[ -d lobster-kp ]]; then
-        echo "Found lobster-kp under this directory. Good."
+        echo "Found lobster-kp/ under $directory_name/$subdir_name/. Will use it."
         cp lobster-kp/IBZKPT KPOINTS
+    elif [[ -f IBZKPT ]]; then
+        echo "Found IBZKPT under $directory_name/$subdir_name/. Will use it. Hope it's a full k-point mesh..."
     else
-        echo "Didn't find lobster-kp or full IBZKPT. Did you have your own copied here?"
+        echo "Didn't find lobster-kp/ or IBZKPT. Did you have your own copied here?"
     fi
 
     if [[ -f ../scrun/CHGCAR ]]; then
         echo "Use the CHGCAR from the scrun."
         cp ../scrun/CONTCAR POSCAR
         cp -l ../scrun/CHGCAR .
+        sed -i "/ICHARG/c ICHARG = 11" INCAR
+    elif [[ -f CHGCAR ]]; then
+        echo "Found CHGCAR under . Will use it."
         sed -i "/ICHARG/c ICHARG = 11" INCAR
     fi
 
