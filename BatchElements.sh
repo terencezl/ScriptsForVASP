@@ -68,20 +68,20 @@ if [[ "$test_type" == prepare ]]; then
     done
 
 else
-    test_script=$test_type
-    shift 1
-    if ! type $test_script >/dev/null 2>&1; then
-        echo "Command $test_script does not exist!"
-        exit 1
-    fi
+#    test_script=$test_type
+#    shift 1
+#    if ! type $test_script >/dev/null 2>&1; then
+#        echo "Command $test_script does not exist!"
+#        exit 1
+#    fi
     for compound in $compound_list
     do
         (
-        if ! cd "$compound"; then
-            echo "$compound directory does not exist!"
-            exit 1
-        fi
-        $test_script "$@"
+#        if ! cd "$compound"; then
+#            echo "$compound directory does not exist!"
+#            exit 1
+#        fi
+        $@
         )
     done
 fi
