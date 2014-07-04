@@ -27,8 +27,6 @@ while getopts ":e:c:" opt; do
     esac
 done
 
-[[ $pot_combo =~ . ]] && pot_combo=$pot_combo","
-
 if [[ -z "$pot_combo" ]]; then
     echo "-c potential combination must be specified, comma separated, iterating element as X!"
     exit 1
@@ -55,7 +53,13 @@ if [[ "$test_type" == prepare ]]; then
         mkdir -p "$compound"/INPUT
         cp -r INPUT_ELEMENT/* "$compound"/INPUT
         rm "$compound"/INPUT/*.dat
-        eval "cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_{$pot_combo_item} > $compound/INPUT/POTCAR"
+
+        if [[ $pot_combo_item != *,* ]]; then
+            eval "cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_$pot_combo_item > $compound/INPUT/POTCAR"
+        else
+            eval "cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_{$pot_combo_item} > $compound/INPUT/POTCAR"
+        fi
+
         cd "$compound"/INPUT
         sed -i "/SYSTEM/c SYSTEM = $pot_combo_item" INCAR
         sed -i "1c $pot_combo_item" POSCAR
