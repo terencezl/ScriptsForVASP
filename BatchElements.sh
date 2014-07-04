@@ -25,6 +25,7 @@ while getopts ":e:c:" opt; do
     esac
 done
 
+shift $(($OPTIND-1))
 test_type="$1"
 
 if [[ -z "$pot_combo" ]]; then
@@ -68,7 +69,7 @@ if [[ "$test_type" == prepare ]]; then
 
 else
     test_script=$test_type
-    shift $$OPTIND
+    shift 1
     if ! type $test_script >/dev/null 2>&1; then
         echo "Command $test_script does not exist!"
         exit 1
