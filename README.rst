@@ -42,12 +42,12 @@ Bash job submission scripts
 ---------------------------
 
 * ``Prepare.sh DIRECTORY`` - a fast way to create a directory with necessary input files
-* ``SequenceTest.sh TEST_TYPE OPTIONS`` - to create a series of runs, performing a routine test
+* ``SequenceTest.sh TEST_TYPE [OPTIONS]`` - to create a series of runs, performing a routine test
 * ``SequenceDisp.sh TEST_TYPE`` - to do the post-analysis of a series of runs described above and determine physical quantities
-* ``Elastic.sh test | disp-solve | solve`` - to do a full set of independent elastic constant determination runs
-* ``Electronic.sh prepare | scrun | dosrun | bsrun | lobster kp | lobster test -n NBAND | lobster analysis`` - to carry out electronic-related runs
-* ``Bader.sh test | analysis`` - to perform Bader charge transfer analysis
-* ``BatchElements.sh`` - a wrapper script to execute the above routines and almost random Bash code for multiple species
+* ``Elastic.sh TEST_TYPE CRYST_SYS [OPTIONS]`` - to do a full set of independent elastic constant determination runs
+* ``Electronic.sh TEST_TYPE [OPTIONS]`` - to carry out electronic-related runs
+* ``Bader.sh TEST_TYPE [OPTIONS]`` - to perform Bader charge transfer analysis
+* ``BatchElements.sh 'COMMANDS'`` - a wrapper script to execute the above routines and almost random Bash code for multiple species
 
 Supportive scripts
 ------------------
