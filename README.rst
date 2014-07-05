@@ -20,7 +20,7 @@ Scripts structure
 Python scripts
 --------------
 
-These can also be used alone, and **can be readily imported and played with in a Python interpreter**.
+These can also be used alone, just type ``SCRIPT.py -h`` in the terminal you will get help. Additionally, they **can be readily imported and played with in a Python interpreter**.
 
 * ``PlotTDOS.py`` - to plot total density of states, spin states are supported (above or below x axis)
 * ``PlotLDOS.py`` - to plot local projected density of states of two ions (above or below x axis), spin states are supported (in different files)
@@ -32,23 +32,22 @@ These can also be used alone, and **can be readily imported and played with in a
 Bash convenient scripts
 -----------------------
 
-* ``CellInfo.sh [rwigs]`` - to show the important info from OUTCAR (rwigs is optional, and displays the RWIGS values for different species to 100 % fill the cell)
-* ``DelFiles.sh [XXX]`` - to delete the output files for failed runs (XXX is optional if one stays in the job directory)
-* ``SwapFileNames.sh AAA BBB`` - to exchange the names of two files AAA and BBB
-* ``R`` - to submit the job in a specified directory or the current directory
-* ``D`` - to cancel the submitted N job
+* ``CellInfo.sh [rwigs]`` - to show the important info from OUTCAR. With the optional rwigs, displays the RWIGS values for different species to 100 % fill the cell
+* ``DelFiles.sh [DIRECTORY]`` - to delete the output files, default to current directory
+* ``SwapFileNames.sh A B`` - to exchange the names of two files A and B
+* ``R [DIRECTORY]`` - to submit the job in a specified directory or default to the current directory
+* ``D [N]`` - to cancel the submitted N job, or default to 1 without argument
 
 Bash job submission scripts
 ---------------------------
 
-* ``Prepare.sh XXX`` - a fast way to create a directory XXX with necessary input files
-* ``SequenceTest.sh TEST_TYPE [OPTIONS]`` - to create a series of runs, performing encut test | kpoints test | lattice constant test | elastic constant test | ...
-* ``SequenceDisp.sh TEST_TYPE [OPTIONS]`` - to do the post-analysis of a series of runs described above and determine physical quantities
+* ``Prepare.sh DIRECTORY`` - a fast way to create a directory with necessary input files
+* ``SequenceTest.sh TEST_TYPE OPTIONS`` - to create a series of runs, performing a routine test
+* ``SequenceDisp.sh TEST_TYPE`` - to do the post-analysis of a series of runs described above and determine physical quantities
 * ``Elastic.sh test | disp-solve | solve`` - to do a full set of independent elastic constant determination runs
-* ``Electronic.sh scrun | dosrun | bsrun | lobster kp | lobster test | lobster analysis``
-  - to carry out self-consistent run, density of states run, band structure run, LOBSTER pCOHP run
+* ``Electronic.sh prepare | scrun | dosrun | bsrun | lobster kp | lobster test -n NBAND | lobster analysis`` - to carry out electronic-related runs
 * ``Bader.sh test | analysis`` - to perform Bader charge transfer analysis
-* ``BatchElements.sh`` - a wrapper script to execute the above routines for multiple species
+* ``BatchElements.sh`` - a wrapper script to execute the above routines and almost random Bash code for multiple species
 
 Supportive scripts
 ------------------
