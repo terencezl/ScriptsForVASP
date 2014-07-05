@@ -9,10 +9,10 @@ Introduction
 There are multiple ways to carry out VASP calculations. Contrary to the Pythonic scheme the famous `ASE <https://wiki.fysik.dtu.dk/ase/>`_ uses
 , this project does things in an old-fashioned way, providing a collection of scripts, written in Bash, and accompanying them with
 scripts written in Python, in the same directory, with careful use of file names and input arguments, and letting users
-add this single directory into their PATH environmental variable to have direct access. The Bash scripts will be used as **executables**. This approach
-is less comprehensive than the one ASE uses, but it is more file and directory aware, due to their somewhat natural affinity to Bash - a shell
-scripting language. Standalone Python scripts (with capitalized first letter) can be imported. The plotting Python scripts (Plot_***.py) can be
-imported and used to adjust the Matplotlib figures.
+add this single directory into their PATH environmental variable to have direct access. The scripts will be used as **executables**. This approach
+is less comprehensive than the one ASE uses, but it is more file- and directory-wise convenient thanks to the fact that Bash is a shell
+scripting language. Standalone Python scripts (with capitalized first letter) can be imported in an Python interpreter. The plotting Python
+scripts (Plot***.py) can be imported and used to adjust the Matplotlib figures.
 
 Scripts structure
 =================
