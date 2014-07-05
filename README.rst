@@ -47,7 +47,7 @@ Bash job submission scripts
 * ``Elastic.sh TEST_TYPE CRYST_SYS [OPTIONS]`` - to do a full set of independent elastic constant determination runs
 * ``Electronic.sh TEST_TYPE [OPTIONS]`` - to carry out electronic-related runs
 * ``Bader.sh TEST_TYPE [OPTIONS]`` - to perform Bader charge transfer analysis
-* ``BatchElements.sh 'COMMANDS'`` - a wrapper script to execute the above routines and almost random Bash code for multiple species
+* ``BatchElements.sh [OPTIONS] 'COMMANDS'`` - a wrapper script to execute the above routines and almost random Bash code for multiple species
 
 Supportive scripts
 ------------------

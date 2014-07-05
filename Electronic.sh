@@ -41,7 +41,7 @@ function does_directory_exist {
 
 function subdirectory_check {
     if [[ -d "$subdir_name" && $(ls -A "$subdir_name") && -z $is_override ]]; then
-        echo "$subdir_name/ contains files. Escaping..."
+        echo "$directory_name/$subdir_name/ contains files. Escaping..."
         exit 1
     fi
 }
@@ -56,6 +56,17 @@ if [[ "$test_type" == prepare ]]; then
     argparse "$@"
     mkdir $directory_name
     cd $directory_name
+
+    if [[ -d INPUT && $(ls -A INPUT) ]]; then
+        echo "INPUT/ contains files. "
+        if [[ $is_override ]]; then
+            echo "Overriding..."
+        else
+            echo "Escaping..."
+            exit 1
+        fi
+    fi
+
     cp -r ../INPUT .
 #    sed -i "/PREC/c PREC = Accurate" INPUT/INCAR
 #    sed -i "/NSW/c NSW = 0" INPUT/INCAR
