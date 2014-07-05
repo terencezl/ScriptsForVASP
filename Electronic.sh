@@ -92,13 +92,13 @@ elif [[ "$test_type" == dosrun ]]; then
     Prepare.sh "$subdir_name" $test_tag
     cd dosrun
 
-    if [[ -f ../scrun/CHGCAR && -f ../scrun/CONTCAR ]]; then
+    if [[ -f CHGCAR ]]; then
+        echo "Found CHGCAR under $directory_name/$subdir_name/. Will use it."
+        sed -i "/ICHARG/c ICHARG = 11" INCAR
+    elif [[ -f ../scrun/CHGCAR && -f ../scrun/CONTCAR ]]; then
         echo "Found CHGCAR and CONTCAR under $directory_name/scrun/. Will use them."
         cp ../scrun/CONTCAR POSCAR
         cp -l ../scrun/CHGCAR .
-        sed -i "/ICHARG/c ICHARG = 11" INCAR
-    elif [[ -f CHGCAR ]]; then
-        echo "Found CHGCAR under $directory_name/$subdir_name/. Will use it."
         sed -i "/ICHARG/c ICHARG = 11" INCAR
     fi
 
@@ -184,27 +184,27 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
 
     Prepare.sh "$subdir_name" $test_tag -a qlobster.parallel
     cd "$subdir_name"
-    if [[ -d ../lobster-kp ]]; then
-        echo "Found lobster-kp/ under $directory_name/. Moving to $directory_name/$subdir_name/ for clarity..."
-        mv ../lobster-kp .
-        cp lobster-kp/IBZKPT KPOINTS
+    if [[ -f IBZKPT-full ]]; then
+        echo "Found IBZKPT-full under $directory_name/$subdir_name/. Will use it."
+        mv IBZKPT-full IBZKPT
     elif [[ -d lobster-kp ]]; then
         echo "Found lobster-kp/ under $directory_name/$subdir_name/. Will use it."
         cp lobster-kp/IBZKPT KPOINTS
-    elif [[ -f IBZKPT-full ]]; then
-        echo "Found IBZKPT-full under $directory_name/$subdir_name/. Will use it."
-        mv IBZKPT-full IBZKPT
+    elif [[ -d ../lobster-kp ]]; then
+        echo "Found lobster-kp/ under $directory_name/. Moving to $directory_name/$subdir_name/ for clarity..."
+        mv ../lobster-kp .
+        cp lobster-kp/IBZKPT KPOINTS
     else
-        echo "Didn't find lobster-kp/ or IBZKPT. Did you have your own copied here?"
+        echo "Didn't find lobster-kp/ or IBZKPT-full. Did you have your own copied here?"
     fi
 
-    if [[ -f ../scrun/CHGCAR && -f ../scrun/CONTCAR ]]; then
+    if [[ -f CHGCAR ]]; then
+        echo "Found CHGCAR under $directory_name/$subdir_name/. Will use it."
+        sed -i "/ICHARG/c ICHARG = 11" INCAR
+    elif [[ -f ../scrun/CHGCAR && -f ../scrun/CONTCAR ]]; then
         echo "Found CHGCAR and CONTCAR under $directory_name/scrun/. Will use them."
         cp ../scrun/CONTCAR POSCAR
         cp -l ../scrun/CHGCAR .
-        sed -i "/ICHARG/c ICHARG = 11" INCAR
-    elif [[ -f CHGCAR ]]; then
-        echo "Found CHGCAR under $directory_name/$subdir_name/. Will use it."
         sed -i "/ICHARG/c ICHARG = 11" INCAR
     fi
 
