@@ -54,11 +54,11 @@ shift 1
 
 if [[ "$test_type" == prepare ]]; then
     argparse "$@"
-    mkdir $directory_name
+    mkdir $directory_name 2> /dev/null
     cd $directory_name
 
     if [[ -d INPUT && $(ls -A INPUT) ]]; then
-        echo "INPUT/ contains files. "
+        echo -n "INPUT/ contains files. "
         if [[ $is_override ]]; then
             echo "Overriding..."
         else
