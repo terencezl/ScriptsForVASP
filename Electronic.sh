@@ -144,8 +144,13 @@ elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
     fi
     Prepare.sh "$subdir_name"-kp $test_tag -a qlobster.kp.serial
     cd "$subdir_name"-kp
-    sed -i '4c 17 17 17' KPOINTS
 
+    if [[ -f ../scrun/CONTCAR ]]; then
+        echo "Found CONTCAR under $directory_name/scrun/. Will use it."
+        cp ../scrun/CONTCAR POSCAR
+    fi
+
+    sed -i '4c 17 17 17' KPOINTS
     sed -i "/NSW/c NSW = 0" INCAR
     sed -i "/ISYM/c ISYM = 0" INCAR
     sed -i "/LSORBIT/c LSORBIT = .TRUE." INCAR
@@ -177,7 +182,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
         echo "Didn't find lobster-kp/ or IBZKPT. Did you have your own copied here?"
     fi
 
-    if [[ -f ../scrun/CHGCAR ]]; then
+    if [[ -f ../scrun/CHGCAR && -f ../scrun/CONTCAR ]]; then
         echo "Found CHGCAR and CONTCAR under $directory_name/scrun/. Will use them."
         cp ../scrun/CONTCAR POSCAR
         cp -l ../scrun/CHGCAR .
@@ -195,7 +200,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
     sed -i "/LWAVE/c LWAVE = .TRUE." INCAR
 
     sed -i "/NPAR/c NPAR = 8"  INCAR
-    sed -i "/#PBS -l walltime/c #PBS -l walltime=05:00:00" qsub.parallel
+    sed -i "/#PBS -l walltime/c #PBS -l walltime=04:00:00" qsub.parallel
     sed -i "/#PBS -l nodes/c #PBS -l nodes=2:ppn=8" qsub.parallel
     [[ $is_submit ]] && qsub qsub.parallel
 
