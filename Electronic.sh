@@ -91,18 +91,22 @@ elif [[ "$test_type" == dosrun ]]; then
     subdirectory_check
     Prepare.sh "$subdir_name" $test_tag
     cd dosrun
-    if [[ ! -f ../scrun/CHGCAR ]]; then
-        echo "Didn't find $directory_name/scrun/CHGCAR. Aborted."
-        exit 1
-    fi
-    cp ../scrun/CONTCAR POSCAR
-    cp -l ../scrun/CHGCAR .
-    sed -i '4c 21 21 21' KPOINTS
 
+    if [[ -f ../scrun/CHGCAR && -f ../scrun/CONTCAR ]]; then
+        echo "Found CHGCAR and CONTCAR under $directory_name/scrun/. Will use them."
+        cp ../scrun/CONTCAR POSCAR
+        cp -l ../scrun/CHGCAR .
+        sed -i "/ICHARG/c ICHARG = 11" INCAR
+    elif [[ -f CHGCAR ]]; then
+        echo "Found CHGCAR under $directory_name/$subdir_name/. Will use it."
+        sed -i "/ICHARG/c ICHARG = 11" INCAR
+    fi
+
+    sed -i '4c 17 17 17' KPOINTS
     sed -i "/NSW/c NSW = 0" INCAR
     sed -i "/ISMEAR/c ISMEAR = -5" INCAR
     sed -i "/NEDOS/c NEDOS = 1501" INCAR
-    sed -i "/ICHARG/c ICHARG = 11" INCAR
+
     if [[ $2 == rwigs ]]; then
         rwigs=$(cd ../scrun; CellInfo.sh rwigs |awk '{print $4}')
         sed -i "/RWIGS/c RWIGS = ${rwigs//,/ }" INCAR
@@ -187,8 +191,9 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
     elif [[ -d lobster-kp ]]; then
         echo "Found lobster-kp/ under $directory_name/$subdir_name/. Will use it."
         cp lobster-kp/IBZKPT KPOINTS
-    elif [[ -f IBZKPT ]]; then
-        echo "Found IBZKPT under $directory_name/$subdir_name/. Will use it. Hope it's a full k-point mesh..."
+    elif [[ -f IBZKPT-full ]]; then
+        echo "Found IBZKPT-full under $directory_name/$subdir_name/. Will use it."
+        mv IBZKPT-full IBZKPT
     else
         echo "Didn't find lobster-kp/ or IBZKPT. Did you have your own copied here?"
     fi
