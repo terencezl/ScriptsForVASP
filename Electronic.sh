@@ -186,7 +186,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
     cd "$subdir_name"
     if [[ -f IBZKPT-full ]]; then
         echo "Found IBZKPT-full under $directory_name/$subdir_name/. Will use it."
-        mv IBZKPT-full IBZKPT
+        mv IBZKPT-full KPOINTS
     elif [[ -d lobster-kp ]]; then
         echo "Found lobster-kp/ under $directory_name/$subdir_name/. Will use it."
         cp lobster-kp/IBZKPT KPOINTS
