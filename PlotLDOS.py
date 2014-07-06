@@ -64,8 +64,8 @@ def main(arguments='-h'):
     arguments = arguments.split()
     parser = argparse.ArgumentParser(description='''Plot the local projected density of states, with
                                                     consideration of spin-polarization.''')
-    parser.add_argument('atom1', type=int, help='first atom to plot')
-    parser.add_argument('atom2', type=int, help='second atom to plot')
+    parser.add_argument('atom1', metavar='ATOM1', type=int, help='first atom to plot')
+    parser.add_argument('atom2', metavar='ATOM2', type=int, help='second atom to plot')
     parser.add_argument('-a', '--axis-range', type=eval, help='''the x and y range of axis in the form of
                 '[Xmin,Xmax,Ymin,Ymax]'. If ISPIN=2, this option specifies the combined spin''')
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")

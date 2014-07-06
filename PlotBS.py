@@ -122,7 +122,7 @@ def main(arguments='-h'):
     parser = argparse.ArgumentParser(description='''Plot the band structure, with consideration of spin-polarization.''')
     parser.add_argument('-a', '--axis-range', type=eval,
                         help="the x and y range of axis in the form of '[Ymin,Ymax]'.")
-    parser.add_argument('-e', '--Ef', type=float, help="manually override Fermi energy detection")
+    parser.add_argument('--Ef', type=float, help="manually override Fermi energy detection")
     parser.add_argument('--ISPIN', type=int, help="manually override ISPIN detection")
     parser.add_argument('-i', '--input', metavar='EIGENVAL', default='EIGENVAL', help="the input EIGENVAL file name")
     parser.add_argument('-o', '--output-prefix', default='BS', help="the output files' prefix")

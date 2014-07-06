@@ -20,8 +20,8 @@ def main(arguments='-h'):
     """
     arguments = arguments.split()
     parser = argparse.ArgumentParser(description="""Apply strain to the cell basis vectors in POSCAR.""")
-    parser.add_argument('test_type', help="the elastic constant combination to select, like c11+2c12")
-    parser.add_argument('cryst_sys', help="the crystallographic system to select, like cubic")
+    parser.add_argument('test_type', metavar='TEST_TYPE', help="the elastic constant combination to select, like c11+2c12")
+    parser.add_argument('cryst_sys', metavar='CRYST_SYS', help="the crystallographic system to select, like cubic")
     parser.add_argument('delta', type=float, help="the delta value for the strain")
     parser.add_argument('-i', '--input', metavar='POSCAR', default='POSCAR', help="the input POSCAR file name")
     group = parser.add_mutually_exclusive_group()
