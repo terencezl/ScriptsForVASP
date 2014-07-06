@@ -128,7 +128,7 @@ def main(arguments='-h'):
                 DOS_data[abs(DOS_data[:, 0] + 0.2).argmin(), 3] + \
                 DOS_data[abs(DOS_data[:, 0] - 0.2).argmin(), 4] - \
                 DOS_data[abs(DOS_data[:, 0] + 0.2).argmin(), 4]
-        np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6E')
+        np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6f')
 
     elif ISPIN == 1:
         col_names = ['E', 'total', 'integrated']
@@ -144,7 +144,7 @@ def main(arguments='-h'):
         np.savetxt(args.output_prefix + '.txt', DOS_data, '%15.6E', header=' '.join(col_names))
         energy_slice = DOS_data[abs(DOS_data[:, 0] - 0.2).argmin(), 2] - \
                        DOS_data[abs(DOS_data[:, 0] + 0.2).argmin(), 2]
-        np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6E')
+        np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6f')
 
     return col_names, DOS_data
 

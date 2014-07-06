@@ -29,8 +29,10 @@ done
 
 if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
     cd "$directory_name"
+elif [[ -z "$directory_name" ]]; then
+    echo "Deleting files under the current directory!"
 else
-    echo "The directory $directory_name does not exist!"
+    echo "$directory_name/ does not exist!"
     exit 1
 fi
 
