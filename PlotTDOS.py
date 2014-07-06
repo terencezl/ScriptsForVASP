@@ -124,10 +124,10 @@ def main(arguments='-h'):
         plot_helper_close()
 
         np.savetxt(args.output_prefix + '.txt', DOS_data, '%15.6E', header=' '.join(col_names))
-        energy_slice = DOS_data[abs(DOS_data[0] - 0.2).argmin(), 3] - \
-                DOS_data[abs(DOS_data[0] + 0.2).argmin(), 3] + \
-                DOS_data[abs(DOS_data[0] - 0.2).argmin(), 4] - \
-                DOS_data[abs(DOS_data[0] + 0.2).argmin(), 4]
+        energy_slice = DOS_data[abs(DOS_data[:, 0] - 0.2).argmin(), 3] - \
+                DOS_data[abs(DOS_data[:, 0] + 0.2).argmin(), 3] + \
+                DOS_data[abs(DOS_data[:, 0] - 0.2).argmin(), 4] - \
+                DOS_data[abs(DOS_data[:, 0] + 0.2).argmin(), 4]
         np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6E')
 
     elif ISPIN == 1:
@@ -142,8 +142,8 @@ def main(arguments='-h'):
         plot_helper_close()
 
         np.savetxt(args.output_prefix + '.txt', DOS_data, '%15.6E', header=' '.join(col_names))
-        energy_slice = DOS_data[abs(DOS_data[0] - 0.2).argmin(), 2] - \
-                       DOS_data[abs(DOS_data[0] + 0.2).argmin(), 2]
+        energy_slice = DOS_data[abs(DOS_data[:, 0] - 0.2).argmin(), 2] - \
+                       DOS_data[abs(DOS_data[:, 0] + 0.2).argmin(), 2]
         np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6E')
 
     return col_names, DOS_data
