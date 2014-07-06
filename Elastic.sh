@@ -152,7 +152,7 @@ elif [[ "$test_type" == solve ]]; then
     econst_list=$(echo $econst_list)
     econst_list=[${econst_list// /,}]
     echo >> $fname
-    _elastic_solver.py $cryst_sys $Vpcell $econst_list | tee -a elastic_output.txt
+    _elastic_solver.py $cryst_sys $Vpcell $econst_list | tee -a $fname
 
 else
     echo "Specify what you are going to test!" >&2

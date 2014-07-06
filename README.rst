@@ -46,7 +46,6 @@ Bash job submission scripts
 * ``SequenceDisp.sh TEST_TYPE`` - to do the post-analysis of a series of runs described above and determine physical quantities
 * ``Elastic.sh TEST_TYPE CRYST_SYS [OPTIONS]`` - to do a full set of independent elastic constant determination runs
 * ``Electronic.sh TEST_TYPE [OPTIONS]`` - to carry out electronic-related runs
-* ``Bader.sh TEST_TYPE [OPTIONS]`` - to perform Bader charge transfer analysis
 * ``BatchElements.sh [OPTIONS] 'COMMANDS'`` - a wrapper script to execute the above routines and almost random Bash code for multiple species
 
 Supportive scripts

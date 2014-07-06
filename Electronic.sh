@@ -233,6 +233,34 @@ elif [[ "$test_type" == lobster && "$test_type2" == analysis ]]; then
     fi
     [[ $is_submit ]] && qsub qlobster.parallel
 
+elif [[ "$test_type" == bader && "$test_type2" == test ]]; then
+    shift 1
+    argparse "$@"
+    does_directory_exist
+    subdirectory_check
+    Prepare.sh "$directory_name" $test_tag -a qbader.serial
+    cd "$directory_name"
+    sed -i '/LAECHG/c LAECHG = .TRUE.' INCAR
+    sed -i '/NGXF/c NGXF = 250' INCAR
+    sed -i '/NGYF/c NGYF = 250' INCAR
+    sed -i '/NGZF/c NGZF = 250' INCAR
+#    echo -e 'NGXF = 250\nNGYF = 250\nNGZF = 250' >> INCAR
+    sed -i '/LCHARG/c LCHARG = .TRUE.' INCAR
+    sed -i '/NSW/c NSW = 0' INCAR
+    [[ $is_submit ]] && qsub qsub.parallel
+
+elif [[ "$test_type" == bader && "$test_type2" == analysis ]]; then
+    shift 1
+    argparse "$@"
+    does_directory_exist
+    if [[ -d "$subdir_name" && $(ls -A "$subdir_name") ]]; then
+        cd "$subdir_name"
+    else
+        echo "$subdir_name/ does not exist!"
+        exit 1
+    fi
+    [[ $is_submit ]] && qsub qbader.serial
+
 else
     echo "Specify what you are going to test!" >&2
     exit 1

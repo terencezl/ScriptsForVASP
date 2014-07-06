@@ -2,7 +2,7 @@
 
 test_type="$1"
 directory_name=bader
-fname="$directory_name"elastic_output.txt
+fname="$directory_name"_output.txt
 shift 1
 
 while getopts ":d:mf" opt; do
@@ -55,7 +55,6 @@ elif [[ "$test_type" == analysis ]]; then
         echo "$directory_name/ does not exist!"
         exit 1
     fi
-    cp ../INPUT/qbader.serial .
     [[ $is_submit ]] && qsub qbader.serial
 
 else
