@@ -184,9 +184,9 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
 
     Prepare.sh "$subdir_name" $test_tag -a qlobster.parallel
     cd "$subdir_name"
-    if [[ -f IBZKPT-full ]]; then
-        echo "Found IBZKPT-full under $directory_name/$subdir_name/. Will use it."
-        mv IBZKPT-full KPOINTS
+    if [[ -f KPOINTS-full ]]; then
+        echo "Found KPOINTS-full under $directory_name/$subdir_name/. Will use it."
+        mv KPOINTS-full KPOINTS
     elif [[ -d lobster-kp ]]; then
         echo "Found lobster-kp/ under $directory_name/$subdir_name/. Will use it."
         cp lobster-kp/IBZKPT KPOINTS
@@ -195,7 +195,8 @@ elif [[ "$test_type" == lobster && "$test_type2" == test ]]; then
         mv ../lobster-kp .
         cp lobster-kp/IBZKPT KPOINTS
     else
-        echo "Didn't find lobster-kp/ or IBZKPT-full. Did you have your own copied here?"
+        echo "Didn't find lobster-kp/ or KPOINTS-full. Did you have your own copied here?"
+        exit 1
     fi
 
     if [[ -f CHGCAR ]]; then
