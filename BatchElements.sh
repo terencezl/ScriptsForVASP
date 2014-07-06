@@ -71,7 +71,7 @@ else
     for compound in $compound_list
     do
         (
-        echo "Getting into $compound/ and start..."
+        echo "Processing $compound/ ..."
         cd "$compound"
         i=$compound
         eval "$@"

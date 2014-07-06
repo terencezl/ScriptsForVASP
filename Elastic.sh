@@ -6,7 +6,7 @@ function does_directory_exist {
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
         cd "$directory_name"
     elif [[ "${PWD##*/}" == "$directory_name"* ]]; then
-        echo "Already in ${PWD##*/}/."
+        echo "You are already in ${PWD##*/}/."
     else
         echo "$directory_name/ does not exist!"
         exit 1
