@@ -31,8 +31,9 @@ function argparse {
 function does_directory_exist {
     if [[ -d "$directory_name" ]]; then
         cd "$directory_name"
-    elif [[ "${PWD##*/}" == "$directory_name"* ]]; then
-        echo "You are already in ${PWD##*/}/."
+    elif [[ "$current_directory" == "$directory_name"* ]]; then
+        echo "You are already in $current_directory/."
+        directory_name="$current_directory"
     else
         echo "$directory_name/ does not exist!"
         exit 1
@@ -47,6 +48,7 @@ function subdirectory_check {
 }
 
 directory_name=electronic
+current_directory=${PWD##*/}
 if [[ "$1" == */ ]]; then subdir_name=${1%/}; else subdir_name=$1; fi
 test_type="${subdir_name%%_*}"
 test_type2=$2

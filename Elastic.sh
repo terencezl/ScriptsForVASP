@@ -5,8 +5,9 @@
 function does_directory_exist {
     if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
         cd "$directory_name"
-    elif [[ "${PWD##*/}" == "$directory_name"* ]]; then
-        echo "You are already in ${PWD##*/}/."
+    elif [[ "$current_directory" == "$directory_name"* ]]; then
+        echo "You are already in $current_directory/."
+        directory_name="$current_directory"
     else
         echo "$directory_name/ does not exist!"
         exit 1
@@ -15,6 +16,7 @@ function does_directory_exist {
 
 test_type="$1"
 directory_name=elastic
+current_directory=${PWD##*/}
 fname="$directory_name"_output.txt
 cryst_sys="$2"
 equi_relax="equi-relax"
