@@ -39,5 +39,5 @@ fi
 
 rm XDATCAR PCDAT CHG EIGENVAL PROCAR vasprun.xml OUTCAR OSZICAR DOSCAR *.o*
 [[ $contcar ]] && rm CONTCAR
-[[ $wavecat ]] && rm WAVECAR
+[[ $wavecar ]] && rm WAVECAR
 [[ $chgcar ]] && rm CHGCAR
