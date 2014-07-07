@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-directory_name="$1"
-
 while getopts ":twc" opt; do
     case $opt in
     t)
@@ -26,6 +24,8 @@ while getopts ":twc" opt; do
         ;;
   esac
 done
+
+directory_name="$1"
 
 if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
     cd "$directory_name"
