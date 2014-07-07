@@ -25,6 +25,7 @@ while getopts ":twc" opt; do
   esac
 done
 
+shift $(($OPTIND-1))
 directory_name="$1"
 
 if [[ -d "$directory_name" && $(ls -A "$directory_name") ]]; then
