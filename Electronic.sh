@@ -165,7 +165,7 @@ elif [[ "$test_type" == lobster && "$test_type2" == kp ]]; then
         cp ../scrun/CONTCAR POSCAR
     fi
 
-    sed -i '4c 17 17 17' KPOINTS
+#    sed -i '4c 11 11 11' KPOINTS
     sed -i "/NSW/c NSW = 0" INCAR
     sed -i "/ISYM/c ISYM = 0" INCAR
     sed -i "/LSORBIT/c LSORBIT = .TRUE." INCAR
