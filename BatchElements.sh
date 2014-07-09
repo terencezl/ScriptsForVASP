@@ -72,11 +72,11 @@ else
     for compound in $compound_list
     do
         (
-        if [[ -d "compound" ]]; then
+        if [[ -d "$compound" ]]; then
             echo "Processing $compound/ ..."
-            cd "compound"
+            cd "$compound"
         else
-            echo "compound/ does not exist!"
+            echo "$compound/ does not exist!"
             exit 1
         fi
 
