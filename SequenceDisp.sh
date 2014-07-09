@@ -182,8 +182,8 @@ elif [[ $test_type == "lctest" ]]; then
     grep "B0' =" $fname
     grep "Total energy =" $fname
 
-    # copy the CONTCAR from the run closest to equlibrium to INPUT/POSCAR.
-    # plug equlibirum scaling constant to INPUT/POSCAR
+    # copy the CONTCAR from the run closest to equilibrium to INPUT/POSCAR.
+    # plug equilibrium scaling constant to INPUT/POSCAR
     cd ..
     if [[ -d INPUT ]]; then
         echo "Replacing INPUT/POSCAR with the closest CONTCAR from lctest and updating the scaling constant..."

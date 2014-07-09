@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+### START CONFIG ###
 POT_TYPE=PAW-GGA
 POTENTIALS_DIR=$HOME/terencelz/local/potential-database
-
 element_list_file=INPUT_ELEMENT/element.dat
+### END CONFIG ###
 
 while getopts ":e:c:" opt; do
     case $opt in

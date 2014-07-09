@@ -18,6 +18,7 @@ def main(arguments='-h'):
     main(), main('-h') : as if ``StrainApplier.py -h`` is executed from command line.
     main(string) : as if ``StrainApplier.py content_of_string`` is executed from command line.
     """
+    # parse arguments
     arguments = arguments.split()
     parser = argparse.ArgumentParser(description="""Apply strain to the cell basis vectors in POSCAR.""")
     parser.add_argument('test_type', metavar='TEST_TYPE', help="the elastic constant combination to select, like c11+2c12")
@@ -62,30 +63,6 @@ def main(arguments='-h'):
             transformation_matrix = np.array([[1 + delta, 0, 0],
                                               [0, 1 + delta, delta / 2],
                                               [0, delta / 2, 1]])
-        elif args.test_type == "A1":
-            transformation_matrix = np.array([[1 + delta, 0, 0],
-                                              [0, 1, 0],
-                                              [0, 0, 1]])
-        elif args.test_type == "A2":
-            transformation_matrix = np.array([[1 + delta, 0, 0],
-                                              [0, 1 + delta, 0],
-                                              [0, 0, 1]])
-        elif args.test_type == "A3":
-            transformation_matrix = np.array([[1 + delta, 0, 0],
-                                              [0, 1 + delta, 0],
-                                              [0, 0, 1 + delta]])
-        elif args.test_type == "A4":
-            transformation_matrix = np.array([[1 + delta, 0, 0],
-                                              [0, 1, delta],
-                                              [0, delta, 1]])
-        elif args.test_type == "A5":
-            transformation_matrix = np.array([[1 + delta, delta, 0],
-                                              [delta, 1, 0],
-                                              [0, 0, 1]])
-        elif args.test_type == "A6":
-            transformation_matrix = np.array([[1, delta, delta],
-                                              [delta, 1, delta],
-                                              [delta, delta, 1]])
 
     elif args.cryst_sys == 'tetragonal':
         if args.test_type == "c11":
@@ -151,14 +128,16 @@ def main(arguments='-h'):
                                               [delta, 1 - delta, 0],
                                               [0, 0, 1 + 2 * delta]])
 
+    # apply the specified strain
     basis_vectors_new = np.dot(basis_vectors, transformation_matrix)
+    # create the string list form, ready to write to file
     basis_vectors_new_str = [''] * len(basis_vectors_new)
     for i in range(3):
         basis_vectors_new_str[i] = '{0[0]:11.8f}  {0[1]:11.8f}  {0[2]:11.8f}\n'.format(basis_vectors_new[i])
-
+    # replace the POSCAR variable content
     for i, line_num in enumerate(range(2, 5)):
         POSCAR[line_num] = basis_vectors_new_str[i]
-
+    # write to it
     with open(args.output, 'w') as f:
         f.writelines(POSCAR)
 

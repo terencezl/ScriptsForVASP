@@ -42,7 +42,7 @@ function submission_trigger {
     fi
 }
 
-function header_echo {
+function info_echo {
     echo -e "Creating test directory $directory_name/..."
     if [[ -d "$directory_name" && "$(ls -A $directory_name)" ]]; then
         echo "  $directory_name/ contains files or sub-directories."
@@ -50,7 +50,6 @@ function header_echo {
     mkdir "$directory_name" 2> /dev/null
     cd "$directory_name"
     echo "  Preparing "$test_type"..."
-    fname="$test_type"_output.txt
 }
 
 function argparse {
@@ -103,7 +102,7 @@ if [[ "$test_type" == "entest" || "$test_type" == "kptest" ]]; then
         echo "-b -e -i should be all set with valid values!" >&2
         exit 1
     fi
-    header_echo
+    info_echo
     for ((dir=$begin; dir<=$end; dir=$dir+$interval))
     do
             (
@@ -124,7 +123,7 @@ elif [[ "$test_type" == "lctest" ]]; then
         echo "-b -e -n should be all set with valid values!" >&2
         exit 1
     fi
-    header_echo
+    info_echo
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($begin,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     for dir in $dir_list
     do
@@ -141,7 +140,7 @@ elif [[ "$test_type" == "rttest" ]]; then
         echo "-b -e -n should be all set with valid values!" >&2
         exit 1
     fi
-    header_echo
+    info_echo
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($begin,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
@@ -160,7 +159,7 @@ elif [[ "$test_type" == "agltest" ]]; then
         echo "-b -e -n -r should be all set with valid values!" >&2
         exit 1
     fi
-    header_echo
+    info_echo
     dir_list=$(echo -e "import numpy as np\nfor i in np.linspace($begin,$end,$num_points): print('{0:.3f}'.format(i))" | python)
     dir_list=$(change_dir_name_with_hyphen "$dir_list")
     for dir in $dir_list
@@ -181,7 +180,10 @@ elif [[ "$test_type" == *c[1-9][1-9]* ]]; then
         echo "crystallographic system should be set!" >&2
         exit 1
     fi
-    header_echo
+    info_echo
+
+    # create dir_list of each sample point. To save computing resources, oen should manually choose the sample point.
+    dir_list=$(echo -e "import numpy as np\nfor i in np.linspace(-0.040,0.040,5): print('{0:.3f}'.format(i))" | python)
     if [ "$test_type" == c44 ]; then
         dir_list="0.020 0.035 0.050n"
     elif [ "$test_type" == c11-c12 ]; then
