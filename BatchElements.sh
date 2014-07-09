@@ -71,8 +71,14 @@ else
     for compound in $compound_list
     do
         (
-        echo "Processing $compound/ ..."
-        cd "$compound"
+        if [[ -d "compound" ]]; then
+            echo "Processing $compound/ ..."
+            cd "compound"
+        else
+            echo "compound/ does not exist!"
+            exit 1
+        fi
+
         i=$compound
         eval "$@"
         )

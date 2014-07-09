@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # Used by CellInfo.sh to solve equations
-# _cell_info_solver.py task volumn_of_primitive_cell input_data(in the form of a python list)
+# _cell_info_solver.py test_type volumn_of_primitive_cell input_data(in the form of a python list)
 
 import sys
 import numpy as np
 
-task = sys.argv[1]
+test_type = sys.argv[1]
 Vpcell = float(sys.argv[2])
 
-if task == 'rwigs':
+if test_type == 'rwigs':
     N_atoms = eval(sys.argv[3])
     r_input = np.array(eval(sys.argv[4]))
     V_raw = 0
