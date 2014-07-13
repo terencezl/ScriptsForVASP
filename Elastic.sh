@@ -91,6 +91,7 @@ if [[ "$test_type" == test ]]; then
     cd "$directory_name"
     cp -r ../INPUT .
     sed -i '/NSW/c NSW = 20' INPUT/INCAR
+    sed -i "/#PBS -l walltime/c #PBS -l walltime=01:00:00" INPUT/qsub.parallel
     for dir in $dir_list
     do
         SequenceTest.sh $dir $cryst_sys $test_tag
