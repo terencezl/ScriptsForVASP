@@ -63,9 +63,10 @@ if test_type == 'entest' or test_type == 'kptest':
     plt.plot(data[:, 0], data[:, 2], 'o', label=col_names[2])
     plt.axhline(0.001, ls=':', c='k')
     plt.grid(True)
-    plt.legend()
     plt.xlabel(index_name)
     plt.ylabel('Energy diff (eV)')
+    plt.legend(loc=0)
+    plt.tight_layout()
 
 elif test_type == 'lctest':
     col_names = ['ScalingConst(Ang)', 'Volume(Ang^3)', 'E(eV)']
@@ -96,6 +97,7 @@ elif test_type == 'lctest':
     plt.xlabel(r'Volume ($\AA^{3}$)')
     plt.ylabel('E (eV)')
     plt.legend(loc=0)
+    plt.tight_layout()
     np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
 elif test_type == 'rttest':
@@ -115,6 +117,7 @@ elif test_type == 'rttest':
                '%15.6E', header='Ratio E(eV)')
     plt.xlabel('Raito')
     plt.ylabel('E (eV)')
+    plt.tight_layout()
     np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
 elif test_type == 'agltest':
@@ -126,6 +129,7 @@ elif test_type == 'agltest':
     plt.plot(data[:, 0], data[:, 1], 'o')
     plt.xlabel('Angle (degree)')
     plt.ylabel('E (eV)')
+    plt.tight_layout()
     np.savetxt('orig_data.dat', data, '%15.6E', header=' '.join(col_names))
 
 elif re.search('.*c[1-9][1-9].*', test_type):
@@ -141,6 +145,7 @@ elif re.search('.*c[1-9][1-9].*', test_type):
     plt.text(delta_fit[len(delta_fit) / 4], energy_fit[6], result_str)
     plt.xlabel('Delta (ratio)')
     plt.ylabel('E (eV)')
+    plt.tight_layout()
     print("Fitting result: {0}".format(result_str))
 
 plt.savefig('fit_curve.png')
