@@ -78,14 +78,16 @@ def get_effective_mass_reduced(band, kp_start, kp_end, kp_linearized_array, E):
     effective_mass_reduced = h_bar ** 2 / d2E_dk2 / m_e
     return effective_mass_reduced
 
-
-def plot_helper_figure(args, ISPIN):
+def plot_helper_figure_assert(args, ISPIN):
     if ISPIN == 2:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 2), \
             'The number of figures should be 2!'
     elif ISPIN == 1:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 1), \
             'The number of figures should be 1!'
+
+
+def plot_helper_figure(args):
     if args.figure is None:
         plt.figure()
     else:
@@ -162,6 +164,8 @@ def main(arguments='-h'):
             except IOError:
                 raise IOError("Can't determine ISPIN! Either manually specify it, or provide OUTCAR or INCAR")
 
+    plot_helper_figure_assert(args, ISPIN)
+
     with open(args.input, 'r') as f:
         EIGENVAL = f.readlines()
     for i in range(len(EIGENVAL)):
@@ -216,7 +220,7 @@ def main(arguments='-h'):
     E -= Ef
 
     # Plot the bands.
-    plot_helper_figure(args, ISPIN)
+    plot_helper_figure(args)
     ax = plt.subplot(111)
     for band in range(N_bands):
         plt.plot(kp_linearized_array, E[band])

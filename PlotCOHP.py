@@ -12,13 +12,16 @@ import argparse
 import warnings
 
 
-def plot_helper_figure(args, ISPIN):
+def plot_helper_figure_assert(args, ISPIN):
     if ISPIN == 2:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 2), \
             'The number of figures should be 2!'
     elif ISPIN == 1:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 1), \
             'The number of figures should be 1!'
+
+
+def plot_helper_figure(args):
     if args.figure is None:
         plt.figure()
     else:
@@ -76,22 +79,6 @@ def main(arguments='-h'):
     n_bond_to_plot = args.bond_to_plot
     ISPIN = args.ISPIN
 
-    with open(args.input, 'r') as f:
-        COHPCAR = f.readlines()
-
-    for N_headerlines, line in enumerate(COHPCAR):
-        if re.match(r'No\.\d*:.*\(.*\)', line):
-            break
-    for N_bonds, line in enumerate(COHPCAR[N_headerlines:]):
-        if not re.match(r'No\.\d*:.*\(.*\)', line):
-            break
-    data_start_line = N_headerlines + N_bonds
-
-    for i in range(len(COHPCAR)):
-        COHPCAR[i] = COHPCAR[i].split()
-
-    N_steps = int(COHPCAR[1][2])
-
     if args.ISPIN:
         print "Using user specified ISPIN."
     else:
@@ -124,6 +111,24 @@ def main(arguments='-h'):
                             ISPIN = int(line.split()[-1])
             except IOError:
                 raise IOError('No ISPIN value determined!')
+
+    plot_helper_figure_assert(args, ISPIN)
+
+    with open(args.input, 'r') as f:
+        COHPCAR = f.readlines()
+
+    for N_headerlines, line in enumerate(COHPCAR):
+        if re.match(r'No\.\d*:.*\(.*\)', line):
+            break
+    for N_bonds, line in enumerate(COHPCAR[N_headerlines:]):
+        if not re.match(r'No\.\d*:.*\(.*\)', line):
+            break
+    data_start_line = N_headerlines + N_bonds
+
+    for i in range(len(COHPCAR)):
+        COHPCAR[i] = COHPCAR[i].split()
+
+    N_steps = int(COHPCAR[1][2])
 
     if ISPIN == 2:
         col_names = ['E', 'avg_up', 'avg_integrated_up']

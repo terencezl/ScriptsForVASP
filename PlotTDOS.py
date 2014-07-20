@@ -104,8 +104,9 @@ def main(arguments='-h'):
             except IOError:
                 raise IOError("Can't determine ISPIN! Either manually specify it, or provide OUTCAR or INCAR")
 
+    plot_helper_figure_assert(args, ISPIN)
+
     if ISPIN == 2:
-        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 'total_up', 'total_down', 'integrated_up', 'integrated_down']
         DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
         DOS_data[:, 0] -= Ef
@@ -135,7 +136,6 @@ def main(arguments='-h'):
         np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6f')
 
     elif ISPIN == 1:
-        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 'total', 'integrated']
         DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
         DOS_data[:, 0] -= Ef

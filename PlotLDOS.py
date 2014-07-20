@@ -127,8 +127,9 @@ def main(arguments='-h'):
             except IOError:
                 raise IOError("Can't determine LORBIT! Either manually specify it, or provide OUTCAR or INCAR")
 
+    plot_helper_figure_assert(args, ISPIN)
+
     if ISPIN == 2 and (LORBIT == 11 or LORBIT == 1):
-        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 's_up', 's_down', 'p_y_up', 'p_y_down', 'p_z_up', 'p_z_down', 'p_x_up', 'p_x_down',
                      'd_xy_up', 'd_xy_down', 'd_yz_up', 'd_yz_down', 'd_z2_up', 'd_z2_down',
                      'd_xz_up', 'd_xz_down', 'd_x2y2_up', 'd_x2y2_down']
@@ -178,7 +179,6 @@ def main(arguments='-h'):
         plot_helper_close()
 
     elif ISPIN == 2 and (LORBIT == 10 or LORBIT == 0):
-        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 's_up', 's_down', 'p_up', 'p_down', 'd_up', 'd_down']
         DOS_data1 = np.array(DOSCAR[(6 + (N_steps + 1) * atom1):(6 + (N_steps + 1) * atom1 + N_steps)], dtype=float)
         DOS_data1[:, 0] -= Ef
@@ -226,7 +226,6 @@ def main(arguments='-h'):
         plot_helper_close()
 
     elif ISPIN == 1 and (LORBIT == 11 or LORBIT == 1):
-        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 's', 'p_y', 'p_z', 'p_x', 'd_xy', 'd_yz', 'd_z2', 'd_xz', 'd_x2y2']
         DOS_data1 = np.array(DOSCAR[(6 + (N_steps + 1) * atom1):(6 + (N_steps + 1) * atom1 + N_steps)], dtype=float)
         DOS_data1[:, 0] -= Ef
