@@ -11,13 +11,16 @@ import re
 import argparse
 
 
-def plot_helper_figure(args, ISPIN):
+def plot_helper_figure_assert(args, ISPIN):
     if ISPIN == 2:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 3), \
             'The number of figures should be 3!'
     elif ISPIN == 1:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 1), \
             'The number of figures should be 1!'
+
+
+def plot_helper_figure(args):
     if args.figure is None:
         plt.figure()
     else:
@@ -125,6 +128,7 @@ def main(arguments='-h'):
                 raise IOError("Can't determine LORBIT! Either manually specify it, or provide OUTCAR or INCAR")
 
     if ISPIN == 2 and (LORBIT == 11 or LORBIT == 1):
+        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 's_up', 's_down', 'p_y_up', 'p_y_down', 'p_z_up', 'p_z_down', 'p_x_up', 'p_x_down',
                      'd_xy_up', 'd_xy_down', 'd_yz_up', 'd_yz_down', 'd_z2_up', 'd_z2_down',
                      'd_xz_up', 'd_xz_down', 'd_x2y2_up', 'd_x2y2_down']
@@ -134,7 +138,7 @@ def main(arguments='-h'):
         DOS_data2[:, 0] -= Ef
 
         # Spin up for both atoms, above and below
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         for i in range(1, 18, 2):
             plt.plot(DOS_data1[:, 0], DOS_data1[:, i], label=col_names[i])
         ax = plt.gca()
@@ -148,7 +152,7 @@ def main(arguments='-h'):
         plot_helper_close()
 
         # Spin down for both atoms, above and below
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         for i in range(1, 18, 2):
             plt.plot(DOS_data1[:, 0], DOS_data1[:, i + 1], label=col_names[i + 1])
         ax = plt.gca()
@@ -162,7 +166,7 @@ def main(arguments='-h'):
         plot_helper_close()
 
         # Spin up + down for both atoms, above and below
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         for i in range(1, 18, 2):
             plt.plot(DOS_data1[:, 0], DOS_data1[:, i] + DOS_data1[:, i + 1], label=col_names[i] + '+' + col_names[i + 1])
         ax = plt.gca()
@@ -174,6 +178,7 @@ def main(arguments='-h'):
         plot_helper_close()
 
     elif ISPIN == 2 and (LORBIT == 10 or LORBIT == 0):
+        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 's_up', 's_down', 'p_up', 'p_down', 'd_up', 'd_down']
         DOS_data1 = np.array(DOSCAR[(6 + (N_steps + 1) * atom1):(6 + (N_steps + 1) * atom1 + N_steps)], dtype=float)
         DOS_data1[:, 0] -= Ef
@@ -181,7 +186,7 @@ def main(arguments='-h'):
         DOS_data2[:, 0] -= Ef
 
         # Spin up for both atoms, above and below
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         for i in range(1, 6, 2):
             plt.plot(DOS_data1[:, 0], DOS_data1[:, i], label=col_names[i])
         ax = plt.gca()
@@ -195,7 +200,7 @@ def main(arguments='-h'):
         plot_helper_close()
 
         # Spin down for both atoms, above and below
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         for i in range(1, 6, 2):
             plt.plot(DOS_data1[:, 0], DOS_data1[:, i + 1], label=col_names[i + 1])
         ax = plt.gca()
@@ -209,7 +214,7 @@ def main(arguments='-h'):
         plot_helper_close()
 
         # Spin up + down for both atoms, above and below
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         for i in range(1, 6, 2):
             plt.plot(DOS_data1[:, 0], DOS_data1[:, i] + DOS_data1[:, i + 1], label=col_names[i] + '+' + col_names[i + 1])
         ax = plt.gca()
@@ -221,13 +226,14 @@ def main(arguments='-h'):
         plot_helper_close()
 
     elif ISPIN == 1 and (LORBIT == 11 or LORBIT == 1):
+        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 's', 'p_y', 'p_z', 'p_x', 'd_xy', 'd_yz', 'd_z2', 'd_xz', 'd_x2y2']
         DOS_data1 = np.array(DOSCAR[(6 + (N_steps + 1) * atom1):(6 + (N_steps + 1) * atom1 + N_steps)], dtype=float)
         DOS_data1[:, 0] -= Ef
         DOS_data2 = np.array(DOSCAR[(6 + (N_steps + 1) * atom2):(6 + (N_steps + 1) * atom2 + N_steps)], dtype=float)
         DOS_data2[:, 0] -= Ef
 
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         for i in range(1, 10):
             plt.plot(DOS_data1[:, 0], DOS_data1[:, i], label=col_names[i])
         ax = plt.gca()
@@ -245,7 +251,7 @@ def main(arguments='-h'):
         DOS_data2 = np.array(DOSCAR[(6 + (N_steps + 1) * atom2):(6 + (N_steps + 1) * atom2 + N_steps)], dtype=float)
         DOS_data2[:, 0] -= Ef
 
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         for i in range(1, 4):
             plt.plot(DOS_data1[:, 0], DOS_data1[:, i], label=col_names[i])
         ax = plt.gca()

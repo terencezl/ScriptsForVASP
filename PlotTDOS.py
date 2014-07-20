@@ -12,13 +12,16 @@ import argparse
 import warnings
 
 
-def plot_helper_figure(args, ISPIN):
+def plot_helper_figure_assert(args, ISPIN):
     if ISPIN == 2:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 2), \
             'The number of figures should be 2!'
     elif ISPIN == 1:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 1), \
             'The number of figures should be 1!'
+
+
+def plot_helper_figure(args):
     if args.figure is None:
         plt.figure()
     else:
@@ -102,12 +105,13 @@ def main(arguments='-h'):
                 raise IOError("Can't determine ISPIN! Either manually specify it, or provide OUTCAR or INCAR")
 
     if ISPIN == 2:
+        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 'total_up', 'total_down', 'integrated_up', 'integrated_down']
         DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
         DOS_data[:, 0] -= Ef
 
         # Plot the separated TDOS
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         plt.plot(DOS_data[:, 0], DOS_data[:, 1], label='spin up')
         plt.plot(DOS_data[:, 0], DOS_data[:, 2], label='spin down')
         plot_helper_settings(args)
@@ -117,7 +121,7 @@ def main(arguments='-h'):
         plot_helper_close()
 
         # Plot the combined TDOS
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         plt.plot(DOS_data[:, 0], DOS_data[:, 1] + DOS_data[:, 2], label='spin up + down')
         plot_helper_settings(args)
         plt.savefig(args.output_prefix + '-spin-combined.png')
@@ -131,11 +135,12 @@ def main(arguments='-h'):
         np.savetxt(args.output_prefix + '@Ef.txt', [energy_slice], '%15.6f')
 
     elif ISPIN == 1:
+        plot_helper_figure_assert(args, ISPIN)
         col_names = ['E', 'total', 'integrated']
         DOS_data = np.array(DOSCAR[6:6+N_steps], dtype=float)
         DOS_data[:, 0] -= Ef
 
-        plot_helper_figure(args, ISPIN)
+        plot_helper_figure(args)
         plt.plot(DOS_data[:, 0], DOS_data[:, 1])
         plot_helper_settings(args)
         plt.savefig(args.output_prefix + '.png')
