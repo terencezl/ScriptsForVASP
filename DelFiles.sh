@@ -4,15 +4,15 @@ while getopts ":twc" opt; do
     case $opt in
     t)
         contcar=true
-        echo "-t also removes CONTCAR."
+#        echo "-t also removes CONTCAR."
         ;;
     w)
         wavecar=true
-        echo "-w also removes WAVECAR."
+#        echo "-w also removes WAVECAR."
         ;;
     c)
         chgcar=true
-        echo "-c also removes CHGCAR."
+#        echo "-c also removes CHGCAR."
         ;;
     \?)
         echo "Invalid option: -$OPTARG" >&2

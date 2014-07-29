@@ -60,8 +60,8 @@ def main(arguments='-h'):
     basis_vectors = np.zeros((3, 3))
     for i, line in enumerate(POSCAR[2:5]):
         basis_vectors[i] = line.split()
-    # convert the string form of ions' position into a numpy numeral array and subtract the translational vector
 
+    # convert the string form of ions' position into a numpy numeral array and subtract the translational vector
     ions_position = np.zeros((len(ions_line_number), 3))
     for i, line in enumerate(ions_line_number):
         ions_position[i] = POSCAR[line].split()[:3]
