@@ -90,4 +90,4 @@ def main(arguments='-h'):
 
 
 if __name__ == '__main__':
-    main(' '.join(sys.argv[1:]))
+    main(' '.join(i.replace(' ', '') for i in sys.argv[1:]))

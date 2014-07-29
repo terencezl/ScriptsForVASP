@@ -133,8 +133,11 @@ elif [[ "$test_type" == bsrun ]]; then
         echo "Didn't find $directory_name/scrun/CHGCAR. Aborted."
         exit 1
     fi
-    cp ../scrun/CONTCAR POSCAR
     cp -l ../scrun/CHGCAR .
+    if [[ -f ../scrun/CONTCAR ]]; then
+        echo "Found CONTCAR under $directory_name/scrun/. Will use it."
+        cp ../scrun/CONTCAR POSCAR
+    fi
 
     if [[ ! -f KPOINTS-bs ]]; then
         echo "You must manually change the KPOINTS file before submitting job!"
