@@ -19,7 +19,7 @@ Bash convenient scripts
 * ``CellInfo.sh [rwigs]`` - to show the important info from OUTCAR (rwigs is optional, and displays the RWIGS values for different species to 100 % fill the cell)
 * ``DelFiles.sh [XXX]`` - to delete the output files for failed runs (XXX is optional if one stays in the job directory)
 * ``SwapFileNames.sh AAA BBB`` - to exchange the names of two files AAA and BBB
-* ``R`` - to submit the job in a specified directory or the current directory
+* ``M`` - to submit the job in a specified directory or the current directory
 * ``D`` - to cancel the submitted N job
 
 Bash job submission scripts
