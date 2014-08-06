@@ -7,8 +7,7 @@
 # SequenceTest.sh c11-c12 cubic
 
 function create_copy_replace {
-    mkdir "$1" 2> /dev/null
-    if [[ $? != 0 ]]; then
+    if [[ -d "$1" ]]; then
         if [[ $is_override ]]; then
             echo "  $1/ already exists. Overriding input files."
         else
@@ -18,7 +17,7 @@ function create_copy_replace {
     else
         echo "  Creating $1/."
     fi
-    cd "$1"
+    mkdir "$1" && cd "$1"
     cp ../../INPUT/INCAR .
     cp ../../INPUT/POSCAR .
     cp ../../INPUT/POTCAR .

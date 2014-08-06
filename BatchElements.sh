@@ -6,13 +6,16 @@ POTENTIALS_DIR=$HOME/terencelz/local/potential-database
 element_list_file=INPUT_ELEMENT/element.dat
 ### END CONFIG ###
 
-while getopts ":e:c:" opt; do
+while getopts ":e:c:f" opt; do
     case $opt in
     e)
         element_list_file=$OPTARG
         ;;
     c)
         pot_combo=$OPTARG
+        ;;
+    f)
+        is_override=true
         ;;
     \?)
         echo "Invalid option: -$OPTARG" >&2
@@ -51,6 +54,16 @@ if [[ "$test_type" == prepare ]]; then
     for pot_combo_item in $pot_combo_list
     do
         compound=${pot_combo_item//,/}
+        (
+        if [[ -d "$compound" ]]; then
+            echo -n "$compound/ contains files. "
+            if [[ $is_override ]]; then
+                echo "Overriding..."
+            else
+                echo "Escaping..."
+                exit 1
+            fi
+        fi
         mkdir -p "$compound"/INPUT
         cp -r INPUT_ELEMENT/* "$compound"/INPUT
         rm "$compound"/INPUT/*.dat
@@ -65,6 +78,7 @@ if [[ "$test_type" == prepare ]]; then
         sed -i "/SYSTEM/c SYSTEM = $pot_combo_item" INCAR
         sed -i "1c $pot_combo_item" POSCAR
         cd ../..
+        )
     done
 
 else
