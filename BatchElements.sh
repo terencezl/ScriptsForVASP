@@ -82,7 +82,7 @@ if [[ "$test_type" == prepare ]]; then
     done
 
 else
-    n=1
+    n=100
     for compound in $compound_list
     do
         (
