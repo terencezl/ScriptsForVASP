@@ -2,7 +2,7 @@
 
 ### START CONFIG ###
 POT_TYPE=PAW-GGA
-POTENTIALS_DIR=$HOME/terencelz/local/potential-database
+POTENTIALS_DIR=$HOME/terencelz/local/POTENTIAL-DATABASE
 element_list_file=INPUT_ELEMENT/element.dat
 ### END CONFIG ###
 
