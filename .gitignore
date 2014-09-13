@@ -45,3 +45,4 @@ docs/_build/
 
 # PyCharm
 .idea/
+fabfile.py
