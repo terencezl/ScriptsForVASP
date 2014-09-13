@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 ### START CONFIG ###
-POT_TYPE=PAW-GGA
 POTENTIALS_DIR=$HOME/terencelz/local/POTENTIAL-DATABASE
+POT_TYPE=PAW-GGA
 element_list_file=INPUT_ELEMENT/element.dat
 ### END CONFIG ###
 
