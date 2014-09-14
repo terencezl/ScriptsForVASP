@@ -59,7 +59,7 @@ function force_entropy_not_converged_detecting_helper {
     local dir="$1"
     local force_max=$(grep "FORCES:" $dir/OUTCAR | tail -1 | awk '{print $5}')
     force_max=${force_max#-}
-    if [ -n $force_max ]; then
+    if [ -n "$force_max" ]; then
         if [ $(echo "$force_max > 0.04" | bc) == 1 ]; then
             force_not_converged_list="$force_not_converged_list\n$dir $force_max"
         fi
