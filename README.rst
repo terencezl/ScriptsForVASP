@@ -36,7 +36,6 @@ Bash convenient scripts
 * ``DelFiles.sh [DIRECTORY]`` - to delete the output files, default to current directory
 * ``SwapFileNames.sh A B`` - to exchange the names of two files A and B
 * ``M [DIRECTORY]`` - to submit the job in a specified directory or default to the current directory
-* ``D [N]`` - to cancel the submitted N job, or default to 1 without argument
 
 Bash job submission scripts
 ---------------------------
