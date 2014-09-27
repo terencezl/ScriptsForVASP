@@ -78,6 +78,7 @@ def get_effective_mass_reduced(band, kp_start, kp_end, kp_linearized_array, E):
     effective_mass_reduced = h_bar ** 2 / d2E_dk2 / m_e
     return effective_mass_reduced
 
+
 def plot_helper_figure_assert(args, ISPIN):
     if ISPIN == 2:
         assert args.figure is None or (isinstance(args.figure, list) and len(args.figure) == 2), \
@@ -238,7 +239,7 @@ def main(arguments='-h'):
         plt.tight_layout()
     except RuntimeError:
         print "Tight layout failed... Not a big deal though."
-    plt.savefig(args.output_prefix + '.png')
+    plt.savefig(args.output_prefix + '.pdf')
     plot_helper_close()
 
     return kp_end_symbol_list, kp_end_point_list, kp_linearized_array, E

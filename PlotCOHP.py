@@ -148,14 +148,14 @@ def main(arguments='-h'):
         plot_helper_settings(args)
         if args.axis_range:
             plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2]/2., args.axis_range[3]/2.])
-        plt.savefig(args.output_prefix + '-spin-separated.png')
+        plt.savefig(args.output_prefix + '-spin-separated.pdf')
         plot_helper_close()
 
         # Plot the combined COHP
         plot_helper_figure(args, ISPIN)
         plt.plot(COHP_data[:, 0], -COHP_data[:, col_up_to_plot] - COHP_data[:, col_down_to_plot])
         plot_helper_settings(args)
-        plt.savefig(args.output_prefix + '-spin-combined.png')
+        plt.savefig(args.output_prefix + '-spin-combined.pdf')
         plot_helper_close()
 
     elif ISPIN == 1:
@@ -169,7 +169,7 @@ def main(arguments='-h'):
         plot_helper_figure(args, ISPIN)
         plt.plot(COHP_data[:, 0], -COHP_data[:, col_to_plot], label=col_names[col_to_plot])
         plot_helper_settings(args)
-        plt.savefig(args.output_prefix + '.png')
+        plt.savefig(args.output_prefix + '.pdf')
         plot_helper_close()
 
     return (col_names, COHP_data)

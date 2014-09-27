@@ -149,7 +149,7 @@ def main(arguments='-h'):
         plot_helper_settings(args)
         if args.axis_range:
             plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2]/2., args.axis_range[3]/2.])
-        plt.savefig(args.output_prefix + '-spin-up.png')
+        plt.savefig(args.output_prefix + '-spin-up.pdf')
         plot_helper_close()
 
         # Spin down for both atoms, above and below
@@ -163,7 +163,7 @@ def main(arguments='-h'):
         plot_helper_settings(args)
         if args.axis_range:
             plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2]/2., args.axis_range[3]/2.])
-        plt.savefig(args.output_prefix + '-spin-down.png')
+        plt.savefig(args.output_prefix + '-spin-down.pdf')
         plot_helper_close()
 
         # Spin up + down for both atoms, above and below
@@ -175,7 +175,7 @@ def main(arguments='-h'):
         for i in range(1, 18, 2):
             plt.plot(DOS_data2[:, 0], -DOS_data2[:, i] - DOS_data2[:, i + 1])
         plot_helper_settings(args)
-        plt.savefig(args.output_prefix + '-spin-combined.png')
+        plt.savefig(args.output_prefix + '-spin-combined.pdf')
         plot_helper_close()
 
     elif ISPIN == 2 and (LORBIT == 10 or LORBIT == 0):
@@ -196,7 +196,7 @@ def main(arguments='-h'):
         plot_helper_settings(args)
         if args.axis_range:
             plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2]/2., args.axis_range[3]/2.])
-        plt.savefig(args.output_prefix + '-spin-up.png')
+        plt.savefig(args.output_prefix + '-spin-up.pdf')
         plot_helper_close()
 
         # Spin down for both atoms, above and below
@@ -210,7 +210,7 @@ def main(arguments='-h'):
         plot_helper_settings(args)
         if args.axis_range:
             plt.axis([args.axis_range[0], args.axis_range[1], args.axis_range[2]/2., args.axis_range[3]/2.])
-        plt.savefig(args.output_prefix + '-spin-down.png')
+        plt.savefig(args.output_prefix + '-spin-down.pdf')
         plot_helper_close()
 
         # Spin up + down for both atoms, above and below
@@ -222,7 +222,7 @@ def main(arguments='-h'):
         for i in range(1, 6, 2):
             plt.plot(DOS_data2[:, 0], -DOS_data2[:, i] - DOS_data2[:, i + 1])
         plot_helper_settings(args)
-        plt.savefig(args.output_prefix + '-spin-combined.png')
+        plt.savefig(args.output_prefix + '-spin-combined.pdf')
         plot_helper_close()
 
     elif ISPIN == 1 and (LORBIT == 11 or LORBIT == 1):
@@ -240,7 +240,7 @@ def main(arguments='-h'):
         for i in range(1, 10):
             plt.plot(DOS_data2[:, 0], -DOS_data2[:, i])
         plot_helper_settings(args)
-        plt.savefig(args.output_prefix + '.png')
+        plt.savefig(args.output_prefix + '.pdf')
         plot_helper_close()
 
     elif ISPIN == 1 and (LORBIT == 10 or LORBIT == 0):
@@ -258,7 +258,7 @@ def main(arguments='-h'):
         for i in range(1, 4):
             plt.plot(DOS_data2[:, 0], -DOS_data2[:, i])
         plot_helper_settings(args)
-        plt.savefig(args.output_prefix + '.png')
+        plt.savefig(args.output_prefix + '.pdf')
         plot_helper_close()
 
     return col_names, DOS_data1, DOS_data2
