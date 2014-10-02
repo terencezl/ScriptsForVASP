@@ -22,7 +22,7 @@ Python scripts
 
 These can also be used alone, just type ``SCRIPT.py -h`` in the terminal you will get help. Additionally, they **can be readily imported and played with in a Python interpreter**.
 
-* ``PlotTDOS.py`` - to plot total density of states, spin states are supported (above or below x axis)
+* ``PlotTDOS.py`` - to plot total density of states, spin states are supported
 * ``PlotLDOS.py`` - to plot local projected density of states of two ions (above or below x axis), spin states are supported (in different files)
 * ``PlotBS.py`` - to plot the band structure along certain chosen points in the 1st BZ
 * ``PlotCOHP.py`` - to plot the pCOHP from LOBSTER runs
