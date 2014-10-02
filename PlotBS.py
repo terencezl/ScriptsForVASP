@@ -5,8 +5,11 @@ import matplotlib
 if not matplotlib.is_interactive():
     matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import mpltools.style
-mpltools.style.use('ggplot')
+try:
+    import mpltools.style
+    mpltools.style.use('ggplot')
+except ImportError:
+    print "If package mpltools was installed, the figures would be more pretty!"
 import re
 import argparse
 
