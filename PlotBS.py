@@ -6,10 +6,9 @@ if not matplotlib.is_interactive():
     matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 try:
-    import mpltools.style
-    mpltools.style.use('ggplot')
-except ImportError:
-    print "If package mpltools was installed, the figures would be more pretty!"
+    plt.style.use('ggplot')
+except AttributeError:
+    print "If you upgrade to matplotlib 1.4 and I will change the style to ggplot, just prettier."
 import re
 import argparse
 
