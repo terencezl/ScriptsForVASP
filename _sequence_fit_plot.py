@@ -10,6 +10,7 @@ try:
     plt.style.use('ggplot')
 except AttributeError:
     print "If you upgrade to matplotlib 1.4 and I will change the style to ggplot, just prettier."
+from scipy.optimize import curve_fit
 import re
 
 
