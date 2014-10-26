@@ -37,7 +37,7 @@ else
     exit 1
 fi
 
-rm IBZKPT XDATCAR PCDAT CHG EIGENVAL PROCAR vasprun.xml OUTCAR OSZICAR DOSCAR *.o*
+rm IBZKPT XDATCAR PCDAT CHG EIGENVAL PROCAR vasprun.xml OUTCAR OSZICAR DOSCAR *.o* 2> /dev/null
 [[ $contcar ]] && rm CONTCAR
 [[ $wavecar ]] && rm WAVECAR
 [[ $chgcar ]] && rm CHGCAR

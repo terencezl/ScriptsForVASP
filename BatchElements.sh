@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
 ### START CONFIG ###
-POTENTIALS_DIR=$HOME/terencelz/local/POTENTIAL-DATABASE
-POT_TYPE=PAW-GGA
-element_list_file=INPUT_ELEMENT/element.dat
+if [[ -z POTENTIAL_DATABASE ]]; then
+    POTENTIAL_DATABASE=$HOME/terencelz/local/POTENTIAL_DATABASE
+fi
+if [[ -z POTENTIAL_TYPE ]]; then
+    POTENTIAL_TYPE=PAW-GGA
+fi
+element_list_file=INPUT_ELEMENT/elements.txt
 ### END CONFIG ###
 
 while getopts ":e:c:f" opt; do
@@ -69,9 +73,9 @@ if [[ "$test_type" == prepare ]]; then
         rm "$compound"/INPUT/*.dat
 
         if [[ $pot_combo_item != *,* ]]; then
-            eval "cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_$pot_combo_item > $compound/INPUT/POTCAR"
+            eval "cat $POTENTIALS_DIR/$POTENTIAL_TYPE/POTCAR_$pot_combo_item > $compound/INPUT/POTCAR"
         else
-            eval "cat $POTENTIALS_DIR/$POT_TYPE/POTCAR_{$pot_combo_item} > $compound/INPUT/POTCAR"
+            eval "cat $POTENTIALS_DIR/$POTENTIAL_TYPE/POTCAR_{$pot_combo_item} > $compound/INPUT/POTCAR"
         fi
 
         cd "$compound"/INPUT

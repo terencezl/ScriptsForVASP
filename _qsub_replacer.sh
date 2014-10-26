@@ -12,4 +12,4 @@ if [[ $(echo $qname | wc -c) > 17 ]]; then
     qname="T$qname_3$qname_2$qname_1"
 fi
 sed -i "/#PBS -N/c #PBS -N $qname" $1
-sed -i "/^cd/c cd $PWD" $1
+#sed -i "/^cd/c cd $PWD" $1
