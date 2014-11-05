@@ -12,7 +12,7 @@ and perhaps will not be of too much use to most VASP users. Since it has come
 to a level handy enough to suit my own research need, I will not actively 
 maintain this project anymore, and the documentation will not be added either. 
 However, I selected some of the generally useful features, like plotting, 
-fitting, POSCAR manipulation and repackaged them, made a Python package out of it, 
+fitting, POSCAR manipulation and reorganized them, made a Python package out of it, 
 named [pydass_vasp](http://terencezl.github.io/pydass_vasp/). It should be 
 interesting to you. Just take a look.
 
