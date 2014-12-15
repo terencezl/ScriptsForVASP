@@ -17,7 +17,7 @@ function create_copy_replace {
     else
         echo "  Creating $1/."
     fi
-    mkdir "$1"
+    mkdir "$1" 2> /dev/null
     cd "$1"
     cp ../../INPUT/INCAR .
     cp ../../INPUT/POSCAR .
